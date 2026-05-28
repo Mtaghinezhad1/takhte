@@ -15,7 +15,11 @@
         "simulator": true
       }
     },
-    "production": {}
+    "production": {
+      "android": {
+        "withoutCredentials": true
+      }
+    }
   },
   "submit": {
     "production": {}
