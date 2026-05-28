@@ -122,8 +122,8 @@ export default function Timer({ initialTotalTime = 30 }) {
 
 const styles = StyleSheet.create({
     timeContainer: {
-        backgroundColor: 'orange',
-        borderRadius: 10,
+        backgroundColor: 'rgba(42, 68, 254, 1.00)',
+        borderRadius: 3,
         width: '80%',
         padding: '2%',
         alignItems: 'center'

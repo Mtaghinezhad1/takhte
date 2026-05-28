@@ -5,7 +5,7 @@ export const InitialBoard_standard = [
   0, 
   0, 
   0, 
-  5,     //blackCaptured
+  5,  
   0, 
   3, 
   0, 

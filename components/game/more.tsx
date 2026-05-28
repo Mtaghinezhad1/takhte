@@ -164,8 +164,8 @@ const styles = StyleSheet.create({
   mainButton: {
     width: '100%',
     backgroundColor: 'rgba(42, 68, 254, 1.00)',
-    paddingVertical: 14,
-    borderRadius: 5,
+    paddingVertical: 10,
+    borderRadius: 3,
     elevation: 3,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },

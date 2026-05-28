@@ -1,23 +1,23 @@
 const AI_LEVELS = {
     '1': {
-        pipCount: 10,
-        blots: 10,
+        pipCount: 0,
+        blots: 0,
         hits: 0,
-        closedPoints: 10,
+        closedPoints: 0,
         risk: -20,        // جریمه برای بلات‌های در معرض خطر
     },
     2: {
-        pipCount: 1,
-        blots: 10,
-        hits: 5,
-        closedPoints: 10,
+        pipCount: 0,
+        blots: 0,
+        hits: 0,
+        closedPoints: 0,
         risk: -3,
     },
     3: {
         pipCount: 0,
-        blots: 10,
-        hits: 1,
-        closedPoints: 10,
+        blots: 0,
+        hits: 0,
+        closedPoints: 0,
         risk: -5,
     },
     4: {
@@ -94,7 +94,7 @@ const DISTANCE_PROB = {
  */
 function getBlotHitProbability(board, blotPoint, color) {
     const opponent = color === 'white' ? 'black' : 'white';
-    const direction = opponent === 'white' ? 1 : -1;
+    const direction = opponent === 'white' ? -1 : 1;
     let unionProb = 0;
 
     for (let point = 1; point <= 24; point++) {
@@ -115,6 +115,7 @@ function getBlotHitProbability(board, blotPoint, color) {
         if (distance <= 0 || distance > 12) continue;
 
         const p = DISTANCE_PROB[distance];
+
         unionProb = unionProb + p - unionProb * p;
     }
     return unionProb;
@@ -143,6 +144,7 @@ function evaluateBoard(board, color, weights = AI_LEVELS[3]) {
     }
     const averageRisk = riskSum / (myBlots || 1);  // اگر بلات نداشته باشیم، ریسک صفر
 
+
     // ترکیب خطی
     let score = 0;
     let pipCountPoint = weights.pipCount * pipDiff;
@@ -150,12 +152,13 @@ function evaluateBoard(board, color, weights = AI_LEVELS[3]) {
     let closedPoint = weights.closedPoints * (myClosed - oppClosed);
     let riskPoint = weights.risk * averageRisk;   // weights.risk منفی است
 
+
     score += pipCountPoint;
     score += blotPoint;
     score += closedPoint;
     score += riskPoint;
 
-    return { score, pipCountPoint, blotPoint, closedPoint, riskPoint };
+    return { score, pipCountPoint, blotPoint, closedPoint, riskPoint};
 }
 
 // =================== ارزیابی یک حرکت خاص ===================
