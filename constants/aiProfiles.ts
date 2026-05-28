@@ -17,7 +17,7 @@ export const AI_PROFILES = {
   },
   4: {
     name: 'حرفه‌ای',
-    avatar: require('@/assets/avatar/1 (1).jpg'),
+    avatar: require('@/assets/avatar/1 (1).jpeg'),
     baseRating: 1300,
   },
   // ... تا سطح 10
