@@ -131,7 +131,6 @@ const styles = StyleSheet.create({
         top: '50%', // می‌توانید با توجه به محل دکمه تنظیمش کنید
         left: '50%',
         transform: 'translate(-50%,-50%)',
-        width: '100%',
         backgroundColor: '#FFFFFF',
         borderRadius: 20,
         padding: 20,

@@ -5,9 +5,11 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 // Mapping of SF Symbol names to Material Icons names.
 const MAPPING = {
   'house.fill': 'home',
-  'paperplane.fill': 'send',
-  'chevron.left.forwardslash.chevron.right': 'code',
-  'chevron.right': 'chevron-right',
+  'stars.fill': 'stars',
+  'school.fill': 'school',
+  'menu.fill': 'menu',
+  'account_circle.fill': 'person',
+  'info.fill': 'info',
 };
 
 /**

@@ -1,3 +1,4 @@
+import { IconSymbol } from '@/components/ui/icon-symbol';
 import useUserStore from '@/stores/useUserStore';
 import React, { useState } from 'react';
 import { Image, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
@@ -83,7 +84,7 @@ export default function MoreScreen() {
             onPress={() => { }}
           /> */}
           <MenuItem
-            icon="👤"
+            icon={<IconSymbol size={28} name="account_circle.fill" color={'black'} />}
             title="نام کاربری"
             subtitle={username}
             onPress={() => { }}
@@ -103,13 +104,13 @@ export default function MoreScreen() {
             onPress={() => { }}
             rightText="‹"
           /> */}
-          <MenuItem
+          {/* <MenuItem
             icon="✏️"
             title="ویرایش پروفایل"
             subtitle="بروزرسانی عکس و اطلاعات"
             onPress={() => { }}
             rightText="‹"
-          />
+          /> */}
           {/* <MenuItem
             icon="🌐"
             title="تنظیمات زبان"
@@ -181,7 +182,7 @@ export default function MoreScreen() {
             rightText="‹"
           /> */}
           <MenuItem
-            icon="ℹ️"
+            icon={<IconSymbol size={28} name="info.fill" color={'black'} />}
             title="درباره ما"
             subtitle="نسخه اپلیکیشن ۱.۰.۰"
             onPress={() => { }}

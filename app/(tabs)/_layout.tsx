@@ -43,21 +43,21 @@ export default function TabLayout() {
         name="achievements"
         options={{
           title: 'دستاوردها',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="chevron.right" color={color} />,
+          tabBarIcon: ({ color }) => <IconSymbol size={28} name="stars.fill" color={color} />,
         }}
       />
       <Tabs.Screen
         name="learn"
         options={{
           title: 'آموزش',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
+          tabBarIcon: ({ color }) => <IconSymbol size={28} name="school.fill" color={color} />,
         }}
       />
       <Tabs.Screen
         name="more"
         options={{
           title: 'بیشتر',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
+          tabBarIcon: ({ color }) => <IconSymbol size={28} name="menu.fill" color={color} />,
         }}
       />
     </Tabs>
