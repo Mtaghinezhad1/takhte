@@ -1,31 +1,75 @@
+import { makeMove } from "./utils";
+
 const AI_LEVELS = {
-    '1': {
-        pipCount: 0,
-        blots: 0,
-        hits: 0,
-        closedPoints: 0,
-        risk: -20,        // جریمه برای بلات‌های در معرض خطر
+    '1': {  // ضعیف‌ترین
+        pipCount: 0.1,
+        blots: 0.1,
+        hits: 0.1,
+        closedPoints: 0.1,
+        risk: 0,           // بدون جریمه برای بلات‌های در معرض خطر
     },
-    2: {
-        pipCount: 0,
-        blots: 0,
-        hits: 0,
-        closedPoints: 0,
+    '2': {
+        pipCount: 0.2,
+        blots: 0.2,
+        hits: 0.2,
+        closedPoints: 0.2,
+        risk: -1,
+    },
+    '3': {
+        pipCount: 0.5,
+        blots: 0.5,
+        hits: 0.5,
+        closedPoints: 0.5,
+        risk: -2,
+    },
+    '4': {
+        pipCount: 1,
+        blots: 1,
+        hits: 1,
+        closedPoints: 1,
         risk: -3,
     },
-    3: {
-        pipCount: 0,
-        blots: 0,
-        hits: 0,
-        closedPoints: 0,
+    '5': {
+        pipCount: 2,
+        blots: 2,
+        hits: 1.5,
+        closedPoints: 2,
         risk: -5,
     },
-    4: {
-        pipCount: 0,
-        blots: 0,
-        hits: 0,
-        closedPoints: 0,
+    '6': {
+        pipCount: 3,
+        blots: 3,
+        hits: 2,
+        closedPoints: 3,
         risk: -8,
+    },
+    '7': {
+        pipCount: 4,
+        blots: 4,
+        hits: 2.5,
+        closedPoints: 4,
+        risk: -10,
+    },
+    '8': {
+        pipCount: 5,
+        blots: 5,
+        hits: 3,
+        closedPoints: 5,
+        risk: -15,
+    },
+    '9': {
+        pipCount: 7,
+        blots: 6,
+        hits: 4,
+        closedPoints: 6,
+        risk: -18,
+    },
+    '10': {  // قوی‌ترین
+        pipCount: 10,
+        blots: 8,
+        hits: 5,
+        closedPoints: 8,
+        risk: -25,
     }
 }
 
@@ -158,42 +202,49 @@ function evaluateBoard(board, color, weights = AI_LEVELS[3]) {
     score += closedPoint;
     score += riskPoint;
 
-    return { score, pipCountPoint, blotPoint, closedPoint, riskPoint};
+    return { score, pipCountPoint, blotPoint, closedPoint, riskPoint };
 }
 
 // =================== ارزیابی یک حرکت خاص ===================
 export const evaluateMove = (board, dice, moveSequence, color, weights = AI_LEVELS[3]) => {
-    const newBoard = [...board];
-    let hitsInMove = 0;
-    for (const step of moveSequence) {
-        const { from, to, die } = step;
+    // کپی از تخته و مقادیر اولیه bornOff (در ارزیابی تأثیری ندارند، اما برای makeMove لازمند)
+    let newBoard = [...board];
+    let whiteBornOff = 0;
+    let blackBornOff = 0;
 
-        if (newBoard[from] > 0) {
-            newBoard[from] -= 1;
-        } else if (newBoard[from] < 0) {
-            newBoard[from] += 1;
-        }
-
-        const opponent = color === 'black' ? 'white' : 'black';
-        if (newBoard[to] &&
-            ((opponent === 'black' && newBoard[to] === -1) ||
-                (opponent === 'white' && newBoard[to] === 1))) {
-            hitsInMove++;
-        }
-
-        if (to > 0 && to < 25) {
-            const targetValue = newBoard[to];
-            if (targetValue > 0) {
-                newBoard[25] += 1;
-                newBoard[to] = -1;
-            } else if (targetValue < 0) {
-                newBoard[to] -= 1;
-            } else {
-                newBoard[to] = -1;
-            }
-        }
+    // ذخیره مقدار اولیه بار حریف (برای محاسبه ضربات)
+    let initialOppBar;
+    if (color === 'white') {
+        // حریف سیاه است → بار سیاه در board[0] (عدد منفی)
+        initialOppBar = Math.abs(newBoard[0]); // تعداد مهره‌های سیاه در بار
+    } else {
+        // حریف سفید است → بار سفید در board[25] (عدد مثبت)
+        initialOppBar = newBoard[25];
     }
 
+    // اعمال تک‌تک گام‌های حرکت با استفاده از makeMove
+    for (const step of moveSequence) {
+        const { from, to, die } = step;
+        // فراخوانی makeMove؛ prevBoard را null می‌دهیم (چون برای انیمیشن نیست)
+        const result = makeMove(newBoard, from, die, color, null, whiteBornOff, blackBornOff);
+        // به‌روزرسانی وضعیت پس از هر حرکت
+        newBoard = result.newBoard;
+        whiteBornOff = result.whiteBornOff;
+        blackBornOff = result.blackBornOff;
+    }
+
+    // محاسبه مقدار نهایی بار حریف
+    let finalOppBar;
+    if (color === 'white') {
+        finalOppBar = Math.abs(newBoard[0]);
+    } else {
+        finalOppBar = newBoard[25];
+    }
+
+    // تعداد ضربات = افزایش مهره‌های حریف در بار
+    const hitsInMove = finalOppBar - initialOppBar; // همیشه نامنفی
+
+    // ارزیابی وضعیت نهایی تخته (بدون در نظر گرفتن bornOffها)
     const { score, pipCountPoint, blotPoint, closedPoint, riskPoint } = evaluateBoard(newBoard, color, weights);
     const baseScore = score;
     const hitScore = weights.hits * hitsInMove;

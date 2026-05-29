@@ -53,7 +53,7 @@ export default function MoreScreen() {
         {/* Profile Section */}
         <View style={styles.profileSection}>
           <View style={styles.avatar}>
-            <Image style={styles.avatarImg} source={avatar ? avatar : 'sdf'} />
+            <Image style={styles.avatarImg} source={avatar ? avatar : require('@/assets/avatar/default.jpeg')} />
           </View>
           <Text style={styles.profileName}>{username}</Text>
           <Text style={styles.profileBio}>ID: 737848826</Text>

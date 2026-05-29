@@ -187,7 +187,9 @@ export const isValidMove = (board, fromPoint, diceNumber, currentTurn) => {
 
 
 export const makeMove = (board, fromPoint, diceNumber, currentTurn, prevBoard, currentWhiteBornOff, currentBlackBornOff) => {
-    const newBoard = [...board];
+
+    let newBoard = [...board];
+
     let newWhiteBornOff = currentWhiteBornOff;
     let newBlackBornOff = currentBlackBornOff;
   

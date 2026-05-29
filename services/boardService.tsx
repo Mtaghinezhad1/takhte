@@ -20,6 +20,21 @@ export const boardService = {
         return InitialBoard_standard;
     },
 
+    getInitialBoardByGameMode(gameMode) {
+        switch (gameMode) {
+            case 'standard':
+                return InitialBoard_standard;
+            case 'fun':
+                return InitialBoard_fun;
+            case 'aiVsAi':
+                return InitialBoard_standard;
+            case 'twoPlayer':
+                return InitialBoard_standard;
+            default:
+                return InitialBoard_standard;
+        }
+    },
+
     // محاسبه تعداد پیپ برای یک رنگ (فاصله تا خانه)
     pipCount(board, color) {
         let total = 0;
@@ -37,21 +52,6 @@ export const boardService = {
             total += Math.abs(board[25]) * 25;
         }
         return total;
-    },
-
-    getInitialBoardByGameMode(gameMode) {
-        switch (gameMode) {
-            case 'standard':
-                return InitialBoard_standard;
-            case 'fun':
-                return InitialBoard_fun;
-            case 'aiVsAi':
-                return InitialBoard_standard;
-            case 'twoPlayer':
-                return InitialBoard_standard;
-            default:
-                return InitialBoard_standard;
-        }
     },
 
     hasAnyMove(board, dice, currentTurn) {

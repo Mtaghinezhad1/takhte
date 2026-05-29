@@ -1,8 +1,7 @@
 import { useLocalSearchParams } from "expo-router";
 import * as ScreenOrientation from 'expo-screen-orientation';
 import React, { useEffect } from "react";
-import { Dimensions, StyleSheet, View } from "react-native";
-
+import { StyleSheet, useWindowDimensions, View } from "react-native";
 
 import HalfBoard from "@/components/game/halfBoard";
 import InformModal from '@/components/game/informModal';
@@ -14,13 +13,10 @@ import Rightbar from "@/components/game/rightbar";
 import StaticsBar from "@/components/game/staticsBar";
 import useGameStore from '@/stores/useGameStore';
 
-
-
-const { height: screenHeight } = Dimensions.get('window');
-
 export default function Index() {
   const { gameMode, targetScore, aiLevel } = useLocalSearchParams();
   const store = useGameStore();
+  const { height: screenHeight } = useWindowDimensions(); // واکنش‌گرا
 
   useEffect(() => {
     if (gameMode) {
@@ -48,16 +44,12 @@ export default function Index() {
 
   return (
     <View style={styles.container}>
-      <View style={styles.board}>
+      <View style={[styles.board, { height: screenHeight }]}>
         <GameStatusBar />
         <Leftbar />
-        <HalfBoard
-          side="left"
-        />
+        <HalfBoard side="left" />
         <StaticsBar />
-        <HalfBoard
-          side="right"
-        />
+        <HalfBoard side="right" />
         <Rightbar />
         <ResultModal />
         <InformModal />
@@ -66,7 +58,6 @@ export default function Index() {
     </View>
   );
 }
-
 
 const styles = StyleSheet.create({
   container: {
@@ -77,7 +68,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#070024',
   },
   board: {
-    height: screenHeight,
     aspectRatio: 16 / 9,
     flexDirection: 'row',
     justifyContent: 'space-between',

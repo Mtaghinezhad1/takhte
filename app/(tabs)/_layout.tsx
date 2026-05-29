@@ -43,7 +43,7 @@ export default function TabLayout() {
         name="achievements"
         options={{
           title: 'دستاوردها',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
+          tabBarIcon: ({ color }) => <IconSymbol size={28} name="chevron.right" color={color} />,
         }}
       />
       <Tabs.Screen

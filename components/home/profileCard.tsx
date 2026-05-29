@@ -23,8 +23,7 @@ const ProfileCard = () => {
                 <View style={styles.avatar}>
                     <Image
                         style={styles.image}
-                        source={avatar ? avatar : 'sdf'}
-                    // Replace with your local image: require('./1 (13).jpeg')
+                        source={avatar ? avatar : require('@/assets/avatar/default.jpeg')}
                     />
                 </View>
             </View>
@@ -37,7 +36,6 @@ const styles = StyleSheet.create({
         width: '100%',
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#fff', // optional, matches original body
     },
     container: {
         backgroundColor: '#dee4e0',

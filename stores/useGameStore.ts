@@ -9,7 +9,7 @@ import useUserStore from './useUserStore';
 const useGameStore = create((set, get) => ({
   // State
   board: boardService.getInitialBoard(),
-  currentTurn: 'black',
+  currentTurn: 'white',
   movesCount: 0,
   allDice: [1, 1, 1, 1],
   dice: [1, 1, 1, 1],
@@ -46,7 +46,7 @@ const useGameStore = create((set, get) => ({
       gameMode,
       aiLevel,
       aiProfile,
-      currentTurn: 'black',
+      currentTurn: 'white',
       movesCount: 0,
       dice: [1, 1],
       activeDice: 1,

@@ -57,10 +57,10 @@ export default function ResultModal() {
                         {/* Black Player */}
                         <View style={styles.playerSection}>
                             <Image
-                                source={aiProfile ? aiProfile.avatar : 'sdf'}
+                                source={aiProfile ? aiProfile.avatar : require('@/assets/avatar/default.jpeg')}
                                 style={[styles.playerImage, styles.blackPlayerBorder]}
                             />
-                            <Text style={styles.playerName}>{aiProfile ? aiProfile.name : 'sdf'}</Text>
+                            <Text style={styles.playerName}>{aiProfile ? aiProfile.name : 'ربات'}</Text>
                             <Text style={[styles.playerColor, { color: '#000000' }]}>مهره سیاه</Text>
                         </View>
 
@@ -81,7 +81,7 @@ export default function ResultModal() {
                         {/* White Player */}
                         <View style={styles.playerSection}>
                             <Image
-                                source={avatar ? avatar : 'sdf'}
+                                source={avatar ? avatar : require('@/assets/avatar/default.jpeg')}
                                 style={[styles.playerImage, styles.whitePlayerBorder]}
                             />
                             <Text style={styles.playerName}>{username}</Text>

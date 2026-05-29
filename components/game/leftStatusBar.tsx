@@ -11,16 +11,16 @@ const GameStatusBar = () => {
   return (
     <View style={styles.leftStatusBar}>
       <View style={styles.topContainer}>
-        <Text style={styles.playerName}>{aiProfile ? aiProfile.name : 'sdf'}</Text>
+        <Text style={styles.playerName}>{aiProfile ? aiProfile.name : 'کاربر مهمان'}</Text>
         {currentTurn == 'black' ? (
           <View style={styles.showTurn}>
             <View style={styles.avatar}>
-              <Image style={styles.avatarImg} source={aiProfile ? aiProfile.avatar : 'sdf'} />
+              <Image style={styles.avatarImg} source={aiProfile ? aiProfile.avatar : require('@/assets/avatar/default.jpeg')} />
             </View>
           </View>
         ) : (
           <View style={styles.avatar}>
-            <Image style={styles.avatarImg} source={aiProfile ? aiProfile.avatar : 'sdf'} />
+            <Image style={styles.avatarImg} source={aiProfile ? aiProfile.avatar : require('@/assets/avatar/default.jpeg')} />
           </View>
         )}
         <Text style={styles.rating}>{aiProfile ? aiProfile.baseRating : '1400'}</Text>
@@ -43,12 +43,12 @@ const GameStatusBar = () => {
         {currentTurn == 'white' ? (
           <View style={styles.showTurn}>
             <View style={styles.avatar}>
-              <Image style={styles.avatarImg} source={avatar ? avatar : 'sdf'} />
+              <Image style={styles.avatarImg} source={avatar ? avatar : require('@/assets/avatar/default.jpeg')} />
             </View>
           </View>
         ) : (
           <View style={styles.avatar}>
-            <Image style={styles.avatarImg} source={avatar ? avatar : 'sdf'} />
+            <Image style={styles.avatarImg} source={avatar ? avatar : require('@/assets/avatar/default.jpeg')} />
           </View>
         )}
         <Text style={styles.playerName}>{username}</Text>

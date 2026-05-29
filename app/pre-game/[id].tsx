@@ -87,7 +87,7 @@ export default function PreGameScreen() {
                                 <Slider
                                     style={styles.slider}
                                     minimumValue={1}
-                                    maximumValue={4}
+                                    maximumValue={10}
                                     step={1}
                                     value={difficultyLevel}
                                     onValueChange={handleDifficultyChange}
