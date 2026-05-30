@@ -343,6 +343,9 @@ const useGameStore = create((set, get) => ({
 
     if (state.isModalVisible || state.gameWinner || uniqueMoves.length === 0) return;
 
+    console.log('playAi dice', state.dice);
+    console.log('playAi all dice', state.allDice);
+
 
     const result = aiService.executeBestMove(
       state.board,
@@ -388,7 +391,9 @@ const useGameStore = create((set, get) => ({
   executeAIMove: () => {
     const state = get();
     if (state.dice.length === 0 || state.isAiThinking || state.gameWinner || state.isModalVisible || state.isMatchEndModalVisible) return;
-
+    console.log('execute dice', state.dice);
+    console.log('execute all dice', state.allDice);
+    
     const uniqueMoves = boardService.getAvailableMoves(state.board, state.dice, state.currentTurn);
     set({ availableMoves: uniqueMoves });
     if (state.currentTurn === 'white' && uniqueMoves.length === 1 && !state.showContinue && !state.isModalVisible) {
