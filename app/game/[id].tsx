@@ -39,8 +39,12 @@ export default function Index() {
 
   // اجرای حرکت هوش مصنوعی
   useEffect(() => {
+  const timer = setTimeout(() => {
     store.executeAIMove();
-  }, [store.currentTurn, store.allDice]);
+  }, 100);
+
+  return () => clearTimeout(timer);
+}, [store.currentTurn, store.allDice]);
 
   return (
     <View style={styles.container}>
