@@ -137,7 +137,6 @@ const styles = StyleSheet.create({
   },
   diceText: {
     fontSize: 13,
-    fontWeight: 'bold',
     fontFamily: 'Kaghaz',
     color: '#333',
   },
@@ -151,12 +150,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 6,
-    backgroundColor: '#ffcc00',
+    backgroundColor: '#2e2bac',
   },
   continueButtonText: {
-    color: '#000',
+    color: 'white',
     fontFamily: 'Kaghaz',
-    fontWeight: 'bold',
   },
 
 });

@@ -242,13 +242,14 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   profileName: {
+    fontFamily: 'Kaghaz',
     fontSize: 20,
-    fontWeight: '700',
     color: '#1a1a1a',
     marginBottom: 4,
   },
   profileBio: {
     fontSize: 14,
+    fontFamily: 'Kaghaz',
     color: '#777777',
     marginBottom: 4,
   },
@@ -276,15 +277,17 @@ const styles = StyleSheet.create({
   },
   statIconText: {
     fontSize: 20,
+    fontFamily: 'Kaghaz',
   },
   statLabel: {
     fontSize: 13,
+    fontFamily: 'Kaghaz',
     color: '#666666',
     marginBottom: 4,
   },
   statValue: {
     fontSize: 18,
-    fontWeight: '700',
+    fontFamily: 'Kaghaz',
     color: '#1a1a1a',
   },
   menuContainer: {
@@ -324,7 +327,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 15,
-    fontWeight: '600',
+    fontFamily: 'Kaghaz',
     color: '#1a1a1a',
   },
   logoutTitle: {
@@ -332,6 +335,7 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     fontSize: 12,
+    fontFamily: 'Kaghaz',
     color: '#999999',
     marginTop: 2,
   },
@@ -349,7 +353,7 @@ const styles = StyleSheet.create({
   },
   rightText: {
     fontSize: 15,
-    fontWeight: '500',
+    fontFamily: 'Kaghaz',
     color: '#1a1a1a',
     marginRight: 10,
   },
@@ -358,6 +362,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
   },
   footer: {
+    fontFamily: 'Kaghaz',
     textAlign: 'center',
     padding: 20,
     fontSize: 12,

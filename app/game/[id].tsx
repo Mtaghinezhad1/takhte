@@ -1,3 +1,4 @@
+import * as NavigationBar from 'expo-navigation-bar'; // اضافه شده
 import { useLocalSearchParams } from "expo-router";
 import * as ScreenOrientation from 'expo-screen-orientation';
 import React, { useEffect } from "react";
@@ -23,14 +24,26 @@ export default function Index() {
       store.initializeGame(gameMode, targetScore, aiLevel || '3');
     }
 
+    // قفل صفحه به حالت افقی
     ScreenOrientation.lockAsync(
       ScreenOrientation.OrientationLock.LANDSCAPE
     );
 
+    // مخفی کردن نوار ناوبری اندروید (نوار سفید ژستی)
+    async function hideNavigationBar() {
+      await NavigationBar.setVisibilityAsync('hidden');
+      // (اختیاری) رفتار: با اولین سوایپ از لبه، نوار موقت ظاهر شود
+      await NavigationBar.setBehaviorAsync('overlay-swipe');
+    }
+    hideNavigationBar();
+
     return () => {
       ScreenOrientation.unlockAsync();
+      // برگرداندن نوار ناوبری به حالت عادی هنگام خارج شدن از صفحه
+      NavigationBar.setVisibilityAsync('visible');
     };
   }, []);
+
 
   // ریختن تاس در شروع هر نوبت
   useEffect(() => {
@@ -39,10 +52,12 @@ export default function Index() {
 
   // اجرای حرکت هوش مصنوعی
   useEffect(() => {
-    setTimeout(() => {
+    const timer = setTimeout(() => {
       store.executeAIMove();
     }, 100);
-  }, [store.currentTurn, store.allDice]);
+
+    return () => clearTimeout(timer);
+  }, [store.allDice]);
 
   return (
     <View style={styles.container}>

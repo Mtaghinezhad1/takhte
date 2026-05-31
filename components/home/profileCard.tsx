@@ -15,8 +15,8 @@ const ProfileCard = () => {
                 <View style={styles.textSection}>
                     <Text style={styles.name}>{username}</Text>
                     <View style={styles.amounts}>
-                        <Text>سکه: {coins}</Text>
-                        <Text style={styles.amountMargin}>توانایی: {elo}</Text>
+                        <Text style={styles.amountText}>سکه: {coins}</Text>
+                        <Text style={[styles.amountMargin, styles.amountText]}>توانایی: {elo}</Text>
                     </View>
                 </View>
                 {/* Avatar on the far right */}
@@ -53,12 +53,15 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between', // separates name and amounts
     },
     name: {
-        fontWeight: '800',
+        fontFamily: 'Kaghaz',
         fontSize: 1.6 * rem,      // ~26px
     },
     amounts: {
         flexDirection: 'row',
         marginTop: 0,             // adjust if needed
+    },
+    amountText: {
+        fontFamily: 'Kaghaz',
     },
     amountMargin: {
         marginLeft: 2 * rem,      // 32px

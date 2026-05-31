@@ -60,10 +60,10 @@ const GameStatusBar = () => {
 const styles = StyleSheet.create({
   leftStatusBar: {
     height: '100%',
-    width: '12%',
+    width: '14%',
     backgroundColor: '#070024',
     flexDirection: 'column',
-    justifyContent: 'center',
+    justifyContent: 'space-around',
     alignItems: 'center',
   },
   topContainer: {

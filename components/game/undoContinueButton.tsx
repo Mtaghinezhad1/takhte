@@ -38,15 +38,15 @@ const styles = StyleSheet.create({
         paddingHorizontal: 12,
         paddingVertical: 6,
         borderRadius: 6,
-        backgroundColor: '#ffcc00',
+        backgroundColor: '#2e2bac',
     },
     undoButtonDisabled: {
-        backgroundColor: '#555555',
-        opacity: 0.5,
+        backgroundColor: '#2e2bac',
+        opacity: 0.3,
     },
     undoButtonText: {
-        color: '#000',
-        fontWeight: 'bold',
+        color: 'white',
+        fontFamily: 'Kaghaz',
     },
 });
 

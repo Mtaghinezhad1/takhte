@@ -1,14 +1,13 @@
-
 import useGameStore from '@/stores/useGameStore';
 import React, { useEffect, useRef, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-export default function Timer({ initialTotalTime = 30 }) {
+export default function Timer({ initialTotalTime = 180 }) {
     const currentTurn = useGameStore(state => state.currentTurn);
     const gameWinner = useGameStore(state => state.gameWinner);
     const isModalVisible = useGameStore(state => state.isModalVisible);
+    const isMatchEndModalVisible = useGameStore(state => state.isMatchEndModalVisible);
     
-    // اضافه کردن توابع مورد نیاز از store
     const handleTimeEnd = useGameStore(state => state.handleTimeEnd);
     const gameScore = useGameStore(state => state.gameScore);
 
@@ -23,23 +22,19 @@ export default function Timer({ initialTotalTime = 30 }) {
     const timeEndedRef = useRef(false);
 
     useEffect(() => {
-        // اگر بازی تموم شده، تایمر رو متوقف کن
-        if (gameWinner || isModalVisible) {
+        if (gameWinner || isModalVisible || isMatchEndModalVisible) {
             if (intervalRef.current) {
                 clearInterval(intervalRef.current);
             }
             return;
         }
 
-        // پاک کردن تایمر قبلی
         if (intervalRef.current) {
             clearInterval(intervalRef.current);
         }
 
-        // ریست فلگ پایان زمان
         timeEndedRef.current = false;
 
-        // شروع تایمر جدید
         intervalRef.current = setInterval(() => {
             if (isTurnTimeActive) {
                 setTurnTime(prev => {
@@ -54,7 +49,6 @@ export default function Timer({ initialTotalTime = 30 }) {
                     setBlackTotalTime(prev => {
                         if (prev <= 1 && !timeEndedRef.current) {
                             timeEndedRef.current = true;
-                            // فراخوانی تابع پایان زمان
                             handleTimeEnd('black');
                             return 0;
                         }
@@ -64,7 +58,6 @@ export default function Timer({ initialTotalTime = 30 }) {
                     setWhiteTotalTime(prev => {
                         if (prev <= 1 && !timeEndedRef.current) {
                             timeEndedRef.current = true;
-                            // فراخوانی تابع پایان زمان
                             handleTimeEnd('white');
                             return 0;
                         }
@@ -79,25 +72,23 @@ export default function Timer({ initialTotalTime = 30 }) {
                 clearInterval(intervalRef.current);
             }
         };
-    }, [currentTurn, isTurnTimeActive, gameWinner, isModalVisible]);
+    }, [currentTurn, isTurnTimeActive, gameWinner, isModalVisible, isMatchEndModalVisible]);
 
-    // ریست تایمر نوبت وقتی currentTurn تغییر می‌کنه
     useEffect(() => {
         setTurnTime(TURN_TIME);
         setIsTurnTimeActive(true);
         timeEndedRef.current = false;
     }, [currentTurn]);
 
-    // ریست تایمرها وقتی بازی جدید شروع میشه
     useEffect(() => {
-        if (!gameWinner && !isModalVisible) {
+        if (!gameWinner && !isModalVisible && !isMatchEndModalVisible) {
             setBlackTotalTime(initialTotalTime);
             setWhiteTotalTime(initialTotalTime);
             setTurnTime(TURN_TIME);
             setIsTurnTimeActive(true);
             timeEndedRef.current = false;
         }
-    }, [gameWinner]);
+    }, [gameWinner, isModalVisible, isMatchEndModalVisible]);
 
     const formatTime = (seconds) => {
         const minutes = Math.floor(seconds / 60);
@@ -122,17 +113,19 @@ export default function Timer({ initialTotalTime = 30 }) {
 
 const styles = StyleSheet.create({
     timeContainer: {
-        backgroundColor: 'rgba(42, 68, 254, 1.00)',
+        backgroundColor: '#3e7ced',
         borderRadius: 3,
         width: '80%',
         padding: '2%',
-        alignItems: 'center'
+        alignItems: 'center',
     },
     totalTime: {
-        color: 'white'
+        color: 'white',
+        fontFamily: 'Kaghaz',
     },
     time: {
         backgroundColor: 'white',
+        fontFamily: 'Kaghaz',
         width: '90%',
         textAlign: 'center',
         color: 'black',

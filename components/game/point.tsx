@@ -19,7 +19,7 @@ const Point = ({ value, pointId }) => {
           key={index}
           style={[styles.checker, isWhite && styles.white]}
         >
-          <Text>
+          <Text style={{fontFamily: 'Kaghaz',}}>
               {count > 5 && index == 4 && `${count}`}
           </Text>
         </View>

@@ -11,5 +11,5 @@ export default function LearnScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#f6f7fb' },
-  title: { fontSize: width * 0.06, fontWeight: 'bold', color: '#333' },
+  title: { fontSize: width * 0.06, fontFamily: 'Kaghaz', color: '#333' },
 });

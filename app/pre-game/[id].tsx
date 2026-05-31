@@ -101,7 +101,7 @@ export default function PreGameScreen() {
                 )}
 
                 {/* انتخاب شروع‌کننده (فقط برای حالت AI) */}
-                {!isTwoPlayer && (
+                {/* {!isTwoPlayer && (
                     <>
                         <Text style={styles.sectionTitle}>شروع‌کننده</Text>
                         <View style={styles.startRow}>
@@ -139,7 +139,7 @@ export default function PreGameScreen() {
                             </TouchableOpacity>
                         </View>
                     </>
-                )}
+                )} */}
 
                 {/* فاصله برای جلوگیری از همپوشانی با دکمه ثابت */}
                 <View style={styles.bottomPadding} />
@@ -166,7 +166,6 @@ const styles = StyleSheet.create({
     sectionTitle: {
         fontSize: 24,
         fontFamily: 'Kaghaz',
-        fontWeight: '800',
         color: '#1a4b6e',
         textAlign: 'center',
         marginBottom: 12,
@@ -199,21 +198,19 @@ const styles = StyleSheet.create({
     },
     valueLabel: {
         fontSize: 14,
-        fontWeight: '600',
         fontFamily: 'Kaghaz',
         color: '#1a4b6e',
         marginHorizontal: 4,
     },
     valueNumber: {
         fontSize: 24,
-        fontWeight: '800',
         fontFamily: 'Kaghaz',
         color: '#1a4b6e',
         marginHorizontal: 4,
         lineHeight: 32,
     },
     sliderWrapper: {
-        flex: 0.7,
+        flex: 1,
         marginLeft: 12,
     },
     slider: {
@@ -248,7 +245,6 @@ const styles = StyleSheet.create({
     optionText: {
         fontSize: 16,
         fontFamily: 'Kaghaz',
-        fontWeight: '600',
         color: '#1a4b6e',
     },
     activeOptionText: {
@@ -277,7 +273,6 @@ const styles = StyleSheet.create({
         color: '#ffffff',
         fontFamily: 'Kaghaz',
         fontSize: 18,
-        fontWeight: '700',
         textAlign: 'center',
     },
 });

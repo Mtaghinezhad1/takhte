@@ -19,7 +19,7 @@ const StaticsBar = () => {
             onPress={() => handlePointPress(25)}
             activeOpacity={0.7}
           >
-            {whiteCaptured > 1 && <Text>{Math.abs(whiteCaptured)}</Text>}
+            {whiteCaptured > 1 && <Text style={{fontFamily: 'Kaghaz',}}>{Math.abs(whiteCaptured)}</Text>}
           </TouchableOpacity>
         }
       </View>
@@ -38,7 +38,7 @@ const StaticsBar = () => {
             onPress={() => handlePointPress(0)}
             activeOpacity={0.7}
           >
-            {blackCaptured < -1 && <Text>{Math.abs(blackCaptured)}</Text>}
+            {blackCaptured < -1 && <Text style={{fontFamily: 'Kaghaz',}}>{Math.abs(blackCaptured)}</Text>}
           </TouchableOpacity>
         }
       </View>
@@ -80,6 +80,7 @@ const styles = StyleSheet.create({
   },
   pointsRemained: {
     color: 'white',
+    fontFamily: 'Kaghaz',
     marginBottom: 5,
     fontSize: 12,
   },

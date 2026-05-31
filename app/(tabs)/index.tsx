@@ -131,7 +131,6 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     fontFamily: 'Kaghaz',
     fontSize: 18,
-    fontWeight: 'bold',
     textAlign: 'right',
     marginLeft: '4%',
   },
@@ -151,15 +150,19 @@ const styles = StyleSheet.create({
   playBtnText: {
     fontSize: 16,
     fontFamily: 'Kaghaz',
-    fontWeight: 'bold',
   },
   cardImg: {
     borderRadius: 12,
+    // سایه برای iOS
     shadowColor: '#000',
-    shadowOffset: { width: 2, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 4,
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    // سایه برای Android
+    elevation: 40,
     transform: [{ rotate: '30deg' }],
   },
 });

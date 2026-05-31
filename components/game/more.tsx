@@ -176,7 +176,6 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontFamily: 'Kaghaz',
-    fontWeight: 'bold',
     textAlign: 'center',
   },
   overlay: {
@@ -208,7 +207,6 @@ const styles = StyleSheet.create({
     fontFamily: 'Kaghaz',
     color: '#333',
     textAlign: 'right',
-    fontWeight: '500',
   },
   separator: {
     height: 1,

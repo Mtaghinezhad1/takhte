@@ -8,7 +8,7 @@ const PointNumber = ({ pointIds }) => {
         <View style={styles.container}>
             {
                 pointIds.map((pointId) => (
-                    <View key={pointId} style={styles.textContainer}><Text style={{ textAlign: 'center', color: 'white' }}>{pointId}</Text></View>
+                    <View key={pointId} style={styles.textContainer}><Text style={{ textAlign: 'center', color: 'white', fontFamily: 'Kaghaz' }}>{pointId}</Text></View>
                 ))
             }
         </View>

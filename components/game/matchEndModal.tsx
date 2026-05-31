@@ -164,7 +164,7 @@ const styles = StyleSheet.create({
     },
     winnerText: {
         fontSize: 16,
-        fontWeight: 'bold',
+        fontFamily: 'Kaghaz',
         color: '#333',
         textAlign: 'center',
     },
@@ -194,14 +194,14 @@ const styles = StyleSheet.create({
     },
     playerName: {
         fontSize: 14,
-        fontWeight: '600',
+        fontFamily: 'Kaghaz',
         color: '#333',
         marginBottom: 5,
         textAlign: 'center',
     },
     playerColor: {
         fontSize: 12,
-        fontWeight: '500',
+        fontFamily: 'Kaghaz',
     },
     vsSection: {
         alignItems: 'center',
@@ -226,18 +226,18 @@ const styles = StyleSheet.create({
     },
     scoreText: {
         fontSize: 22,
-        fontWeight: 'bold',
+        fontFamily: 'Kaghaz',
         color: '#FFFFFF',
     },
     scoreSeparator: {
         fontSize: 24,
-        fontWeight: 'bold',
+        fontFamily: 'Kaghaz',
         color: '#333',
         marginHorizontal: 10,
     },
     changeText: {
         fontSize: 14,
-        fontWeight: '500',
+        fontFamily: 'Kaghaz',
     },
     button: {
         backgroundColor: '#1a4b6e',
@@ -251,7 +251,7 @@ const styles = StyleSheet.create({
     },
     buttonText: {
         fontSize: 18,
-        fontWeight: 'bold',
+        fontFamily: 'Kaghaz',
         color: '#FFFFFF',
     }
 });

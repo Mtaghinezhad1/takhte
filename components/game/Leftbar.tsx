@@ -35,7 +35,6 @@ const styles = StyleSheet.create({
       scoreText: {
         fontSize: 16,
         fontFamily: 'Kaghaz',
-        fontWeight: 'bold',
         color: '#070024',
       }
 });
