@@ -56,69 +56,69 @@ export default function MatchEndModal() {
             animationType="fade"
             onRequestClose={handleGoHome}
         >
-
-            <View style={[styles.card, { width: CARD_WIDTH }]}>
-                {/* Winner Badge */}
-                <View style={styles.winnerBadge}>
-                    <View style={[styles.winnerDot, { backgroundColor: `${gameWinner}` }]} />
-                    <Text style={styles.winnerText}>
-                        برنده نهایی: {matchEndWinner === 'white' ? 'سفید' : 'سیاه'}
-                    </Text>
-                </View>
-
-                {/* Players Info */}
-                <View style={styles.playersContainer}>
-                    {/* Black Player */}
-                    <View style={styles.playerSection}>
-                        <Image
-                            source={aiProfile ? aiProfile.avatar : require('@/assets/avatar/default.jpeg')}
-                            style={[styles.playerImage, styles.blackPlayerBorder]}
-                        />
-                        <Text style={styles.playerName}>{aiProfile ? aiProfile.name : 'ربات'}</Text>
-                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                            <Text style={styles.playerName}>{finalBlackElo}</Text>
-                            <Text style={[styles.changeText, { color: getChangeColor(aiEloChange), marginLeft: 5 }]}>
-                                {formatChange(aiEloChange)}
-                            </Text>
-                        </View>
-                        <Text style={[styles.playerColor, { color: '#000000' }]}>مهره سیاه</Text>
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                <View style={[styles.card, { width: '60%' }]}>
+                    {/* Winner Badge */}
+                    <View style={styles.winnerBadge}>
+                        <View style={[styles.winnerDot, { backgroundColor: `${gameWinner}` }]} />
+                        <Text style={styles.winnerText}>
+                            برنده نهایی: {matchEndWinner === 'white' ? 'سفید' : 'سیاه'}
+                        </Text>
                     </View>
 
-                    {/* VS Section */}
-                    <View style={styles.vsSection}>
-                        <Text style={styles.vsText}>VS</Text>
-                        <View style={styles.scoreContainer}>
-                            <View style={[styles.scoreBox, { backgroundColor: '#000000' }]}>
-                                <Text style={styles.scoreText}>{gameScore[1]}</Text>
-                            </View>
-                            <Text style={styles.scoreSeparator}>:</Text>
-                            <View style={[styles.scoreBox, { backgroundColor: '#FFFFFF', borderWidth: 2, borderColor: '#000000' }]}>
-                                <Text style={[styles.scoreText, { color: '#000000' }]}>{gameScore[0]}</Text>
+                    {/* Players Info */}
+                    <View style={styles.playersContainer}>
+                        {/* Black Player */}
+                        <View style={styles.playerSection}>
+                            <Image
+                                source={aiProfile ? aiProfile.avatar : require('@/assets/avatar/default.jpeg')}
+                                style={[styles.playerImage, styles.blackPlayerBorder]}
+                            />
+                            <Text style={styles.playerName}>{aiProfile ? aiProfile.name : 'ربات'}</Text>
+                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                <Text style={styles.playerName}>{finalBlackElo}</Text>
+                                <Text style={[styles.changeText, { color: getChangeColor(aiEloChange), marginLeft: 5 }]}>
+                                    {formatChange(aiEloChange)}
+                                </Text>
                             </View>
                         </View>
-                    </View>
 
-                    {/* White Player */}
-                    <View style={styles.playerSection}>
-                        <Image
-                            source={avatar ? avatar : require('@/assets/avatar/default.jpeg')}
-                            style={[styles.playerImage, styles.whitePlayerBorder]}
-                        />
-                        <Text style={styles.playerName}>{username}</Text>
-                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                            <Text style={styles.playerName}>{finalWhiteElo}</Text>
-                            <Text style={[styles.changeText, { color: getChangeColor(userEloChange), marginLeft: 5 }]}>
-                                {formatChange(userEloChange)}
-                            </Text>
+                        {/* VS Section */}
+                        <View style={styles.vsSection}>
+                            <Text style={styles.vsText}>VS</Text>
+                            <View style={styles.scoreContainer}>
+                                <View style={[styles.scoreBox, { backgroundColor: '#000000' }]}>
+                                    <Text style={styles.scoreText}>{gameScore[1]}</Text>
+                                </View>
+                                <Text style={styles.scoreSeparator}>:</Text>
+                                <View style={[styles.scoreBox, { backgroundColor: '#FFFFFF', borderWidth: 2, borderColor: '#000000' }]}>
+                                    <Text style={[styles.scoreText, { color: '#000000' }]}>{gameScore[0]}</Text>
+                                </View>
+                            </View>
                         </View>
-                        <Text style={[styles.playerColor, { color: '#666666' }]}>مهره سفید</Text>
-                    </View>
-                </View>
 
-                <TouchableOpacity style={styles.button} onPress={handleGoHome}>
-                    <Text style={styles.buttonText}>بازگشت به صفحه اصلی</Text>
-                </TouchableOpacity>
+                        {/* White Player */}
+                        <View style={styles.playerSection}>
+                            <Image
+                                source={avatar ? avatar : require('@/assets/avatar/default.jpeg')}
+                                style={[styles.playerImage, styles.whitePlayerBorder]}
+                            />
+                            <Text style={styles.playerName}>{username}</Text>
+                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                <Text style={styles.playerName}>{finalWhiteElo}</Text>
+                                <Text style={[styles.changeText, { color: getChangeColor(userEloChange), marginLeft: 5 }]}>
+                                    {formatChange(userEloChange)}
+                                </Text>
+                            </View>
+                        </View>
+                    </View>
+
+                    <TouchableOpacity style={styles.button} onPress={handleGoHome}>
+                        <Text style={styles.buttonText}>بازگشت به صفحه اصلی</Text>
+                    </TouchableOpacity>
+                </View>
             </View>
+
         </Modal>
     );
 }
@@ -127,10 +127,6 @@ export default function MatchEndModal() {
 
 const styles = StyleSheet.create({
     card: {
-        position: "absolute",
-        top: '50%', // می‌توانید با توجه به محل دکمه تنظیمش کنید
-        left: '50%',
-        transform: 'translate(-50%,-50%)',
         backgroundColor: '#FFFFFF',
         borderRadius: 20,
         padding: 20,
@@ -154,7 +150,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 16,
         borderRadius: 25,
         alignSelf: 'center',
-        marginBottom: 15,
+        marginBottom: 10,
     },
     winnerDot: {
         width: 12,
@@ -241,7 +237,8 @@ const styles = StyleSheet.create({
     },
     button: {
         backgroundColor: '#1a4b6e',
-        padding: 20,
+        paddingHorizontal: 20,
+        paddingVertical: 10,
         borderRadius: 12,
         display: 'flex',
         justifyContent: 'center',

@@ -12,6 +12,11 @@ export const boardService = {
     },
 
     getAvailableMoves(board, dice, currentTurn) {
+        const b = [-1, 2, 1, 0, 0, 0, 2, 0, 0, 0, 0, 0, -5, 5, 0, 0, 0, -2, 0, -5, 0, -3, 2, 0, 3, 1];
+        const d = [1, 3];
+        const c = 'black';
+        //console.log('manual move',getAvailableMoves(b, d, c));
+
         const moves = getAvailableMoves(board, dice, currentTurn);
         return removeDuplicateSequences(moves);
     },

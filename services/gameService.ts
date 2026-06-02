@@ -39,5 +39,10 @@ export const gameService = {
       allDice: [dice1, dice2],
       activeDie: Math.max(dice1, dice2)
     };
+
+    // return {
+    //   allDice: [6, 3],
+    //   activeDie: Math.max(dice1, dice2)
+    // };
   }
 }

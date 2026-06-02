@@ -10,6 +10,8 @@ export const aiService = {
         let currentWhiteBornOff = whiteBornOff;
         let currentBlackBornOff = blackBornOff;
 
+
+
         // Execute moves in sequence
         for (const move of bestMove) {
             const result = boardService.makeMove(

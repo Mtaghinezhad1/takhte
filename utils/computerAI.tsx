@@ -259,6 +259,7 @@ export function selectBestMove(board, dice, moves, currentTurn, difficulty = '3'
     let bestScore = -Infinity;
     let bestMove = null;
 
+    console.log(' unique moves', currentTurn, moves);
     moves.forEach((move) => {
         const evaluation = evaluateMove(board, dice, move, currentTurn, weights);
         if (evaluation.finalScore > bestScore) {
@@ -266,6 +267,8 @@ export function selectBestMove(board, dice, moves, currentTurn, difficulty = '3'
             bestMove = move;
         }
     });
+    console.log('best move', currentTurn, bestMove);
+
 
     return bestMove;
 }

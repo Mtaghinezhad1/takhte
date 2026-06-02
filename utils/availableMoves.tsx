@@ -3,17 +3,19 @@ import { isValidMove } from "./utils";
 export const getAvailableMoves = (board, dice, currentTurn) => {
     if (!dice || dice.length === 0) return [];
 
-    // تولید تمام حرکات ترکیبی با بازگشت
     const allSequences = generateMoveSequences(board, dice, currentTurn);
-
-    return allSequences;
+    const unique = removeDuplicateSequences(allSequences);
+    const legal = filterLegalSequences(unique);
+    return legal;
 };
 
-const generateMoveSequences = (board, remainingDice, currentTurn, currentSequence = []) => {
+const generateMoveSequences = (board, remainingDice, currentTurn, currentSequence = [], depth = 0) => {
     // اگر تاسی باقی نمانده، دنباله فعلی را برگردان
     if (remainingDice.length === 0) {
         return [currentSequence];
     }
+
+    console.log(depth);
 
     const allSequences = [];
     const usedDiceValues = new Set(); // برای جلوگیری از حرکت تکراری با تاس‌های هم‌مقدار
@@ -31,7 +33,11 @@ const generateMoveSequences = (board, remainingDice, currentTurn, currentSequenc
 
         if (possibleMoves.length === 0) {
             // اگر حرکتی ممکن نیست، همین دنباله را برگردان
-            allSequences.push([...currentSequence]);
+            const newRemainingDice = [...remainingDice];
+            newRemainingDice.splice(i, 1);
+            const subSequences = generateMoveSequences(board, newRemainingDice, currentTurn, currentSequence, depth + 1);
+            allSequences.push(...subSequences);
+            continue;
         } else {
             // برای هر حرکت ممکن با این تاس
             possibleMoves.forEach(move => {
@@ -47,8 +53,11 @@ const generateMoveSequences = (board, remainingDice, currentTurn, currentSequenc
                     newBoard,
                     newRemainingDice,
                     currentTurn,
-                    [...currentSequence, move]
+                    [...currentSequence, move],
+                    depth + 1
                 );
+
+                console.log('sub sequence', subSequences);
 
                 allSequences.push(...subSequences);
             });
@@ -67,7 +76,7 @@ const getSingleDieMoves = (board, dieValue, currentTurn) => {
     if (hasCapturedPieces) {
         // فقط می‌توانیم از بار حرکت کنیم
         const targetPoint = currentTurn === "white" ? 25 - dieValue : dieValue;
-
+        //console.log('is valid move in captured piece', isValidMove(board, barPoint, dieValue, currentTurn));
         if (targetPoint >= 1 && targetPoint <= 24 && isValidMove(board, barPoint, dieValue, currentTurn)) {
             moves.push({
                 from: barPoint,
@@ -85,7 +94,7 @@ const getSingleDieMoves = (board, dieValue, currentTurn) => {
 
         if (!isPlayerPiece(pieces, currentTurn)) continue;
         const targetPoint = getTargetPoint(i, dieValue, currentTurn);
-
+        //console.log('is valid move in normal loop', isValidMove(board, i, dieValue, currentTurn));
         if (board[i] !== 0 && isValidMove(board, i, dieValue, currentTurn)) {
             if (targetPoint > 24 || targetPoint < 1) {
                 moves.push({
@@ -110,6 +119,41 @@ const getSingleDieMoves = (board, dieValue, currentTurn) => {
     }
 
     return moves;
+};
+
+export const filterLegalSequences = (sequences) => {
+    if (sequences.length === 0) return [];
+
+    // محاسبه تعداد تاس‌های استفاده‌شده در هر دنباله
+    const withDiceCount = sequences.map(seq => ({
+        seq,
+        diceUsed: seq.map(m => m.die).sort((a,b) => b - a) // نزولی
+    }));
+
+    // پیدا کردن بیشترین تعداد تاس مصرف‌شده
+    const maxDiceCount = Math.max(...withDiceCount.map(x => x.diceUsed.length));
+
+    // فقط دنباله‌هایی که حداکثر تعداد تاس را مصرف کرده‌اند
+    const bestCount = withDiceCount.filter(x => x.diceUsed.length === maxDiceCount);
+
+    // اگر باز هم چندتا بودند، آنی که تاس‌های بزرگ‌تر را استفاده کرده معتبر است
+    // (مقایسه آرایه‌های نزولی)
+    bestCount.sort((a, b) => {
+        for (let i = 0; i < a.diceUsed.length; i++) {
+            if (a.diceUsed[i] !== b.diceUsed[i]) return b.diceUsed[i] - a.diceUsed[i];
+        }
+        return 0;
+    });
+
+    const bestDiceUsed = bestCount[0].diceUsed;
+
+    // فقط دنباله‌هایی که دقیقاً همین مجموعه تاس‌ها را استفاده کرده‌اند
+    return withDiceCount
+        .filter(x =>
+            x.diceUsed.length === bestDiceUsed.length &&
+            x.diceUsed.every((v, i) => v === bestDiceUsed[i])
+        )
+        .map(x => x.seq);
 };
 
 const applyMoveToBoard = (board, move, currentTurn) => {

@@ -54,7 +54,7 @@ export default function Index() {
   useEffect(() => {
     const timer = setTimeout(() => {
       store.executeAIMove();
-    }, 100);
+    }, 10);
 
     return () => clearTimeout(timer);
   }, [store.allDice]);

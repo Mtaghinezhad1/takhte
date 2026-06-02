@@ -29,13 +29,13 @@ export default function InformModal() {
             onRequestClose={closeInformModal}
         >
             {/* پشت منو را کلیک کنیم بسته شود */}
-            <Pressable style={styles.backdrop} onPress={closeInformModal} />
-
-            <View style={styles.menuWrap}>
-                <View style={styles.card}>
-                    <Text style={styles.text}>تاس اجبار</Text>
+            <Pressable style={styles.backdrop} onPress={closeInformModal}>
+                <View style={styles.menuWrap}>
+                    <View style={styles.card}>
+                        <Text style={styles.text}>تاس اجبار</Text>
+                    </View>
                 </View>
-            </View>
+            </Pressable>
         </Modal>
     );
 }
@@ -45,19 +45,16 @@ export default function InformModal() {
 const styles = StyleSheet.create({
     backdrop: {
         flex: 1,
-        backgroundColor: "rgba(0,0,0,0)",
+        backgroundColor: 'rgba(0,0,0,0)',
+        justifyContent: 'center', 
+        alignItems: 'center', 
     },
     text: {
         fontFamily: 'Kaghaz',
+        textAlign: 'center',
     },
     menuWrap: {
-        position: "absolute",
-        top: '50%', // می‌توانید با توجه به محل دکمه تنظیمش کنید
-        left: '50%',
-        transform: 'translate(-50%,-50%)',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
+        width: '20%',
     },
     card: {
         width: '100%',

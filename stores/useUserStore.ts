@@ -4,7 +4,7 @@ import { create } from 'zustand';
 const useUserStore = create((set, get) => ({
   username: 'بازیکن مهمان',
   avatar: require('@/assets/avatar/1 (6).jpeg'),
-  elo: 1450,
+  elo: 1480,
   coins: 0,
 
   setUsername: (name) => set({ username: name }),
