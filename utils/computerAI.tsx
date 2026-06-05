@@ -1,75 +1,75 @@
 import { makeMove } from "./utils";
 
 const AI_LEVELS = {
-    '1': {  // ضعیف‌ترین
-        pipCount: 0.1,
+    '1': {  // ضعیف‌ترین - فقط به فکر کم کردن پیپ
+        pipCount: 5,
         blots: 0.1,
         hits: 0.1,
         closedPoints: 0.1,
-        risk: 0,           // بدون جریمه برای بلات‌های در معرض خطر
+        risk: 0,
     },
-    '2': {
-        pipCount: 0.2,
-        blots: 0.2,
-        hits: 0.2,
-        closedPoints: 0.2,
-        risk: -1,
-    },
-    '3': {
-        pipCount: 0.5,
+    '2': {  // کمی توجه به امنیت
+        pipCount: 4,
         blots: 0.5,
-        hits: 0.5,
+        hits: 0.3,
         closedPoints: 0.5,
+        risk: -0.5,
+    },
+    '3': {  // مبتدی
+        pipCount: 3,
+        blots: 1,
+        hits: 0.5,
+        closedPoints: 1,
         risk: -2,
     },
-    '4': {
-        pipCount: 1,
-        blots: 1,
-        hits: 1,
-        closedPoints: 1,
-        risk: -3,
-    },
-    '5': {
-        pipCount: 2,
+    '4': {  // آماتور - توجه بیشتر به امنیت
+        pipCount: 2.5,
         blots: 2,
-        hits: 1.5,
+        hits: 1,
         closedPoints: 2,
         risk: -5,
     },
-    '6': {
-        pipCount: 3,
+    '5': {  // متوسط
+        pipCount: 2,
         blots: 3,
         hits: 2,
         closedPoints: 3,
         risk: -8,
     },
-    '7': {
-        pipCount: 4,
-        blots: 4,
-        hits: 2.5,
-        closedPoints: 4,
-        risk: -10,
-    },
-    '8': {
-        pipCount: 5,
+    '6': {  // نیمه‌حرفه‌ای
+        pipCount: 1.5,
         blots: 5,
         hits: 3,
         closedPoints: 5,
-        risk: -15,
+        risk: -12,
     },
-    '9': {
-        pipCount: 7,
-        blots: 6,
+    '7': {  // حرفه‌ای
+        pipCount: 1.2,
+        blots: 7,
         hits: 4,
-        closedPoints: 6,
+        closedPoints: 8,
         risk: -18,
     },
-    '10': {  // قوی‌ترین
-        pipCount: 10,
-        blots: 8,
+    '8': {  // خبره
+        pipCount: 1,
+        blots: 10,
         hits: 5,
-        closedPoints: 8,
+        closedPoints: 12,
         risk: -25,
+    },
+    '9': {  // استاد
+        pipCount: 0.8,
+        blots: 13,
+        hits: 7,
+        closedPoints: 16,
+        risk: -32,
+    },
+    '10': {  // افسانه‌ای
+        pipCount: 0.5,
+        blots: 16,
+        hits: 9,
+        closedPoints: 22,
+        risk: -45,
     }
 }
 

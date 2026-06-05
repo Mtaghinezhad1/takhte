@@ -5,10 +5,11 @@ import {
 import ProfileCard from '../../components/home/profileCard';
 
 const games = [
-  //{ id: 1, title: 'تخته نرد ایرانی', bgColor: '#1d5cdd', textColor: '#1d5cdd', mode: 'aiVsAi', aiLevel: 'easy' },
-  { id: 2, title: 'تخته نرد استاندارد', bgColor: '#7c3aed', textColor: '#7c3aed', mode: 'standard', aiLevel: 'medium' },
-  { id: 3, title: 'تفننی', bgColor: '#ea580c', textColor: '#ea580c', mode: 'fun', aiLevel: 'hard' },
-  //{ id: 4, title: 'دو نفره', bgColor: '#dc2626', textColor: '#dc2626', mode: 'twoPlayer', aiLevel: 'expert' },
+  //{ id: 1, title: 'تخته نرد ایرانی', bgColor: '#1d5cdd', textColor: '#1d5cdd', mode: 'aiVsAi' },
+  { id: 2, title: 'تخته نرد استاندارد', bgColor: '#7c3aed', textColor: '#7c3aed', mode: 'standard' },
+  { id: 3, title: 'تفننی', bgColor: '#ea580c', textColor: '#ea580c', mode: 'fun' },
+  //{ id: 4, title: 'دو نفره', bgColor: '#dc2626', textColor: '#dc2626', mode: 'twoPlayer' },
+  { id: 4, title: 'هوش مصنوعی', bgColor: '#dc2626', textColor: '#dc2626', mode: 'AIvsAI' },
 ];
 
 export default function HomeScreen() {
@@ -45,9 +46,7 @@ const Card = ({ game, cardWidth, cardHeight, imageWidth, imageHeight }) => {
     router.push({
       pathname: `/pre-game/${game.id}`,
       params: {
-        title: game.title,
         gameMode: game.mode,
-        aiLevel: game.aiLevel,
       },
     });
   };

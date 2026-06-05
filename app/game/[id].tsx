@@ -15,13 +15,17 @@ import StaticsBar from "@/components/game/staticsBar";
 import useGameStore from '@/stores/useGameStore';
 
 export default function Index() {
-  const { gameMode, targetScore, aiLevel } = useLocalSearchParams();
+  const { gameMode, targetScore, aiLevel, aiLevelForWhite } = useLocalSearchParams();
   const store = useGameStore();
   const { height: screenHeight } = useWindowDimensions(); // واکنش‌گرا
 
   useEffect(() => {
     if (gameMode) {
-      store.initializeGame(gameMode, targetScore, aiLevel || '3');
+      if (gameMode === 'AIvsAI') {
+        store.initializeGame(gameMode, targetScore, aiLevel || '3', aiLevelForWhite || '3');
+      } else {
+        store.initializeGame(gameMode, targetScore, aiLevel || '3');
+      }
     }
 
     // قفل صفحه به حالت افقی

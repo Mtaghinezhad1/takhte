@@ -4,10 +4,11 @@ import React, { useState } from 'react';
 import { SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 export default function PreGameScreen() {
-    const { id, title, gameMode } = useLocalSearchParams();
+    const { id, gameMode } = useLocalSearchParams();
 
-    const [gamePoints, setGamePoints] = useState(5);   
+    const [gamePoints, setGamePoints] = useState(5);
     const [difficultyLevel, setDifficultyLevel] = useState(3);
+    const [difficultyLevelForWhite, setDifficultyLevelForWhite] = useState(3);
 
     // شروع‌کننده (فقط برای حالت AI معنی دارد)
     const [firstPlayer, setFirstPlayer] = useState('player');
@@ -32,15 +33,19 @@ export default function PreGameScreen() {
         setDifficultyLevel(value);
     };
 
+    const handleDifficultyChangeWhite = (value) => {
+        setDifficultyLevelForWhite(value);
+    };
+
     const startGame = () => {
         // به صفحه بازی برو و تمام تنظیمات را به عنوان پارامتر ارسال کن
         router.push({
             pathname: `/game/${id}`,
             params: {
-                title: title,
                 gameMode: gameMode,
                 targetScore: gamePoints,      // امتیاز لازم برای بردن
                 aiLevel: difficultyLevel,  // سطح سختی (عدد 1 تا 15)
+                aiLevelForWhite: difficultyLevelForWhite,
                 firstPlayer: firstPlayer,
             },
         });
@@ -77,7 +82,34 @@ export default function PreGameScreen() {
                 {/* بخش سختی (فقط در حالت هوش مصنوعی یا تک نفره نمایش داده شود) */}
                 {!isTwoPlayer && (
                     <>
-                        <Text style={styles.sectionTitle}>سختی</Text>
+                        {gameMode === 'AIvsAI' &&
+                            <>
+                                <Text style={styles.sectionTitle}>{gameMode === 'AIvsAI' ? 'سختی سفید' : 'سختی'}</Text>
+                                <View style={styles.cardRow}>
+                                    <View style={styles.valueBox}>
+                                        <Text style={styles.valueNumber}>{difficultyLevelForWhite}</Text>
+                                        <Text style={styles.valueLabel}>(سطح)</Text>
+                                    </View>
+                                    <View style={styles.sliderWrapper}>
+                                        <Slider
+                                            style={styles.slider}
+                                            minimumValue={1}
+                                            maximumValue={10}
+                                            step={1}
+                                            value={difficultyLevelForWhite}
+                                            onValueChange={handleDifficultyChangeWhite}
+                                            minimumTrackTintColor="#1a4b6e"
+                                            maximumTrackTintColor="#cfdfed"
+                                            thumbTintColor="#1a4b6e"
+                                        />
+                                    </View>
+                                </View>
+                            </>
+                        }
+
+
+
+                        <Text style={styles.sectionTitle}>{gameMode === 'AIvsAI' ? 'سختی سیاه' : 'سختی'}</Text>
                         <View style={styles.cardRow}>
                             <View style={styles.valueBox}>
                                 <Text style={styles.valueNumber}>{difficultyLevel}</Text>
@@ -149,7 +181,7 @@ export default function PreGameScreen() {
             <TouchableOpacity style={styles.startButton} onPress={startGame}>
                 <Text style={styles.startButtonText}>شروع بازی</Text>
             </TouchableOpacity>
-        </SafeAreaView>
+        </SafeAreaView >
     );
 }
 

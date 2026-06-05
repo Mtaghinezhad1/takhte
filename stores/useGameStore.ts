@@ -26,6 +26,7 @@ const useGameStore = create((set, get) => ({
   turnPhase: 'rolling',
   gameWinner: null,
   aiLevel: '3',
+  aiLevelForWhite: '3',
   isRolling: false,
   isMatchEndModalVisible: false,
   matchEndWinner: null,
@@ -37,7 +38,7 @@ const useGameStore = create((set, get) => ({
   oldAIElo: null,
 
   // Actions
-  initializeGame: (gameMode, targetScore = '3', aiLevel = '3') => {
+  initializeGame: (gameMode, targetScore = '3', aiLevel = '3', aiLevelForWhite = '3') => {
     const initialBoard = boardService.getInitialBoardByGameMode(gameMode);
     const aiProfile = gameMode !== 'twoPlayer' ? getAIProfile(aiLevel) : null;
 
@@ -45,6 +46,7 @@ const useGameStore = create((set, get) => ({
       board: [...initialBoard],
       gameMode,
       aiLevel,
+      aiLevelForWhite,
       aiProfile,
       currentTurn: 'black',
       movesCount: 0,
@@ -391,26 +393,34 @@ const useGameStore = create((set, get) => ({
 
     const uniqueMoves = boardService.getAvailableMoves(state.board, state.dice, state.currentTurn);
     set({ availableMoves: uniqueMoves });
-    if (state.currentTurn === 'white' && uniqueMoves.length === 1 && !state.showContinue && !state.isModalVisible) {
-      set({ isAiThinking: true });
-      const forcedTimer = setTimeout(() => get().playAIMove(uniqueMoves, 'white', true, state.aiLevel), 1700);
-      return () => clearTimeout(forcedTimer);
-      //get().playAIMove(uniqueMoves, 'white', true, state.aiLevel);
+
+    if (state.gameMode !== 'AIvsAI') {
+      if (state.currentTurn === 'white' && uniqueMoves.length === 1 && !state.showContinue && !state.isModalVisible) {
+        set({ isAiThinking: true });
+        const forcedTimer = setTimeout(() => get().playAIMove(uniqueMoves, 'white', true, state.aiLevel), 1700);
+        return () => clearTimeout(forcedTimer);
+        //get().playAIMove(uniqueMoves, 'white', true, state.aiLevel);
+      }
+      else if (state.currentTurn === 'black') {
+        set({ isAiThinking: true });
+        const timer = setTimeout(() => get().playAIMove(uniqueMoves, 'black', false, state.aiLevel), 3000);
+        return () => clearTimeout(timer);
+      }
+    } else {
+      if (state.currentTurn === 'white') {
+        set({ isAiThinking: true });
+        const timer = setTimeout(() => get().playAIMove(uniqueMoves, 'white', false, state.aiLevelForWhite), 10);
+        return () => clearTimeout(timer);
+      } else {
+        set({ isAiThinking: true });
+        const timer = setTimeout(() => get().playAIMove(uniqueMoves, 'black', false, state.aiLevel), 10);
+        return () => clearTimeout(timer);
+      }
     }
-    else if (state.currentTurn === 'black') {
-      set({ isAiThinking: true });
-      const timer = setTimeout(() => get().playAIMove(uniqueMoves, 'black', false, state.aiLevel), 3000);
-      return () => clearTimeout(timer);
-    }
-    // if (state.currentTurn === 'white') {
-    //   set({ isAiThinking: true });
-    //   const timer = setTimeout(() => get().playAIMove(uniqueMoves, 'white', false, '10'), 10);
-    //   return () => clearTimeout(timer);
-    // } else {
-    //   set({ isAiThinking: true });
-    //   const timer = setTimeout(() => get().playAIMove(uniqueMoves, 'black', false, '1'), 10);
-    //   return () => clearTimeout(timer);
-    // }
+
+
+
+
 
 
 

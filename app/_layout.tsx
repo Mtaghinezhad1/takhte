@@ -1,3 +1,4 @@
+import useUserStore from '@/stores/useUserStore';
 import { DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
@@ -17,15 +18,26 @@ export default function RootLayout() {
     'Kaghaz': require('../assets/fonts/Kaghaz.ttf'),
     'KaghazBold': require('../assets/fonts/KaghazBold.ttf'),
   });
+  const initializeFromStorage = useUserStore(state => state.initializeFromStorage);
+  const isLoading = useUserStore(state => state.isLoading);
 
   useEffect(() => {
-    if (fontsLoaded || fontError) {
+    initializeFromStorage();
+  }, []);
+
+  useEffect(() => {
+    if ((fontsLoaded || fontError) && !isLoading) {
       SplashScreen.hideAsync();
     }
-  }, [fontsLoaded, fontError]);
+  }, [fontsLoaded, fontError, isLoading]);
 
   // تا زمانی که فونت بارگذاری نشده، چیزی نمایش نده
   if (!fontsLoaded && !fontError) {
+    return null;
+  }
+
+  if (isLoading) {
+    // می‌توانید یک صفحه لودینگ نشان دهید
     return null;
   }
 
