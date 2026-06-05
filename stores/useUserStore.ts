@@ -93,7 +93,7 @@ const useUserStore = create((set, get) => ({
   },
 
   updateEloAfterMatch: async (winner, userColor, opponentElo, matchLength = 5) => {
-    const { elo: userElo } = get();
+    const { elo: userElo, username, avatar, coins } = get(); 
     const isWin = (userColor === winner);
 
     const newUserElo = userService.calculateElo(userElo, opponentElo, isWin, matchLength);
