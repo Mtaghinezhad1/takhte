@@ -43,9 +43,9 @@ const styles = StyleSheet.create({
         width: '90%',
         flexDirection: 'row',     // horizontal layout
         justifyContent: 'flex-end', // push children to the right
-        marginTop: 1 * rem,       // 80px
+        marginTop: 3 * rem,       // 80px
         marginBottom: 1 * rem,       // 80px
-        padding: 1 * rem,         // 16px
+        padding: 0.5 * rem,         // 16px
     },
     textSection: {
         flex: 1,                  // takes remaining space
@@ -54,7 +54,7 @@ const styles = StyleSheet.create({
     },
     name: {
         fontFamily: 'Kaghaz',
-        fontSize: 1.6 * rem,      // ~26px
+        fontSize: 1.3 * rem,      // ~26px
     },
     amounts: {
         flexDirection: 'row',

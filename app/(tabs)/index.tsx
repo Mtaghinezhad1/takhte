@@ -9,7 +9,7 @@ const games = [
   { id: 2, title: 'تخته نرد استاندارد', bgColor: '#7c3aed', textColor: '#7c3aed', mode: 'standard' },
   { id: 3, title: 'تفننی', bgColor: '#ea580c', textColor: '#ea580c', mode: 'fun' },
   //{ id: 4, title: 'دو نفره', bgColor: '#dc2626', textColor: '#dc2626', mode: 'twoPlayer' },
-  { id: 4, title: 'هوش مصنوعی', bgColor: '#dc2626', textColor: '#dc2626', mode: 'AIvsAI' },
+  // { id: 4, title: 'هوش مصنوعی', bgColor: '#dc2626', textColor: '#dc2626', mode: 'AIvsAI' },
 ];
 
 export default function HomeScreen() {
@@ -111,20 +111,20 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.15,
     shadowRadius: 6,
     elevation: 6,
+    paddingHorizontal: '5%',
+    paddingVertical: '2%',
   },
   cardContent: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: '5%',
   },
   cardTextSection: {
     flex: 1,
-    alignItems: 'center',
+    alignItems: 'flex-start',
     justifyContent: 'space-between',
     height: '100%',
-    paddingVertical: '2%',
   },
   textCard: {
     color: '#ffffff',
