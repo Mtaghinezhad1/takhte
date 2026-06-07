@@ -94,7 +94,7 @@ const Card = ({ game, cardWidth, cardHeight, imageWidth, imageHeight }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f6f7fb',
+    backgroundColor: 'white',
   },
   cardsContainer: {
     flex: 1,

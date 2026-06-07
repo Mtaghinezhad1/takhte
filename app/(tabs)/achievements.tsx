@@ -10,6 +10,6 @@ export default function AchievementsScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#f6f7fb' },
+  container: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'white' },
   title: { fontSize: width * 0.06, fontFamily: 'Kaghaz', color: '#333' },
 });
