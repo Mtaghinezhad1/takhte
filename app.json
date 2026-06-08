@@ -2,7 +2,8 @@
   "expo": {
     "name": "Nard Land",
     "slug": "nardland",
-    "projectId": "45d153d6-5a54-42f5-8da4-13d711a4e0f0",
+    "projectId": 
+"1aa67c7c-9030-4c4d-8664-0d05129bb6f1",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -49,7 +50,7 @@
     },
     "extra": {
       "eas": {
-        "projectId": "45d153d6-5a54-42f5-8da4-13d711a4e0f0"
+        "projectId": "1aa67c7c-9030-4c4d-8664-0d05129bb6f1"
       }
     }
   }
