@@ -6,7 +6,7 @@ import { create } from 'zustand';
 const useUserStore = create((set, get) => ({
   username: 'بازیکن مهمان',
   avatar: require('@/assets/avatar/1 (6).jpeg'),
-  elo: 1480,
+  elo: 1500,
   coins: 0,
   isLoading: false,
 
@@ -108,7 +108,7 @@ const useUserStore = create((set, get) => ({
       elo: newUserElo,
       coins
     });
-    
+
     return { newUserElo, newOpponentElo };
   },
 

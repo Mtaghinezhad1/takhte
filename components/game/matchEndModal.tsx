@@ -56,7 +56,7 @@ export default function MatchEndModal() {
             animationType="fade"
             onRequestClose={handleGoHome}
         >
-            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+            <View style={styles.menuWrap}>
                 <View style={[styles.card, { width: '60%' }]}>
                     {/* Winner Badge */}
                     <View style={styles.winnerBadge}>
@@ -119,6 +119,7 @@ export default function MatchEndModal() {
                 </View>
             </View>
 
+
         </Modal>
     );
 }
@@ -126,10 +127,22 @@ export default function MatchEndModal() {
 
 
 const styles = StyleSheet.create({
+    menuWrap: {
+        position: "absolute",
+        top: '50%', // می‌توانید با توجه به محل دکمه تنظیمش کنید
+        left: '50%',
+        transform: 'translate(-50%,-50%)',
+        width: '100%',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
     card: {
+        width: '100%',
         backgroundColor: '#FFFFFF',
         borderRadius: 20,
         padding: 20,
+        justifyContent: 'space-between',
         // سایه برای iOS
         shadowColor: '#000',
         shadowOffset: {

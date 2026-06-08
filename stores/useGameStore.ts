@@ -100,7 +100,7 @@ const useGameStore = create((set, get) => ({
     return whiteScore >= state.targetScore || blackScore >= state.targetScore;
   },
 
-  endMatch: (winner, newGameScore) => {
+  endMatch: async (winner, newGameScore) => {
     const state = get();
     const opponentElo = state.aiProfile.baseRating;
     const currentUserElo = useUserStore.getState().elo; //before change
@@ -108,7 +108,7 @@ const useGameStore = create((set, get) => ({
     const oldUserElo = currentUserElo;
     const oldAIElo = opponentElo;
 
-    const { newUserElo, newOpponentElo } = useUserStore.getState().updateEloAfterMatch(
+    const { newUserElo, newOpponentElo } = await useUserStore.getState().updateEloAfterMatch(
       winner,
       'white',        // کاربر همیشه با سفید بازی می‌کند
       opponentElo,
@@ -117,14 +117,16 @@ const useGameStore = create((set, get) => ({
 
     set({
       gameScore: newGameScore,
-      isMatchEndModalVisible: true,
       matchEndWinner: winner,
       finalWhiteElo: newUserElo,      // الو جدید کاربر (سفید)
       finalBlackElo: newOpponentElo,  // الو جدید هوش مصنوعی (سیاه)
       oldUserElo,
       oldAIElo,
+      isMatchEndModalVisible: true,
       isModalVisible: false,
     });
+
+    
   },
 
   endCurrentGame: (winner) => {

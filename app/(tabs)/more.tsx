@@ -33,6 +33,10 @@ export default function MoreScreen() {
     <Icon name="attach-money" size={getIconSize()} color="#1f1f1f" />
   );
 
+  const SpeedIcon = () => (
+    <Icon name="speed" size={getIconSize()} color="#1f1f1f" />
+  );
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
@@ -53,7 +57,7 @@ export default function MoreScreen() {
 
             <View style={[styles.btn, styles.leftBtn, { padding: getPadding() }]}>
               <View style={styles.textBtn}>
-                <Text style={[styles.btnText, { fontSize: getFontSize() }]}>۱۰۰۰</Text>
+                <Text style={[styles.btnText, { fontSize: getFontSize() }]}>سکه: {coins}</Text>
               </View>
               <View style={styles.icon}>
                 <MoneyIcon />
@@ -62,10 +66,10 @@ export default function MoreScreen() {
 
             <View style={[styles.btn, styles.rightBtn, { padding: getPadding() }]}>
               <View style={styles.textBtn}>
-                <Text style={[styles.btnText, { fontSize: getFontSize() }]}>۱۰۰۰</Text>
+                <Text style={[styles.btnText, { fontSize: getFontSize() }]}>توانایی: {elo}</Text>
               </View>
               <View style={styles.icon}>
-                <MoneyIcon />
+                <SpeedIcon />
               </View>
             </View>
           </View>
@@ -74,14 +78,14 @@ export default function MoreScreen() {
 
 
         <View style={styles.itemContainer}>
-          <ItemRow text="نام کاربری" />
-          <ItemRow text="آشنایی با قوانین تخته نرد" />
-          <ItemRow text="آشنایی با قوانین تخته نرد"  />
+          {/* <ItemRow icon='person' text="نام کاربری" /> */}
+          {/* <ItemRow text="آشنایی با قوانین تخته نرد" />
+          <ItemRow text="آشنایی با قوانین تخته نرد"  /> */}
         </View>
 
         <View style={styles.itemContainer}>
-          <ItemRow text="درباره ما"  />
-          <ItemRow text="نسخه اپلیکیشن              1.0.0"  />
+          {/* <ItemRow text="درباره ما"  /> */}
+          <ItemRow icon='info-outline' text="نسخه اپلیکیشن              1.0.0"  />
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -131,7 +135,7 @@ const styles = StyleSheet.create({
   },
   btnText: {
     color: '#1f1f1f',
-    fontWeight: '500',
+    fontFamily: 'Kaghaz',
   },
   itemContainer: {
     marginTop: 32,
