@@ -76,12 +76,10 @@ const More = () => {
     setTimeout(() => {
       switch (option) {
         case 'assignHand':
-          console.log('واگذاری این دست اجرا شد');
           forfeitHand();
           // منطق واگذاری این دست را اینجا اضافه کنید
           break;
         case 'assignGame':
-          console.log('واگذاری کل بازی اجرا شد');
           forfeitMatch();
           // منطق واگذاری کل بازی را اینجا اضافه کنید
           break;

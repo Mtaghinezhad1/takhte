@@ -7,6 +7,7 @@ const AI_LEVELS = {
         hits: 9,
         closedPoints: 22,
         risk: -45,
+        primes: 0,
     },
     '2': {  // خبره
         pipCount: 1,
@@ -14,6 +15,7 @@ const AI_LEVELS = {
         hits: 5,
         closedPoints: 12,
         risk: -25,
+        primes: 0,
     },
     '3': {  // استاد
         pipCount: 0.8,
@@ -21,6 +23,7 @@ const AI_LEVELS = {
         hits: 7,
         closedPoints: 16,
         risk: -32,
+        primes: 0,
     },
     '4': {  // ضعیف‌ترین - فقط به فکر کم کردن پیپ
         pipCount: 5,
@@ -28,6 +31,7 @@ const AI_LEVELS = {
         hits: 0.1,
         closedPoints: 0.1,
         risk: 0,
+        primes: 0,
     },
     '5': {  // کمی توجه به امنیت
         pipCount: 4,
@@ -35,6 +39,7 @@ const AI_LEVELS = {
         hits: 0.3,
         closedPoints: 0.5,
         risk: -0.5,
+        primes: 0,
     },
     '6': {  // نیمه‌حرفه‌ای
         pipCount: 1.5,
@@ -42,6 +47,7 @@ const AI_LEVELS = {
         hits: 3,
         closedPoints: 5,
         risk: -12,
+        primes: 0,
     },
     '7': {  // حرفه‌ای
         pipCount: 1.2,
@@ -49,6 +55,7 @@ const AI_LEVELS = {
         hits: 4,
         closedPoints: 8,
         risk: -18,
+        primes: 0,
     },
     '8': {  // مبتدی
         pipCount: 3,
@@ -56,6 +63,7 @@ const AI_LEVELS = {
         hits: 0.5,
         closedPoints: 1,
         risk: -2,
+        primes: 0,
     },
     '9': {  // آماتور - توجه بیشتر به امنیت
         pipCount: 2.5,
@@ -63,6 +71,7 @@ const AI_LEVELS = {
         hits: 1,
         closedPoints: 2,
         risk: -5,
+        primes: 0,
     },
     '10': {  // متوسط
         pipCount: 2,
@@ -70,6 +79,39 @@ const AI_LEVELS = {
         hits: 2,
         closedPoints: 3,
         risk: -8,
+        primes: 0,
+    },
+    '11': {  // متوسط
+        pipCount: 2,
+        blots: 3,
+        hits: 2,
+        closedPoints: 3,
+        risk: -8,
+        primes: 2,
+    },
+    '12': {  // متوسط
+        pipCount: 2,
+        blots: 3,
+        hits: 2,
+        closedPoints: 3,
+        risk: -8,
+        primes: 4,
+    },
+    '13': {  // متوسط
+        pipCount: 2,
+        blots: 3,
+        hits: 2,
+        closedPoints: 3,
+        risk: -8,
+        primes: 6,
+    },
+    '14': {  // متوسط
+        pipCount: 2,
+        blots: 3,
+        hits: 2,
+        closedPoints: 3,
+        risk: -8,
+        primes: 8,
     },
 }
 
@@ -115,6 +157,27 @@ function countClosedPoints(board, color) {
         }
     }
     return closed;
+}
+
+function countPrimes(board, color) {
+    let maxConsecutive = 0;
+    let currentStreak = 0;
+
+    for (let i = 1; i <= 24; i++) {
+        const count = board[i];
+        const isMyPoint = (color === 'white' && count >= 2) ||
+            (color === 'black' && count <= -2);
+
+        if (isMyPoint) {
+            currentStreak++;
+            maxConsecutive = Math.max(maxConsecutive, currentStreak);
+        } else {
+            currentStreak = 0;
+        }
+    }
+
+    // ارزش بیشتر برای پرایم‌های ۶ تایی
+    return maxConsecutive >= 6 ? maxConsecutive * 2 : maxConsecutive;
 }
 
 // =================== جدول احتمالات ضربه ===================
@@ -178,6 +241,9 @@ function evaluateBoard(board, color, weights = AI_LEVELS[3]) {
     const myClosed = countClosedPoints(board, color);
     const oppClosed = countClosedPoints(board, opponent);
 
+    const myPrimes = countPrimes(board, color);
+    const oppPrimes = countPrimes(board, opponent);
+
     // محاسبه ریسک (میانگین احتمال ضربه خوردن بلات‌های خودی)
     let riskSum = 0;
     for (let i = 1; i <= 24; i++) {
@@ -195,14 +261,16 @@ function evaluateBoard(board, color, weights = AI_LEVELS[3]) {
     let blotPoint = weights.blots * (oppBlots - myBlots);
     let closedPoint = weights.closedPoints * (myClosed - oppClosed);
     let riskPoint = weights.risk * averageRisk;   // weights.risk منفی است
+    let primePoint = weights.primes * (myPrimes - oppPrimes);
 
 
     score += pipCountPoint;
     score += blotPoint;
     score += closedPoint;
     score += riskPoint;
+    score += primePoint;
 
-    return { score, pipCountPoint, blotPoint, closedPoint, riskPoint };
+    return { score, pipCountPoint, blotPoint, closedPoint, riskPoint, primePoint };
 }
 
 // =================== ارزیابی یک حرکت خاص ===================
@@ -245,12 +313,12 @@ export const evaluateMove = (board, dice, moveSequence, color, weights = AI_LEVE
     const hitsInMove = finalOppBar - initialOppBar; // همیشه نامنفی
 
     // ارزیابی وضعیت نهایی تخته (بدون در نظر گرفتن bornOffها)
-    const { score, pipCountPoint, blotPoint, closedPoint, riskPoint } = evaluateBoard(newBoard, color, weights);
+    const { score, pipCountPoint, blotPoint, closedPoint, riskPoint, primePoint } = evaluateBoard(newBoard, color, weights);
     const baseScore = score;
     const hitScore = weights.hits * hitsInMove;
     const finalScore = baseScore + hitScore;
 
-    return { finalScore, pipCountPoint, blotPoint, closedPoint, riskPoint };
+    return { finalScore, pipCountPoint, blotPoint, closedPoint, riskPoint, primePoint };
 }
 
 // انتخاب بهترین حرکت برای AI
@@ -259,7 +327,6 @@ export function selectBestMove(board, dice, moves, currentTurn, difficulty = '3'
     let bestScore = -Infinity;
     let bestMove = null;
 
-    console.log(' unique moves', currentTurn, moves);
     moves.forEach((move) => {
         const evaluation = evaluateMove(board, dice, move, currentTurn, weights);
         if (evaluation.finalScore > bestScore) {
@@ -267,7 +334,7 @@ export function selectBestMove(board, dice, moves, currentTurn, difficulty = '3'
             bestMove = move;
         }
     });
-    console.log('best move', currentTurn, bestMove);
+    console.log('best move', currentTurn, evaluateMove(board, dice, bestMove, currentTurn, weights));
 
 
     return bestMove;

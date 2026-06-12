@@ -15,8 +15,6 @@ const generateMoveSequences = (board, remainingDice, currentTurn, currentSequenc
         return [currentSequence];
     }
 
-    console.log(depth);
-
     const allSequences = [];
     const usedDiceValues = new Set(); // برای جلوگیری از حرکت تکراری با تاس‌های هم‌مقدار
 
@@ -57,8 +55,6 @@ const generateMoveSequences = (board, remainingDice, currentTurn, currentSequenc
                     depth + 1
                 );
 
-                console.log('sub sequence', subSequences);
-
                 allSequences.push(...subSequences);
             });
         }
@@ -76,7 +72,6 @@ const getSingleDieMoves = (board, dieValue, currentTurn) => {
     if (hasCapturedPieces) {
         // فقط می‌توانیم از بار حرکت کنیم
         const targetPoint = currentTurn === "white" ? 25 - dieValue : dieValue;
-        //console.log('is valid move in captured piece', isValidMove(board, barPoint, dieValue, currentTurn));
         if (targetPoint >= 1 && targetPoint <= 24 && isValidMove(board, barPoint, dieValue, currentTurn)) {
             moves.push({
                 from: barPoint,
@@ -94,7 +89,6 @@ const getSingleDieMoves = (board, dieValue, currentTurn) => {
 
         if (!isPlayerPiece(pieces, currentTurn)) continue;
         const targetPoint = getTargetPoint(i, dieValue, currentTurn);
-        //console.log('is valid move in normal loop', isValidMove(board, i, dieValue, currentTurn));
         if (board[i] !== 0 && isValidMove(board, i, dieValue, currentTurn)) {
             if (targetPoint > 24 || targetPoint < 1) {
                 moves.push({

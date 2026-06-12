@@ -141,7 +141,7 @@ const styles = StyleSheet.create({
     color: '#333',
   },
   active: {
-    transform: [{ scale: 0.9 }],
+    transform: [{ scale: 1 }],
   },
   usedDice: {
     opacity: 0.5,

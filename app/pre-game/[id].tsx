@@ -94,7 +94,7 @@ export default function PreGameScreen() {
                                         <Slider
                                             style={styles.slider}
                                             minimumValue={1}
-                                            maximumValue={10}
+                                            maximumValue={14}
                                             step={1}
                                             value={difficultyLevelForWhite}
                                             onValueChange={handleDifficultyChangeWhite}
@@ -119,7 +119,7 @@ export default function PreGameScreen() {
                                 <Slider
                                     style={styles.slider}
                                     minimumValue={1}
-                                    maximumValue={10}
+                                    maximumValue={14}
                                     step={1}
                                     value={difficultyLevel}
                                     onValueChange={handleDifficultyChange}
