@@ -78,13 +78,13 @@ export const canMoveFromBar = (board, fromPoint, diceNumber, currentTurn) => {
 export const isInHomeBoard = (currentTurn, board) => {
     if (currentTurn === 'white') {
         // White checkers: points 1-6
-        for (let i = 7; i <= 24; i++) {
+        for (let i = 7; i <= 25; i++) {
             if (board[i] > 0) return false;
         }
         return true;
     } else { // turn === 'black'
         // Black checkers: points 19-24
-        for (let i = 1; i <= 18; i++) {
+        for (let i = 0; i <= 18; i++) {
             if (board[i] < 0) return false;
         }
         return true;

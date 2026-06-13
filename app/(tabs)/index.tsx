@@ -4,6 +4,7 @@ import {
 } from 'react-native';
 import ProfileCard from '../../components/home/profileCard';
 
+
 const games = [
   //{ id: 1, title: 'تخته نرد ایرانی', bgColor: '#1d5cdd', textColor: '#1d5cdd', mode: 'aiVsAi' },
   { id: 2, title: 'تخته نرد استاندارد', bgColor: '#7c3aed', textColor: '#7c3aed', mode: 'standard' },

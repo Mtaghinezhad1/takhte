@@ -1,4 +1,4 @@
-import { makeMove } from "./utils";
+import { isInHomeBoard, makeMove } from "./utils";
 
 const AI_LEVELS = {
     '1': {  // افسانه‌ای
@@ -228,6 +228,103 @@ function getBlotHitProbability(board, blotPoint, color) {
     return unionProb;
 }
 
+// =================== Bear Off ===================
+function isBearOffPhase(board, color) {
+    return isInHomeBoard(color, board);
+}
+
+function countRemainingCheckers(board, color) {
+    let count = 0;
+    if (color === 'white') {
+        for (let i = 1; i <= 25; i++) {
+            if (board[i] > 0) count += board[i];
+        }
+    } else {
+        for (let i = 0; i <= 24; i++) {
+            if (board[i] < 0) count += Math.abs(board[i]);
+        }
+    }
+    return count;
+}
+
+function calculateAverageDistance(board, color) {
+    let totalDistance = 0;
+    let totalCheckers = 0;
+
+    if (color === 'white') {
+        for (let i = 1; i <= 24; i++) {
+            if (board[i] > 0) {
+                totalDistance += board[i] * i;
+                totalCheckers += board[i];
+            }
+        }
+    } else {
+        for (let i = 1; i <= 24; i++) {
+            if (board[i] < 0) {
+                const distance = 25 - i;
+                totalDistance += Math.abs(board[i]) * distance;
+                totalCheckers += Math.abs(board[i]);
+            }
+        }
+    }
+
+    return totalCheckers > 0 ? totalDistance / totalCheckers : 0;
+}
+
+function calculateDiceUtilization(board, color) {
+    let score = 0;
+
+    for (let die = 1; die <= 6; die++) {
+        const targetPoint = color === 'white' ? die : (25 - die);
+        const count = board[targetPoint];
+        const hasChecker = (color === 'white' && count > 0) || (color === 'black' && count < 0);
+
+        if (hasChecker) {
+            // می‌توانیم مستقیم خارج کنیم
+            score += 1.0;
+        } else {
+            // بررسی می‌کنیم آیا از خانه بالاتر می‌توان حرکت داد
+            let canMoveFromHigher = false;
+
+            if (color === 'white') {
+                for (let i = die + 1; i <= 24; i++) {
+                    if (board[i] > 0) {
+                        canMoveFromHigher = true;
+                        break;
+                    }
+                }
+            } else {
+                for (let i = 25 - die - 1; i >= 1; i--) {
+                    if (board[i] < 0) {
+                        canMoveFromHigher = true;
+                        break;
+                    }
+                }
+            }
+
+            if (canMoveFromHigher) {
+                score += 0.7;
+            }
+            // else: score += 0 (تاس هدر می‌رود)
+        }
+    }
+
+    return (score / 6) * 100;
+}
+
+function evaluateBearOff(board, color, weights = null) {
+    const remainingCheckers = countRemainingCheckers(board, color);
+    let score = 0;
+
+    const bornOff = 15 - remainingCheckers;
+    const diceUtil = calculateDiceUtilization(board, color);
+    const avgDist = calculateAverageDistance(board, color);
+
+    score = (bornOff * 100) + (diceUtil * 2) - (avgDist * 5);
+
+    return score;
+}
+
 // =================== تابع ارزیابی نهایی یک وضعیت ===================
 function evaluateBoard(board, color, weights = AI_LEVELS[3]) {
     const opponent = color === 'black' ? 'white' : 'black';
@@ -280,6 +377,8 @@ export const evaluateMove = (board, dice, moveSequence, color, weights = AI_LEVE
     let whiteBornOff = 0;
     let blackBornOff = 0;
 
+    const isBearOff = isBearOffPhase(board, color);
+
     // ذخیره مقدار اولیه بار حریف (برای محاسبه ضربات)
     let initialOppBar;
     if (color === 'white') {
@@ -309,16 +408,25 @@ export const evaluateMove = (board, dice, moveSequence, color, weights = AI_LEVE
         finalOppBar = newBoard[25];
     }
 
-    // تعداد ضربات = افزایش مهره‌های حریف در بار
-    const hitsInMove = finalOppBar - initialOppBar; // همیشه نامنفی
 
-    // ارزیابی وضعیت نهایی تخته (بدون در نظر گرفتن bornOffها)
-    const { score, pipCountPoint, blotPoint, closedPoint, riskPoint, primePoint } = evaluateBoard(newBoard, color, weights);
-    const baseScore = score;
-    const hitScore = weights.hits * hitsInMove;
-    const finalScore = baseScore + hitScore;
+    if (isBearOff) {
+        const finalScore = evaluateBearOff(newBoard, color, weights = null);
+        console.log(finalScore);
+        return {finalScore}
+    } else {
+        // تعداد ضربات = افزایش مهره‌های حریف در بار
+        const hitsInMove = finalOppBar - initialOppBar; // همیشه نامنفی
 
-    return { finalScore, pipCountPoint, blotPoint, closedPoint, riskPoint, primePoint };
+        // ارزیابی وضعیت نهایی تخته (بدون در نظر گرفتن bornOffها)
+        const { score, pipCountPoint, blotPoint, closedPoint, riskPoint, primePoint } = evaluateBoard(newBoard, color, weights);
+        const baseScore = score;
+        const hitScore = weights.hits * hitsInMove;
+        const finalScore = baseScore + hitScore;
+
+        return { finalScore, pipCountPoint, blotPoint, closedPoint, riskPoint, primePoint };
+    }
+
+
 }
 
 // انتخاب بهترین حرکت برای AI
