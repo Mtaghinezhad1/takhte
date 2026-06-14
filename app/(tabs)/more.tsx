@@ -1,7 +1,8 @@
 import ItemRow from '@/components/more/itemRow';
 import useUserStore from '@/stores/useUserStore';
+import { router } from 'expo-router';
 import React from 'react';
-import { Image, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import { Image, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 
@@ -47,9 +48,18 @@ export default function MoreScreen() {
       >
         {/* Profile Section */}
         <View style={styles.profileSection}>
-          <View style={styles.avatar}>
-            <Image style={styles.avatarImg} source={avatar ? avatar : require('@/assets/avatar/default.jpeg')} />
+
+          <View style={styles.avatarSection}>
+            <View style={styles.avatar}>
+              <Image style={styles.avatarImg} source={avatar ? avatar : require('@/assets/avatar/default.jpeg')} />
+            </View>
+            <TouchableOpacity style={styles.edit} onPress={() => router.push(`/selectAvatar`)}>
+              <View style={styles.arrow}>
+                <Text style={styles.arrowText}>{'<'}</Text>
+              </View>
+            </TouchableOpacity>
           </View>
+
           <Text style={styles.profileName}>{username}</Text>
           {/* <Text style={styles.profileBio}>ID: 737848826</Text> */}
 
@@ -85,7 +95,7 @@ export default function MoreScreen() {
 
         <View style={styles.itemContainer}>
           {/* <ItemRow text="درباره ما"  /> */}
-          <ItemRow icon='info-outline' text="نسخه اپلیکیشن              1.0.0"  />
+          <ItemRow icon='info-outline' text="نسخه اپلیکیشن              1.0.0" />
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -117,6 +127,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 0,
+  },
+  arrow: {
+    width: 30,
+    height: 30,
+    borderRadius: '50%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'gray',
   },
   leftBtn: {
     borderTopLeftRadius: 16,
@@ -154,6 +172,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#ffffff',
   },
+  avatarSection: {
+    position: 'relative',
+  },
   avatar: {
     width: '35%',
     aspectRatio: 1,
@@ -179,6 +200,10 @@ const styles = StyleSheet.create({
     color: '#777777',
     marginBottom: 4,
   },
-
+  edit: {
+    position: 'absolute',
+    right: 0,
+    bottom: 5,
+  }
 
 });
