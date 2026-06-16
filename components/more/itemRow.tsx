@@ -6,7 +6,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 // 1rem ≈ 16px (converted from your CSS)
 const rem = 16;
 
-const ItemRow = ({ text, icon }) => {
+const ItemRow = ({ text, icon, onPress }) => {
   const { width } = useWindowDimensions(); // واکنش‌گرا به تغییر اندازه صفحه
 
   // محاسبه اندازه فونت واکنش‌گرا
@@ -32,7 +32,7 @@ const ItemRow = ({ text, icon }) => {
   const { username, elo, coins, avatar } = useUserStore();
 
   return (
-    <TouchableOpacity style={[styles.item, { padding: getPadding() }]}>
+    <TouchableOpacity style={[styles.item, { padding: getPadding() }]} onPress={onPress}>
       <View style={styles.arrow}>
         <Text style={[styles.arrowText, { fontSize: getFontSize() }]}>{'<'}</Text>
       </View>

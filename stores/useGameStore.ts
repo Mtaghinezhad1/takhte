@@ -2,6 +2,7 @@ import { getAIProfile } from '@/constants/aiProfiles';
 import { aiService } from '@/services/aiService';
 import { boardService } from '@/services/boardService';
 import { gameService } from '@/services/gameService';
+import storageService from '@/services/storageService';
 import { create } from 'zustand';
 import useUserStore from './useUserStore';
 
@@ -289,6 +290,53 @@ const useGameStore = create((set, get) => ({
     const winner = loser === 'black' ? 'white' : 'black';
     get().endCurrentGame(winner);
     set({ isAiThinking: false }); // فقط اگر نیاز باشد AI thinking غیرفعال شود
+  },
+
+  saveCurrentGameState: async () => {
+    const state = get();
+
+    if (!state.gameMode || state.isMatchEndModalVisible) return;
+    
+    const gameStateToSave = {
+      board: state.board,
+      currentTurn: state.currentTurn,
+      allDice: state.allDice,
+      whiteBornOff: state.whiteBornOff,
+      blackBornOff: state.blackBornOff,
+      gameScore: state.gameScore,
+      gameWinner: state.gameWinner,
+      aiLevel: state.aiLevel,
+      targetScore: state.targetScore,
+      gameMode: state.gameMode,
+      isAiThinking: false, // همیشه false ذخیره شود
+      isRolling: false // همیشه false ذخیره شود
+    };
+    
+    await storageService.saveActiveGame(state.gameMode, gameStateToSave);
+  },
+  
+  
+  // در useGameStore اضافه کنید
+  loadSavedGame: (savedState) => {
+    set({
+      board: savedState.board,
+      currentTurn: savedState.currentTurn,
+      allDice: savedState.allDice,
+      whiteBornOff: savedState.whiteBornOff,
+      blackBornOff: savedState.blackBornOff,
+      gameScore: savedState.gameScore,
+      gameWinner: savedState.gameWinner,
+      aiLevel: savedState.aiLevel,
+      targetScore: savedState.targetScore,
+      gameMode: savedState.gameMode,
+      isAiThinking: false,
+      isRolling: false,
+    });
+    
+    // حذف بازی ذخیره شده بعد از بارگذاری
+    setTimeout(() => {
+      storageService.removeActiveGame(savedState.gameMode);
+    }, 100);
   },
 
   forfeitHand: () => {

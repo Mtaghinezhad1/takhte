@@ -1,3 +1,4 @@
+import { getAvatarByKey } from '@/constants/avatars';
 import useGameStore from '@/stores/useGameStore';
 import useUserStore from '@/stores/useUserStore';
 import React from 'react';
@@ -5,7 +6,7 @@ import { Image, StyleSheet, Text, View } from 'react-native';
 
 const GameStatusBar = () => {
   const aiProfile = useGameStore(state => state.aiProfile);
-  const { username, elo, avatar } = useUserStore();
+  const { username, elo, avatarKey } = useUserStore();
   const currentTurn = useGameStore(state => state.currentTurn);
   const targetScore = useGameStore(state => state.targetScore);
   return (
@@ -43,12 +44,12 @@ const GameStatusBar = () => {
         {currentTurn == 'white' ? (
           <View style={styles.showTurn}>
             <View style={styles.avatar}>
-              <Image style={styles.avatarImg} source={avatar ? avatar : require('@/assets/avatar/default.jpeg')} />
+              <Image style={styles.avatarImg} source={avatarKey ? getAvatarByKey(avatarKey) : require('@/assets/avatar/default.jpeg')} />
             </View>
           </View>
         ) : (
           <View style={styles.avatar}>
-            <Image style={styles.avatarImg} source={avatar ? avatar : require('@/assets/avatar/default.jpeg')} />
+            <Image style={styles.avatarImg} source={avatarKey ? getAvatarByKey(avatarKey) : require('@/assets/avatar/default.jpeg')} />
           </View>
         )}
         <Text style={styles.playerName}>{username}</Text>

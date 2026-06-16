@@ -5,7 +5,7 @@ import { create } from 'zustand';
 
 const useUserStore = create((set, get) => ({
   username: 'بازیکن مهمان',
-  avatar: require('@/assets/avatar/1 (6).jpeg'),
+  avatarKey: 'avatar_3',
   elo: 1500,
   coins: 0,
   isLoading: false,
@@ -20,7 +20,7 @@ const useUserStore = create((set, get) => ({
     if (userData) {
       set({
         username: userData.username || 'بازیکن مهمان',
-        avatar: userData.avatar || null,
+        avatarKey: userData.avatarKey || 'avatar_1',
         elo: userData.elo || 1500,
         coins: userData.coins || 0,
       });
@@ -40,60 +40,61 @@ const useUserStore = create((set, get) => ({
     const currentState = get();
     await storageService.saveUserData({
       username: name,
-      avatar: currentState.avatar,
+      avatarKey: currentState.avatarKey,
       elo: currentState.elo,
       coins: currentState.coins
     });
   },
 
-  setAvatar: async (imgUrl) => {
-    set({ avatar: imgUrl });
+  setAvatar: async (avatarKey) => {
+    set({ avatarKey });
+
     const currentState = get();
     await storageService.saveUserData({
       username: currentState.username,
-      avatar: imgUrl,
+      avatarKey: avatarKey,
       elo: currentState.elo,
       coins: currentState.coins
     });
   },
-  
+
   setCoins: async (amount) => {
     set({ coins: amount });
     const currentState = get();
     await storageService.saveUserData({
       username: currentState.username,
-      avatar: currentState.avatar,
+      avatarKey: currentState.avatarKey,
       elo: currentState.elo,
       coins: amount
     });
   },
-  
+
   addCoins: async (amount) => {
     const newCoins = get().coins + amount;
     set({ coins: newCoins });
     const currentState = get();
     await storageService.saveUserData({
       username: currentState.username,
-      avatar: currentState.avatar,
+      avatarKey: currentState.avatarKey,
       elo: currentState.elo,
       coins: newCoins
     });
   },
-  
+
   deductCoins: async (amount) => {
     const newCoins = Math.max(0, get().coins - amount);
     set({ coins: newCoins });
     const currentState = get();
     await storageService.saveUserData({
       username: currentState.username,
-      avatar: currentState.avatar,
+      avatarKey: currentState.avatarKey,
       elo: currentState.elo,
       coins: newCoins
     });
   },
 
   updateEloAfterMatch: async (winner, userColor, opponentElo, matchLength = 5) => {
-    const { elo: userElo, username, avatar, coins } = get(); 
+    const { elo: userElo, username, avatarKey, coins } = get();
     const isWin = (userColor === winner);
 
     const newUserElo = userService.calculateElo(userElo, opponentElo, isWin, matchLength);
@@ -104,7 +105,7 @@ const useUserStore = create((set, get) => ({
     // ذخیره اطلاعات به‌روز شده
     await storageService.saveUserData({
       username,
-      avatar,
+      avatarKey,
       elo: newUserElo,
       coins
     });
@@ -115,7 +116,7 @@ const useUserStore = create((set, get) => ({
   resetUser: async () => {
     const defaultData = {
       username: 'بازیکن مهمان',
-      avatar: require('@/assets/avatar/1 (6).jpeg'),
+      avatarKey: 'avatar_1',
       elo: 1500,
       coins: 0,
     };

@@ -4,7 +4,8 @@ const STORAGE_KEYS = {
   USER_DATA: '@backgammon_user_data',
   GAME_SETTINGS: '@backgammon_game_settings',
   STATISTICS: '@backgammon_statistics',
-  LEARNING_PROGRESS: '@backgammon_learning_progress'
+  LEARNING_PROGRESS: '@backgammon_learning_progress',
+  ACTIVE_GAMES: '@backgammon_active_games'
 };
 
 class StorageService {
@@ -112,6 +113,78 @@ class StorageService {
     }
   }
 
+  // ذخیره وضعیت بازی در حال انجام برای یک gameMode خاص
+  async saveActiveGame(gameMode, gameState) {
+    try {
+      // دریافت بازی‌های ذخیره شده قبلی
+      const activeGames = await this.loadActiveGames();
+
+      // بروزرسانی یا اضافه کردن بازی جدید
+      activeGames[gameMode] = {
+        ...gameState,
+        savedAt: Date.now(),
+        gameMode: gameMode
+      };
+
+      const jsonValue = JSON.stringify(activeGames);
+      await AsyncStorage.setItem(STORAGE_KEYS.ACTIVE_GAMES, jsonValue);
+      return true;
+    } catch (error) {
+      console.error('خطا در ذخیره وضعیت بازی:', error);
+      return false;
+    }
+  }
+
+  // بارگذاری تمام بازی‌های ذخیره شده
+  async loadActiveGames() {
+    try {
+      const jsonValue = await AsyncStorage.getItem(STORAGE_KEYS.ACTIVE_GAMES);
+      return jsonValue != null ? JSON.parse(jsonValue) : {};
+    } catch (error) {
+      console.error('خطا در بارگذاری بازی‌های ذخیره شده:', error);
+      return {};
+    }
+  }
+
+  // بارگذاری وضعیت یک gameMode خاص
+  async loadGameState(gameMode) {
+    try {
+      const activeGames = await this.loadActiveGames();
+      const gameState = activeGames[gameMode];
+
+      // بررسی اگر بازی بیش از 7 روز ذخیره شده باشد، منقضی شده در نظر گرفته شود
+      if (gameState && Date.now() - gameState.savedAt > 7 * 24 * 60 * 60 * 1000) {
+        await this.removeActiveGame(gameMode);
+        return null;
+      }
+
+      return gameState || null;
+    } catch (error) {
+      console.error('خطا در بارگذاری وضعیت بازی:', error);
+      return null;
+    }
+  }
+
+  // حذف یک بازی ذخیره شده
+  async removeActiveGame(gameMode) {
+    try {
+      const activeGames = await this.loadActiveGames();
+      delete activeGames[gameMode];
+      const jsonValue = JSON.stringify(activeGames);
+      await AsyncStorage.setItem(STORAGE_KEYS.ACTIVE_GAMES, jsonValue);
+      return true;
+    } catch (error) {
+      console.error('خطا در حذف بازی ذخیره شده:', error);
+      return false;
+    }
+  }
+
+  // بررسی وجود بازی ذخیره شده برای یک gameMode
+  async hasActiveGame(gameMode) {
+    const gameState = await this.loadGameState(gameMode);
+    return gameState !== null && !gameState.isMatchEndModalVisible && !gameState.gameWinner;
+  }
+
   // حذف تمام داده‌ها
   async clearAllData() {
     try {
@@ -119,7 +192,8 @@ class StorageService {
         STORAGE_KEYS.USER_DATA,
         STORAGE_KEYS.GAME_SETTINGS,
         STORAGE_KEYS.STATISTICS,
-        STORAGE_KEYS.LEARNING_PROGRESS
+        STORAGE_KEYS.LEARNING_PROGRESS,
+        STORAGE_KEYS.ACTIVE_GAMES
       ]);
       return true;
     } catch (error) {

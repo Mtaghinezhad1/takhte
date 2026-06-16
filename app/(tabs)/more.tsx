@@ -1,4 +1,5 @@
 import ItemRow from '@/components/more/itemRow';
+import { getAvatarByKey } from '@/constants/avatars';
 import useUserStore from '@/stores/useUserStore';
 import { router } from 'expo-router';
 import React from 'react';
@@ -7,7 +8,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 
 
 export default function MoreScreen() {
-  const { username, elo, coins, avatar } = useUserStore();
+  const { username, elo, coins, avatarKey } = useUserStore();
   const { width } = useWindowDimensions(); // واکنش‌گرا به تغییر اندازه صفحه
 
   // محاسبه اندازه فونت واکنش‌گرا
@@ -51,7 +52,7 @@ export default function MoreScreen() {
 
           <View style={styles.avatarSection}>
             <View style={styles.avatar}>
-              <Image style={styles.avatarImg} source={avatar ? avatar : require('@/assets/avatar/default.jpeg')} />
+              <Image style={styles.avatarImg} source={avatarKey ? getAvatarByKey(avatarKey) : require('@/assets/avatar/default.jpeg')} />
             </View>
             <TouchableOpacity style={styles.edit} onPress={() => router.push(`/selectAvatar`)}>
               <View style={styles.arrow}>
@@ -88,14 +89,14 @@ export default function MoreScreen() {
 
 
         <View style={styles.itemContainer}>
-          {/* <ItemRow icon='person' text="نام کاربری" /> */}
+          <ItemRow icon='person' text="ویرایش پروفایل" />
           {/* <ItemRow text="آشنایی با قوانین تخته نرد" />
           <ItemRow text="آشنایی با قوانین تخته نرد"  /> */}
         </View>
 
         <View style={styles.itemContainer}>
           {/* <ItemRow text="درباره ما"  /> */}
-          <ItemRow icon='info-outline' text="نسخه اپلیکیشن              1.0.0" />
+          <ItemRow icon='info-outline' onPress={()=>console.log('ss')}  text="نسخه اپلیکیشن              1.0.0" />
         </View>
       </ScrollView>
     </SafeAreaView>

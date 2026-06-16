@@ -1,3 +1,4 @@
+import { getAvatarByKey } from "@/constants/avatars";
 import useGameStore from "@/stores/useGameStore";
 import useUserStore from "@/stores/useUserStore";
 import { router } from 'expo-router';
@@ -14,7 +15,7 @@ export default function MatchEndModal() {
     const gameScore = useGameStore(state => state.gameScore);
     const gameWinner = useGameStore(state => state.gameWinner);
     const aiProfile = useGameStore(state => state.aiProfile);
-    const { username, elo, avatar } = useUserStore();
+    const { username, elo, avatarKey } = useUserStore();
 
     const {
         isMatchEndModalVisible,
@@ -100,7 +101,7 @@ export default function MatchEndModal() {
                         {/* White Player */}
                         <View style={styles.playerSection}>
                             <Image
-                                source={avatar ? avatar : require('@/assets/avatar/default.jpeg')}
+                                source={avatarKey ? getAvatarByKey(avatarKey) : require('@/assets/avatar/default.jpeg')}
                                 style={[styles.playerImage, styles.whitePlayerBorder]}
                             />
                             <Text style={styles.playerName}>{username}</Text>

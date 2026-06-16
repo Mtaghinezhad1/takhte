@@ -1,8 +1,8 @@
 import * as NavigationBar from 'expo-navigation-bar'; // اضافه شده
-import { useLocalSearchParams } from "expo-router";
+import { useFocusEffect, useLocalSearchParams, useNavigation } from "expo-router";
 import * as ScreenOrientation from 'expo-screen-orientation';
-import React, { useEffect } from "react";
-import { StyleSheet, useWindowDimensions, View } from "react-native";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import { ActivityIndicator, AppState, BackHandler, StyleSheet, useWindowDimensions, View } from "react-native";
 
 import HalfBoard from "@/components/game/halfBoard";
 import InformModal from '@/components/game/informModal';
@@ -12,21 +12,53 @@ import MatchEndModal from "@/components/game/matchEndModal";
 import ResultModal from '@/components/game/resultModal';
 import Rightbar from "@/components/game/rightbar";
 import StaticsBar from "@/components/game/staticsBar";
+import storageService from '@/services/storageService';
 import useGameStore from '@/stores/useGameStore';
+
+
 
 export default function Index() {
   const { gameMode, targetScore, aiLevel, aiLevelForWhite } = useLocalSearchParams();
   const store = useGameStore();
   const { height: screenHeight } = useWindowDimensions(); // واکنش‌گرا
 
+  const navigation = useNavigation();
+  const appState = useRef(AppState.currentState);
+  const isSavedRef = useRef(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const saveGame = () => {
+    if (isSavedRef.current) return;
+    isSavedRef.current = true;
+    store.saveCurrentGameState();
+  };
+
   useEffect(() => {
-    if (gameMode) {
-      if (gameMode === 'AIvsAI') {
-        store.initializeGame(gameMode, targetScore, aiLevel || '3', aiLevelForWhite || '3');
-      } else {
-        store.initializeGame(gameMode, targetScore, aiLevel || '3');
+    let isMounted = true;
+
+    async function loadOrInitialize() {
+      // اول چک کن بازی ذخیره شده وجود دارد یا نه
+      const savedGame = await storageService.loadGameState(gameMode);
+
+      if (savedGame && isMounted) {
+        // بازی ذخیره شده وجود دارد - لود کن
+        store.loadSavedGame(savedGame);
+      } else if (gameMode && isMounted) {
+        // بازی جدید شروع کن
+        if (gameMode === 'AIvsAI') {
+          store.initializeGame(gameMode, targetScore, aiLevel || '3', aiLevelForWhite || '3');
+        } else {
+          store.initializeGame(gameMode, targetScore, aiLevel || '3');
+        }
+      }
+
+      if (isMounted) {
+        setIsLoading(false);
       }
     }
+
+    setIsLoading(true);
+    loadOrInitialize();
 
     // قفل صفحه به حالت افقی
     ScreenOrientation.lockAsync(
@@ -42,26 +74,89 @@ export default function Index() {
     hideNavigationBar();
 
     return () => {
+      isMounted = false;
       ScreenOrientation.unlockAsync();
       // برگرداندن نوار ناوبری به حالت عادی هنگام خارج شدن از صفحه
       NavigationBar.setVisibilityAsync('visible');
     };
   }, []);
 
+  // مدیریت AppState (خروج از کل اپ یا سواپ کردن)
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', (nextAppState) => {
+      if (
+        appState.current.match(/active/) &&
+        (nextAppState === 'inactive' || nextAppState === 'background')
+      ) {
+        saveGame();
+      }
+      appState.current = nextAppState;
+    });
+
+    return () => {
+      subscription.remove();
+    };
+  }, []);
+
+  // مدیریت دکمه برگشت (BackHandler)
+  useEffect(() => {
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
+      saveGame();
+      navigation.goBack();
+      return true;
+    });
+
+    return () => {
+      backHandler.remove();
+    };
+  }, []);
+
+  // مدیریت فوکوس صفحه
+  useFocusEffect(
+    useCallback(() => {
+      // ریست فلگ وقتی صفحه دوباره فوکوس می‌شود
+      isSavedRef.current = false;
+
+      return () => {
+        // ذخیره هنگام ترک صفحه
+        saveGame();
+      };
+    }, [])
+  );
+
+  // ذخیره‌سازی هنگام unmount
+  useEffect(() => {
+    return () => {
+      saveGame();
+    };
+  }, []);
 
   // ریختن تاس در شروع هر نوبت
   useEffect(() => {
-    store.rollDice();
-  }, [store.currentTurn]);
+    if (!isLoading) {
+      store.rollDice();
+    }
+  }, [store.currentTurn, isLoading]);
 
   // اجرای حرکت هوش مصنوعی
   useEffect(() => {
-    const timer = setTimeout(() => {
-      store.executeAIMove();
-    }, 10);
+    if (!isLoading) {
+      const timer = setTimeout(() => {
+        store.executeAIMove();
+      }, 10);
 
-    return () => clearTimeout(timer);
-  }, [store.allDice]);
+      return () => clearTimeout(timer);
+    }
+  }, [store.allDice, isLoading]);
+
+  // نمایش لودینگ هنگام بررسی بازی ذخیره شده
+  if (isLoading) {
+    return (
+      <View style={[styles.container, styles.loadingContainer]}>
+        <ActivityIndicator size="large" color="#ffffff" />
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>

@@ -1,3 +1,4 @@
+import { getAvatarByKey } from '@/constants/avatars';
 import useUserStore from '@/stores/useUserStore';
 import React from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
@@ -6,7 +7,7 @@ import { Image, StyleSheet, Text, View } from 'react-native';
 const rem = 16;
 
 const ProfileCard = () => {
-    const { username, elo, coins, avatar } = useUserStore();
+    const { username, elo, coins, avatarKey } = useUserStore();
 
     return (
         <View style={styles.body}>
@@ -23,7 +24,7 @@ const ProfileCard = () => {
                 <View style={styles.avatar}>
                     <Image
                         style={styles.image}
-                        source={avatar ? avatar : require('@/assets/avatar/default.jpeg')}
+                        source={avatarKey ? getAvatarByKey(avatarKey) : require('@/assets/avatar/default.jpeg')}
                     />
                 </View>
             </View>

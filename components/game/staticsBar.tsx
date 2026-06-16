@@ -2,6 +2,7 @@ import { boardService } from "@/services/boardService";
 import useGameStore from "@/stores/useGameStore";
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import Checker from "./checker";
 
 const StaticsBar = () => {
   const board = useGameStore(state => state.board);
@@ -12,14 +13,16 @@ const StaticsBar = () => {
   return (
     <View style={styles.staticsBar}>
       <View style={styles.statics}>
-        <Text style={styles.pointsRemained}>{boardService.pipCount(board,'black')}</Text>
+        <Text style={styles.pointsRemained}>{boardService.pipCount(board, 'black')}</Text>
         {whiteCaptured > 0 &&
+
           <TouchableOpacity
-            style={[styles.checkersOut, styles.white]}
             onPress={() => handlePointPress(25)}
             activeOpacity={0.7}
           >
-            {whiteCaptured > 1 && <Text style={{fontFamily: 'Kaghaz',}}>{Math.abs(whiteCaptured)}</Text>}
+            <Checker isWhite={true}>
+              {whiteCaptured > 1 && Math.abs(whiteCaptured)}
+            </Checker>
           </TouchableOpacity>
         }
       </View>
@@ -31,15 +34,23 @@ const StaticsBar = () => {
       </View> */}
 
       <View style={styles.statics}>
-        <Text style={styles.pointsRemained}>{boardService.pipCount(board,'white')}</Text>
+        <Text style={styles.pointsRemained}>{boardService.pipCount(board, 'white')}</Text>
         {blackCaptured < 0 &&
           <TouchableOpacity
-            style={styles.checkersOut}
             onPress={() => handlePointPress(0)}
             activeOpacity={0.7}
           >
-            {blackCaptured < -1 && <Text style={{fontFamily: 'Kaghaz',}}>{Math.abs(blackCaptured)}</Text>}
+            <Checker isWhite={false}>
+              {blackCaptured < -1 && Math.abs(blackCaptured)}
+            </Checker>
           </TouchableOpacity>
+          // <TouchableOpacity
+          //   style={styles.checkersOut}
+          //   onPress={() => handlePointPress(0)}
+          //   activeOpacity={0.7}
+          // >
+          //   {blackCaptured < -1 && <Text style={{ fontFamily: 'Kaghaz', }}>{Math.abs(blackCaptured)}</Text>}
+          // </TouchableOpacity>
         }
       </View>
     </View>
