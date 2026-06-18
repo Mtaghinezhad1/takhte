@@ -87,28 +87,37 @@ const LearnScreen = () => {
             >
                 {learnData
                     .find(cat => cat.key === activeTab)
-                    ?.subcategories.map((subcat) => (
-                        <TouchableOpacity
-                            key={subcat.key}
-                            style={styles.item}
-                            onPress={() => router.push(`/learn/${activeTab}/${subcat.key}`)}
-                        >
-                            {/* Progress Bar */}
-                            <View style={styles.loader}>
-                                <View
-                                    style={[
-                                        styles.progress,
-                                        { height: `${getLocalProgress(activeTab, subcat.key)}%` },
-                                    ]}
-                                />
-                            </View>
-                            <View style={styles.textSection}>
-                                <Text style={[styles.text, { fontSize: getFontSize() }]}>
-                                    {subcat.title}
-                                </Text>
-                            </View>
-                        </TouchableOpacity>
-                    ))}
+                    ?.subcategories.map((subcat) => {
+                        const progress = getLocalProgress(activeTab, subcat.key);
+                        return (
+                            <TouchableOpacity
+                                key={subcat.key}
+                                style={styles.item}
+                                onPress={() => {
+                                    if (progress === 0) {
+                                        router.push(`/learn/${activeTab}/${subcat.key}/1`);
+                                    } else {
+                                        router.push(`/learn/${activeTab}/${subcat.key}`);
+                                    }
+                                }}
+                            >
+                                {/* Progress Bar */}
+                                <View style={styles.loader}>
+                                    <View
+                                        style={[
+                                            styles.progress,
+                                            { height: `${progress}%` },
+                                        ]}
+                                    />
+                                </View>
+                                <View style={styles.textSection}>
+                                    <Text style={[styles.text, { fontSize: getFontSize() }]}>
+                                        {subcat.title}
+                                    </Text>
+                                </View>
+                            </TouchableOpacity>
+                        );
+                    })}
             </ScrollView>
         </View>
     );

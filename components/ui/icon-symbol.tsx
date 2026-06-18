@@ -10,6 +10,11 @@ const MAPPING = {
   'menu.fill': 'menu',
   'account_circle.fill': 'person',
   'info.fill': 'info',
+  'attach-money': 'attach-money',
+  'speed': 'speed',
+  'person': 'person',
+  'info-outline': 'info-outline',
+  'edit': 'edit'
 };
 
 /**

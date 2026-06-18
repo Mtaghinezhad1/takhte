@@ -1,7 +1,7 @@
 import useUserStore from '@/stores/useUserStore';
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import { IconSymbol } from '../ui/icon-symbol';
 
 // 1rem ≈ 16px (converted from your CSS)
 const rem = 16;
@@ -40,7 +40,7 @@ const ItemRow = ({ text, icon, onPress }) => {
         <Text style={[styles.itemText, { fontSize: getFontSize() }]}>{text}</Text>
       </View>
       <View style={styles.icon}>
-        <Icon name={icon} size={getIconSize()} color="#1f1f1f" />
+        <IconSymbol size={getIconSize()} name={icon} color='black' />
       </View>
     </TouchableOpacity>
   );

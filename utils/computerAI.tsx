@@ -199,11 +199,37 @@ const DISTANCE_PROB = {
 /**
  * احتمال اینکه یک بلات توسط حریف ضربه بخورد (با در نظر گرفتن همه مهره‌های حریف)
  */
-function getBlotHitProbability(board, blotPoint, color) {
+ function getBlotHitProbability(board, blotPoint, color) {
     const opponent = color === 'white' ? 'black' : 'white';
     const direction = opponent === 'white' ? -1 : 1;
     let unionProb = 0;
 
+    const barPoint = opponent === 'white' ? 25 : 0; // بار برای سفید در 25 و برای سیاه در 0
+    const barCheckers = Math.abs(board[barPoint]);
+
+    // calculate getting hit by bar checkers 
+    if (barCheckers > 0) {
+        // فاصله از بار تا بلات
+        let distanceFromBar;
+        if (opponent === 'white') {
+            // سفید از بار (خانه 25) باید به سمت خانه‌های پایین حرکت کند
+            distanceFromBar = 25 - blotPoint;
+        } else {
+            // سیاه از بار (خانه 0) باید به سمت خانه‌های بالا حرکت کند
+            distanceFromBar = blotPoint;
+        }
+        
+        // اگر فاصله معتبر باشد (1 تا 6)
+        if (distanceFromBar >= 1 && distanceFromBar <= 6) {
+            // احتمال آوردن عدد مورد نظر با دو تاس: 11/36
+            const barHitProb = 11/36;
+            unionProb = unionProb + barHitProb - unionProb * barHitProb;
+            console.log(unionProb);
+
+        }
+    }
+
+    // calculate getting hit by normal checkers 
     for (let point = 1; point <= 24; point++) {
         const checkers = board[point];
         const hasOpponentChecker =
@@ -222,10 +248,21 @@ function getBlotHitProbability(board, blotPoint, color) {
         if (distance <= 0 || distance > 12) continue;
 
         const p = DISTANCE_PROB[distance];
-
         unionProb = unionProb + p - unionProb * p;
     }
+    
     return unionProb;
+}
+
+function getHitValue(to, color) {
+    // ارزش نقاط مختلف را وزن‌دهی کنید
+    const pointValue = color === 'white' ? to : (25 - to);
+    return pointValue / 24; // نرمال‌سازی به 0-1
+}
+
+function checkerValueByPosition(point, color) {
+    const pointValue = color === 'white' ? (25 - point) : point;
+    return pointValue / 24; // نرمال‌سازی به 0-1
 }
 
 // =================== Bear Off ===================
@@ -346,7 +383,7 @@ function evaluateBoard(board, color, weights = AI_LEVELS[3]) {
     for (let i = 1; i <= 24; i++) {
         const count = board[i];
         if ((color === 'white' && count === 1) || (color === 'black' && count === -1)) {
-            riskSum += getBlotHitProbability(board, i, color);
+            riskSum += getBlotHitProbability(board, i, color)*checkerValueByPosition(i,color);
         }
     }
     const averageRisk = riskSum / (myBlots || 1);  // اگر بلات نداشته باشیم، ریسک صفر
@@ -379,19 +416,19 @@ export const evaluateMove = (board, dice, moveSequence, color, weights = AI_LEVE
 
     const isBearOff = isBearOffPhase(board, color);
 
-    // ذخیره مقدار اولیه بار حریف (برای محاسبه ضربات)
-    let initialOppBar;
-    if (color === 'white') {
-        // حریف سیاه است → بار سیاه در board[0] (عدد منفی)
-        initialOppBar = Math.abs(newBoard[0]); // تعداد مهره‌های سیاه در بار
-    } else {
-        // حریف سفید است → بار سفید در board[25] (عدد مثبت)
-        initialOppBar = newBoard[25];
-    }
+    // متغیر برای جمع ارزش ضربات
+    let totalHitValue = 0;
 
     // اعمال تک‌تک گام‌های حرکت با استفاده از makeMove
     for (const step of moveSequence) {
         const { from, to, die } = step;
+        // قبل از حرکت، بررسی می‌کنیم که آیا در مقصد مهره حریف وجود دارد
+        const hasOpponentChecker = (color === 'white' && newBoard[to] == -1) || (color === 'black' && newBoard[to] == 1);
+        if (hasOpponentChecker) {
+            // ارزش ضربه را محاسبه و اضافه می‌کنیم
+            totalHitValue += getHitValue(to, color);
+        }
+
         // فراخوانی makeMove؛ prevBoard را null می‌دهیم (چون برای انیمیشن نیست)
         const result = makeMove(newBoard, from, die, color, null, whiteBornOff, blackBornOff);
         // به‌روزرسانی وضعیت پس از هر حرکت
@@ -400,27 +437,16 @@ export const evaluateMove = (board, dice, moveSequence, color, weights = AI_LEVE
         blackBornOff = result.blackBornOff;
     }
 
-    // محاسبه مقدار نهایی بار حریف
-    let finalOppBar;
-    if (color === 'white') {
-        finalOppBar = Math.abs(newBoard[0]);
-    } else {
-        finalOppBar = newBoard[25];
-    }
-
-
     if (isBearOff) {
         const finalScore = evaluateBearOff(newBoard, color, weights = null);
         console.log(finalScore);
-        return {finalScore}
+        return { finalScore }
     } else {
-        // تعداد ضربات = افزایش مهره‌های حریف در بار
-        const hitsInMove = finalOppBar - initialOppBar; // همیشه نامنفی
-
         // ارزیابی وضعیت نهایی تخته (بدون در نظر گرفتن bornOffها)
         const { score, pipCountPoint, blotPoint, closedPoint, riskPoint, primePoint } = evaluateBoard(newBoard, color, weights);
         const baseScore = score;
-        const hitScore = weights.hits * hitsInMove;
+        // استفاده از ارزش وزنی ضربات
+        const hitScore = weights.hits * totalHitValue;
         const finalScore = baseScore + hitScore;
 
         return { finalScore, pipCountPoint, blotPoint, closedPoint, riskPoint, primePoint };

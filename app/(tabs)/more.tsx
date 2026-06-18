@@ -1,10 +1,10 @@
 import ItemRow from '@/components/more/itemRow';
+import { IconSymbol } from '@/components/ui/icon-symbol';
 import { getAvatarByKey } from '@/constants/avatars';
 import useUserStore from '@/stores/useUserStore';
 import { router } from 'expo-router';
 import React from 'react';
 import { Image, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialIcons';
 
 
 export default function MoreScreen() {
@@ -31,14 +31,6 @@ export default function MoreScreen() {
     return 16;
   };
 
-  const MoneyIcon = () => (
-    <Icon name="attach-money" size={getIconSize()} color="#1f1f1f" />
-  );
-
-  const SpeedIcon = () => (
-    <Icon name="speed" size={getIconSize()} color="#1f1f1f" />
-  );
-
   return (
     <SafeAreaView style={styles.safeArea}>
       <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
@@ -56,7 +48,7 @@ export default function MoreScreen() {
             </View>
             <TouchableOpacity style={styles.edit} onPress={() => router.push(`/selectAvatar`)}>
               <View style={styles.arrow}>
-                <Text style={styles.arrowText}>{'<'}</Text>
+                <IconSymbol size={getIconSize()} name="edit" color='black' />
               </View>
             </TouchableOpacity>
           </View>
@@ -71,7 +63,7 @@ export default function MoreScreen() {
                 <Text style={[styles.btnText, { fontSize: getFontSize() }]}>سکه: {coins}</Text>
               </View>
               <View style={styles.icon}>
-                <MoneyIcon />
+                <IconSymbol size={getIconSize()} name="attach-money" color='black' />
               </View>
             </View>
 
@@ -80,7 +72,7 @@ export default function MoreScreen() {
                 <Text style={[styles.btnText, { fontSize: getFontSize() }]}>توانایی: {elo}</Text>
               </View>
               <View style={styles.icon}>
-                <SpeedIcon />
+                <IconSymbol size={getIconSize()} name="speed" color='black' />
               </View>
             </View>
           </View>
@@ -96,7 +88,7 @@ export default function MoreScreen() {
 
         <View style={styles.itemContainer}>
           {/* <ItemRow text="درباره ما"  /> */}
-          <ItemRow icon='info-outline' onPress={()=>console.log('ss')}  text="نسخه اپلیکیشن              1.0.0" />
+          <ItemRow icon='info-outline' onPress={() => console.log('ss')} text="نسخه اپلیکیشن              1.0.0" />
         </View>
       </ScrollView>
     </SafeAreaView>

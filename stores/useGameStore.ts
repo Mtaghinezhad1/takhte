@@ -102,6 +102,7 @@ const useGameStore = create((set, get) => ({
   },
 
   endMatch: async (winner, newGameScore) => {
+
     const state = get();
     const opponentElo = state.aiProfile.baseRating;
     const currentUserElo = useUserStore.getState().elo; //before change
@@ -127,7 +128,7 @@ const useGameStore = create((set, get) => ({
       isModalVisible: false,
     });
 
-    
+    await storageService.removeActiveGame(state.gameMode);
   },
 
   endCurrentGame: (winner) => {
@@ -147,8 +148,11 @@ const useGameStore = create((set, get) => ({
   },
 
   // بازنشانی وضعیت پایان مسابقه (در زمان شروع بازی جدید)
-  resetMatchEndState: () =>
-    set({ isMatchEndModalVisible: false, matchEndWinner: null }),
+  resetMatchEndState: async () => {
+    const state = get();
+    await storageService.removeActiveGame(state.gameMode);
+    set({ isMatchEndModalVisible: false, matchEndWinner: null });
+  },
 
   pushToHistory: () => {
     const state = get();
@@ -296,11 +300,13 @@ const useGameStore = create((set, get) => ({
     const state = get();
 
     if (!state.gameMode || state.isMatchEndModalVisible) return;
-    
+
     const gameStateToSave = {
       board: state.board,
       currentTurn: state.currentTurn,
       allDice: state.allDice,
+      dice: state.dice,
+      aiProfile: state.aiProfile,
       whiteBornOff: state.whiteBornOff,
       blackBornOff: state.blackBornOff,
       gameScore: state.gameScore,
@@ -311,28 +317,30 @@ const useGameStore = create((set, get) => ({
       isAiThinking: false, // همیشه false ذخیره شود
       isRolling: false // همیشه false ذخیره شود
     };
-    
+
     await storageService.saveActiveGame(state.gameMode, gameStateToSave);
   },
-  
-  
+
+
   // در useGameStore اضافه کنید
   loadSavedGame: (savedState) => {
     set({
       board: savedState.board,
       currentTurn: savedState.currentTurn,
       allDice: savedState.allDice,
+      dice: savedState.dice,
       whiteBornOff: savedState.whiteBornOff,
       blackBornOff: savedState.blackBornOff,
       gameScore: savedState.gameScore,
       gameWinner: savedState.gameWinner,
       aiLevel: savedState.aiLevel,
+      aiProfile: savedState.aiProfile,
       targetScore: savedState.targetScore,
       gameMode: savedState.gameMode,
       isAiThinking: false,
       isRolling: false,
     });
-    
+
     // حذف بازی ذخیره شده بعد از بارگذاری
     setTimeout(() => {
       storageService.removeActiveGame(savedState.gameMode);

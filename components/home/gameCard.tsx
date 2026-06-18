@@ -1,6 +1,7 @@
+import storageService from '@/services/storageService';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Image, StyleSheet, Text, TouchableOpacity, View
 } from 'react-native';
@@ -9,54 +10,86 @@ import {
 const rem = 16;
 
 const GameCard = ({ game, cardWidth, cardHeight, imageWidth, imageHeight }) => {
-    const handleStartGame = () => {
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleStartGame = async () => {
+    setIsLoading(true);
+    try {
+      // بررسی وجود بازی ذخیره شده برای این gameMode
+      const hasActiveGame = await storageService.hasActiveGame(game.mode);
+
+      if (hasActiveGame) {
+        // اگر بازی ذخیره شده وجود دارد، مستقیماً به صفحه بازی برو
+        router.push({
+          pathname: `/game/${game.id}`,
+          params: {
+            gameMode: game.mode,
+            isResumed: 'true', // پارامتر برای نشان دادن ادامه بازی
+          },
+        });
+      } else {
+        // اگر بازی ذخیره شده وجود ندارد، به صفحه پیش‌بازی برو
         router.push({
           pathname: `/pre-game/${game.id}`,
           params: {
             gameMode: game.mode,
           },
         });
-      };
-    
-      return (
-        <LinearGradient
-          colors={[game.bgColor || '#4c669f', '#3b5998', '#192f6a']}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
+      }
+    } catch (error) {
+      console.error('خطا در بررسی بازی ذخیره شده:', error);
+      // در صورت خطا، به صفحه پیش‌بازی برو
+      router.push({
+        pathname: `/pre-game/${game.id}`,
+        params: {
+          gameMode: game.mode,
+        },
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <LinearGradient
+      colors={[game.bgColor || '#4c669f', '#3b5998', '#192f6a']}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
+      style={[
+        styles.card,
+        {
+          width: cardWidth,
+          height: cardHeight,
+        },
+      ]}
+    >
+      <View style={styles.cardContent}>
+        <View style={styles.cardTextSection}>
+          <Text style={[styles.textCard, { marginTop: cardHeight * 0.1 }]}>
+            {game.title}
+          </Text>
+          <TouchableOpacity
+            activeOpacity={0.7}
+            onPress={handleStartGame}
+            style={styles.playBtn}
+            disabled={isLoading}
+          >
+            <Text style={[styles.playBtnText, { color: game.textColor }]}>
+              {isLoading ? '...' : 'شروع'}
+            </Text>
+          </TouchableOpacity>
+        </View>
+        <Image
+          source={require('../../assets/images/1.jpg')}
           style={[
-            styles.card,
-            {
-              width: cardWidth,
-              height: cardHeight,
-            },
+            styles.cardImg,
+            { width: imageWidth, height: imageHeight },
           ]}
-        >
-          <View style={styles.cardContent}>
-            <View style={styles.cardTextSection}>
-              <Text style={[styles.textCard, { marginTop: cardHeight * 0.1 }]}>
-                {game.title}
-              </Text>
-              <TouchableOpacity
-                activeOpacity={0.7}
-                onPress={handleStartGame}
-                style={styles.playBtn}
-              >
-                <Text style={[styles.playBtnText, { color: game.textColor }]}>
-                  شروع
-                </Text>
-              </TouchableOpacity>
-            </View>
-            <Image
-              source={require('../../assets/images/1.jpg')}
-              style={[
-                styles.cardImg,
-                { width: imageWidth, height: imageHeight },
-              ]}
-              resizeMode="cover"
-            />
-          </View>
-        </LinearGradient>
-      );
+          resizeMode="cover"
+        />
+      </View>
+    </LinearGradient>
+  );
 };
 
 const styles = StyleSheet.create({
