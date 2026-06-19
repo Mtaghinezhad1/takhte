@@ -1,3 +1,4 @@
+import { CLOSED_POINT_VALUES, DISTANCE_PROB } from "@/constants/tables";
 import { isInHomeBoard, makeMove } from "./utils";
 
 const AI_LEVELS = {
@@ -147,18 +148,6 @@ function countBlots(board, color) {
     return blots;
 }
 
-// تعداد نقاط بسته (حداقل دو مهره از خودی)
-function countClosedPoints(board, color) {
-    let closed = 0;
-    for (let i = 1; i <= 24; i++) {
-        const count = board[i];
-        if ((color === 'black' && count <= -2) || (color === 'white' && count >= 2)) {
-            closed++;
-        }
-    }
-    return closed;
-}
-
 function countPrimes(board, color) {
     let maxConsecutive = 0;
     let currentStreak = 0;
@@ -180,26 +169,12 @@ function countPrimes(board, color) {
     return maxConsecutive >= 6 ? maxConsecutive * 2 : maxConsecutive;
 }
 
-// =================== جدول احتمالات ضربه ===================
-const DISTANCE_PROB = {
-    1: 11 / 36,
-    2: 12 / 36,
-    3: 13 / 36,
-    4: 14 / 36,
-    5: 15 / 36,
-    6: 16 / 36,
-    7: 6 / 36,
-    8: 5 / 36,
-    9: 4 / 36,
-    10: 3 / 36,
-    11: 2 / 36,
-    12: 1 / 36,
-};
+
 
 /**
  * احتمال اینکه یک بلات توسط حریف ضربه بخورد (با در نظر گرفتن همه مهره‌های حریف)
  */
- function getBlotHitProbability(board, blotPoint, color) {
+function getBlotHitProbability(board, blotPoint, color) {
     const opponent = color === 'white' ? 'black' : 'white';
     const direction = opponent === 'white' ? -1 : 1;
     let unionProb = 0;
@@ -218,14 +193,12 @@ const DISTANCE_PROB = {
             // سیاه از بار (خانه 0) باید به سمت خانه‌های بالا حرکت کند
             distanceFromBar = blotPoint;
         }
-        
+
         // اگر فاصله معتبر باشد (1 تا 6)
         if (distanceFromBar >= 1 && distanceFromBar <= 6) {
             // احتمال آوردن عدد مورد نظر با دو تاس: 11/36
-            const barHitProb = 11/36;
+            const barHitProb = 11 / 36;
             unionProb = unionProb + barHitProb - unionProb * barHitProb;
-            console.log(unionProb);
-
         }
     }
 
@@ -250,7 +223,7 @@ const DISTANCE_PROB = {
         const p = DISTANCE_PROB[distance];
         unionProb = unionProb + p - unionProb * p;
     }
-    
+
     return unionProb;
 }
 
@@ -362,6 +335,71 @@ function evaluateBearOff(board, color, weights = null) {
     return score;
 }
 
+// ======================================================================
+function detectGamePhase(board, color) {
+    const myPips = pipCount(board, color);
+    const opponent = color === 'white' ? 'black' : 'white';
+    const oppPips = pipCount(board, opponent);
+
+    // اگر در فاز بیرون بردن هستیم = آخر بازی
+    if (isBearOffPhase(board, color)) {
+        return 'endgame';
+    }
+
+    // اگر حریف در فاز بیرون بردن است = آخر بازی برای ما هم
+    if (isBearOffPhase(board, opponent)) {
+        return 'endgame';
+    }
+
+    // معیار پیپ کانت:
+    // بالای ۱۲۰ = گشایش (هنوز مهره‌های زیادی در تخته حریف داریم)
+    // زیر ۸۰ = آخر بازی
+    // بین ۸۰ تا ۱۲۰ = میانه بازی
+
+    const totalPips = myPips + oppPips;
+
+    if (totalPips > 280) {  // هر دو بازیکن پیمایش بالایی دارند
+        return 'opening';
+    } else if (totalPips < 120) {  // بازی رو به پایان است
+        return 'endgame';
+    } else if (myPips < 80 || oppPips < 80) {
+        return 'endgame';
+    } else if (myPips > 140) {
+        return 'opening';
+    } else {
+        return 'middlegame';
+    }
+}
+
+function getClosedPointsValue(board, color) {
+    // تشخیص فاز بازی
+    const phase = detectGamePhase(board, color);
+    const pointValues = CLOSED_POINT_VALUES[phase];
+
+    let totalValue = 0;
+
+    for (let i = 1; i <= 24; i++) {
+        const count = board[i];
+
+        // بررسی بسته بودن نقطه توسط ما
+        const isMyClosedPoint =
+            (color === 'white' && count >= 2) ||
+            (color === 'black' && count <= -2);
+
+        if (isMyClosedPoint) {
+            // شماره نقطه از دید خودمان
+            // سفید: خانه ۱ تا ۲۴ همان شماره واقعی
+            // سیاه: خانه ۱ از دید سیاه = خانه ۲۴ واقعی
+            const pointFromMyView = color === 'white' ? i : (25 - i);
+
+            // اضافه کردن ارزش آن نقطه
+            totalValue += pointValues[pointFromMyView] || 0;
+        }
+    }
+
+    return totalValue;
+}
+
 // =================== تابع ارزیابی نهایی یک وضعیت ===================
 function evaluateBoard(board, color, weights = AI_LEVELS[3]) {
     const opponent = color === 'black' ? 'white' : 'black';
@@ -372,8 +410,9 @@ function evaluateBoard(board, color, weights = AI_LEVELS[3]) {
     const myBlots = countBlots(board, color);
     const oppBlots = countBlots(board, opponent);
 
-    const myClosed = countClosedPoints(board, color);
-    const oppClosed = countClosedPoints(board, opponent);
+    const myClosedValue = getClosedPointsValue(board, color);
+    const oppClosedValue = getClosedPointsValue(board, opponent);
+    const closedPointValueDiff = myClosedValue - oppClosedValue;
 
     const myPrimes = countPrimes(board, color);
     const oppPrimes = countPrimes(board, opponent);
@@ -383,7 +422,7 @@ function evaluateBoard(board, color, weights = AI_LEVELS[3]) {
     for (let i = 1; i <= 24; i++) {
         const count = board[i];
         if ((color === 'white' && count === 1) || (color === 'black' && count === -1)) {
-            riskSum += getBlotHitProbability(board, i, color)*checkerValueByPosition(i,color);
+            riskSum += getBlotHitProbability(board, i, color) * checkerValueByPosition(i, color);
         }
     }
     const averageRisk = riskSum / (myBlots || 1);  // اگر بلات نداشته باشیم، ریسک صفر
@@ -393,7 +432,7 @@ function evaluateBoard(board, color, weights = AI_LEVELS[3]) {
     let score = 0;
     let pipCountPoint = weights.pipCount * pipDiff;
     let blotPoint = weights.blots * (oppBlots - myBlots);
-    let closedPoint = weights.closedPoints * (myClosed - oppClosed);
+    let closedPoint = weights.closedPoints * closedPointValueDiff;
     let riskPoint = weights.risk * averageRisk;   // weights.risk منفی است
     let primePoint = weights.primes * (myPrimes - oppPrimes);
 
@@ -439,7 +478,6 @@ export const evaluateMove = (board, dice, moveSequence, color, weights = AI_LEVE
 
     if (isBearOff) {
         const finalScore = evaluateBearOff(newBoard, color, weights = null);
-        console.log(finalScore);
         return { finalScore }
     } else {
         // ارزیابی وضعیت نهایی تخته (بدون در نظر گرفتن bornOffها)

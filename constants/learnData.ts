@@ -1,5 +1,5 @@
-import def from '@/assets/avatar/default.jpeg';
 import board1 from '@/assets/images/learn/board-learn-1.png';
+import board2 from '@/assets/images/learn/board-learn-2.png';
 
 export const learnData = [
   {
@@ -70,28 +70,29 @@ export const learnData = [
               },
               {
                 type: 'content',
-                value: `در تخته نرد، شما مهره‌های خود را از خانه ۲۴ به سمت خانه ۱ در اطراف صفحه حرکت می‌دهید و حریف شما مخالف در جهت شما حرکت میدهد.`,
+                value: `در تخته نرد، شما مهره‌های خود را از خانه ۲۴ به سمت خانه ۱ در اطراف صفحه حرکت می‌دهید و حریفتان در جهت مخالف شما حرکت میدهد.`,
               },
               {
                 type: 'image',
-                src: def,
-                alt: 'عکس',
+                src: board2,
+                alt: '',
               },
               {
                 type: 'quiz',
                 question: 'جهت حرکت حریفتان به کدام سمت است؟',
-                options: [ 'از خانه ۲۴ به ۱', 'از خانه ۱ به ۲۴'],
+                options: ['از خانه ۲۴ به ۱', 'از خانه ۱ به ۲۴'],
                 correctAnswer: 1,
               },
             ],
           },
+          /*
           {
             id: 4,
             title: 'درس 3',
             components: [
               {
                 type: 'hero',
-                title: 'چیدمان مهره‌ها',
+                title: 'جفت تاس',
               },
               {
                 type: 'content',
@@ -109,9 +110,10 @@ export const learnData = [
                 correctAnswer: 1,
               },
             ],
-          },
+          }, */
         ],
       },
+      /*
       {
         key: 'basii',
         title: 'آشنایی با بازی نردلند',
@@ -235,7 +237,7 @@ export const learnData = [
             ],
           },
         ],
-      },
+      }, */
     ],
   },
 ];

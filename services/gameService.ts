@@ -25,6 +25,8 @@ export const gameService = {
   },
 
   generateDice() {
+    // const dice1 = 5;
+    // const dice2 = 6;
     const dice1 = Math.floor(Math.random() * 6) + 1;
     const dice2 = Math.floor(Math.random() * 6) + 1;
 
@@ -39,10 +41,5 @@ export const gameService = {
       allDice: [dice1, dice2],
       activeDie: Math.max(dice1, dice2)
     };
-
-    // return {
-    //   allDice: [6, 3],
-    //   activeDie: Math.max(dice1, dice2)
-    // };
   }
 }
