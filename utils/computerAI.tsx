@@ -3,116 +3,368 @@ import { isInHomeBoard, makeMove } from "./utils";
 
 const AI_LEVELS = {
     '1': {  // افسانه‌ای
-        pipCount: 0.5,
-        blots: 16,
-        hits: 9,
-        closedPoints: 22,
-        risk: -45,
-        primes: 0,
+        opening: {
+            pipCount: 0.3,
+            blots: 14,
+            hits: 8,
+            closedPoints: 20,
+            risk: -40,
+            primes: 0,
+        },
+        middlegame: {
+            pipCount: 0.5,
+            blots: 16,
+            hits: 9,
+            closedPoints: 22,
+            risk: -45,
+            primes: 0,
+        },
+        endgame: {
+            pipCount: 0.8,
+            blots: 10,
+            hits: 5,
+            closedPoints: 15,
+            risk: -30,
+            primes: 0,
+        }
     },
     '2': {  // خبره
-        pipCount: 1,
-        blots: 10,
-        hits: 5,
-        closedPoints: 12,
-        risk: -25,
-        primes: 0,
+        opening: {
+            pipCount: 0.7,
+            blots: 8,
+            hits: 4,
+            closedPoints: 10,
+            risk: -22,
+            primes: 0,
+        },
+        middlegame: {
+            pipCount: 1.0,
+            blots: 10,
+            hits: 5,
+            closedPoints: 12,
+            risk: -25,
+            primes: 0,
+        },
+        endgame: {
+            pipCount: 1.4,
+            blots: 7,
+            hits: 3,
+            closedPoints: 9,
+            risk: -18,
+            primes: 0,
+        }
     },
     '3': {  // استاد
-        pipCount: 0.8,
-        blots: 13,
-        hits: 7,
-        closedPoints: 16,
-        risk: -32,
-        primes: 0,
+        opening: {
+            pipCount: 0.5,
+            blots: 10,
+            hits: 6,
+            closedPoints: 14,
+            risk: -28,
+            primes: 0,
+        },
+        middlegame: {
+            pipCount: 0.8,
+            blots: 13,
+            hits: 7,
+            closedPoints: 16,
+            risk: -32,
+            primes: 0,
+        },
+        endgame: {
+            pipCount: 1.2,
+            blots: 8,
+            hits: 4,
+            closedPoints: 12,
+            risk: -25,
+            primes: 0,
+        }
     },
     '4': {  // ضعیف‌ترین - فقط به فکر کم کردن پیپ
-        pipCount: 5,
-        blots: 0.1,
-        hits: 0.1,
-        closedPoints: 0.1,
-        risk: 0,
-        primes: 0,
+        opening: {
+            pipCount: 5,
+            blots: 0.1,
+            hits: 0.1,
+            closedPoints: 0.1,
+            risk: 0,
+            primes: 0,
+        },
+        middlegame: {
+            pipCount: 5,
+            blots: 0.1,
+            hits: 0.1,
+            closedPoints: 0.1,
+            risk: 0,
+            primes: 0,
+        },
+        endgame: {
+            pipCount: 5,
+            blots: 0.1,
+            hits: 0.1,
+            closedPoints: 0.1,
+            risk: 0,
+            primes: 0,
+        }
     },
     '5': {  // کمی توجه به امنیت
-        pipCount: 4,
-        blots: 0.5,
-        hits: 0.3,
-        closedPoints: 0.5,
-        risk: -0.5,
-        primes: 0,
+        opening: {
+            pipCount: 3.5,
+            blots: 0.4,
+            hits: 0.2,
+            closedPoints: 0.4,
+            risk: -0.4,
+            primes: 0,
+        },
+        middlegame: {
+            pipCount: 4,
+            blots: 0.5,
+            hits: 0.3,
+            closedPoints: 0.5,
+            risk: -0.5,
+            primes: 0,
+        },
+        endgame: {
+            pipCount: 4.5,
+            blots: 0.3,
+            hits: 0.2,
+            closedPoints: 0.3,
+            risk: -0.3,
+            primes: 0,
+        }
     },
     '6': {  // نیمه‌حرفه‌ای
-        pipCount: 1.5,
-        blots: 5,
-        hits: 3,
-        closedPoints: 5,
-        risk: -12,
-        primes: 0,
+        opening: {
+            pipCount: 1.2,
+            blots: 4,
+            hits: 2.5,
+            closedPoints: 4,
+            risk: -10,
+            primes: 0,
+        },
+        middlegame: {
+            pipCount: 1.5,
+            blots: 5,
+            hits: 3,
+            closedPoints: 5,
+            risk: -12,
+            primes: 0,
+        },
+        endgame: {
+            pipCount: 2.0,
+            blots: 3.5,
+            hits: 2,
+            closedPoints: 3.5,
+            risk: -8,
+            primes: 0,
+        }
     },
     '7': {  // حرفه‌ای
-        pipCount: 1.2,
-        blots: 7,
-        hits: 4,
-        closedPoints: 8,
-        risk: -18,
-        primes: 0,
+        opening: {
+            pipCount: 0.9,
+            blots: 6,
+            hits: 3.5,
+            closedPoints: 7,
+            risk: -16,
+            primes: 0,
+        },
+        middlegame: {
+            pipCount: 1.2,
+            blots: 7,
+            hits: 4,
+            closedPoints: 8,
+            risk: -18,
+            primes: 0,
+        },
+        endgame: {
+            pipCount: 1.6,
+            blots: 5.5,
+            hits: 3,
+            closedPoints: 6.5,
+            risk: -14,
+            primes: 0,
+        }
     },
     '8': {  // مبتدی
-        pipCount: 3,
-        blots: 1,
-        hits: 0.5,
-        closedPoints: 1,
-        risk: -2,
-        primes: 0,
+        opening: {
+            pipCount: 2.5,
+            blots: 0.8,
+            hits: 0.4,
+            closedPoints: 0.8,
+            risk: -1.5,
+            primes: 0,
+        },
+        middlegame: {
+            pipCount: 3,
+            blots: 1,
+            hits: 0.5,
+            closedPoints: 1,
+            risk: -2,
+            primes: 0,
+        },
+        endgame: {
+            pipCount: 3.5,
+            blots: 0.7,
+            hits: 0.3,
+            closedPoints: 0.7,
+            risk: -1.2,
+            primes: 0,
+        }
     },
     '9': {  // آماتور - توجه بیشتر به امنیت
-        pipCount: 2.5,
-        blots: 2,
-        hits: 1,
-        closedPoints: 2,
-        risk: -5,
-        primes: 0,
+        opening: {
+            pipCount: 2.0,
+            blots: 1.5,
+            hits: 0.8,
+            closedPoints: 1.5,
+            risk: -4,
+            primes: 0,
+        },
+        middlegame: {
+            pipCount: 2.5,
+            blots: 2,
+            hits: 1,
+            closedPoints: 2,
+            risk: -5,
+            primes: 0,
+        },
+        endgame: {
+            pipCount: 3.0,
+            blots: 1.2,
+            hits: 0.6,
+            closedPoints: 1.2,
+            risk: -3,
+            primes: 0,
+        }
     },
     '10': {  // متوسط
-        pipCount: 2,
-        blots: 3,
-        hits: 2,
-        closedPoints: 3,
-        risk: -8,
-        primes: 0,
+        opening: {
+            pipCount: 1.5,
+            blots: 1,
+            hits: 1.5,
+            closedPoints: 2.5,
+            risk: -6,
+            primes: 2,
+        },
+        middlegame: {
+            pipCount: 2,
+            blots: 3,
+            hits: 2,
+            closedPoints: 3,
+            risk: -8,
+            primes: 2,
+        },
+        endgame: {
+            pipCount: 2.5,
+            blots: 2,
+            hits: 1.2,
+            closedPoints: 2,
+            risk: -5,
+            primes: 2,
+        }
     },
-    '11': {  // متوسط
-        pipCount: 2,
-        blots: 3,
-        hits: 2,
-        closedPoints: 3,
-        risk: -8,
-        primes: 2,
+    '11': {  // متوسط با پرایم ضعیف
+        opening: {
+            pipCount: 1.5,
+            blots: 2.5,
+            hits: 1.5,
+            closedPoints: 2.5,
+            risk: -6,
+            primes: 1.5,
+        },
+        middlegame: {
+            pipCount: 2,
+            blots: 3,
+            hits: 2,
+            closedPoints: 3,
+            risk: -8,
+            primes: 2,
+        },
+        endgame: {
+            pipCount: 2.5,
+            blots: 2,
+            hits: 1.2,
+            closedPoints: 2,
+            risk: -5,
+            primes: 1,
+        }
     },
-    '12': {  // متوسط
-        pipCount: 2,
-        blots: 3,
-        hits: 2,
-        closedPoints: 3,
-        risk: -8,
-        primes: 4,
+    '12': {  // متوسط با پرایم متوسط
+        opening: {
+            pipCount: 1.5,
+            blots: 2.5,
+            hits: 1.5,
+            closedPoints: 2.5,
+            risk: -6,
+            primes: 3,
+        },
+        middlegame: {
+            pipCount: 2,
+            blots: 3,
+            hits: 2,
+            closedPoints: 3,
+            risk: -8,
+            primes: 4,
+        },
+        endgame: {
+            pipCount: 2.5,
+            blots: 2,
+            hits: 1.2,
+            closedPoints: 2,
+            risk: -5,
+            primes: 2,
+        }
     },
-    '13': {  // متوسط
-        pipCount: 2,
-        blots: 3,
-        hits: 2,
-        closedPoints: 3,
-        risk: -8,
-        primes: 6,
+    '13': {  // متوسط با پرایم قوی
+        opening: {
+            pipCount: 1.5,
+            blots: 2.5,
+            hits: 1.5,
+            closedPoints: 2.5,
+            risk: -6,
+            primes: 5,
+        },
+        middlegame: {
+            pipCount: 2,
+            blots: 3,
+            hits: 2,
+            closedPoints: 3,
+            risk: -8,
+            primes: 6,
+        },
+        endgame: {
+            pipCount: 2.5,
+            blots: 2,
+            hits: 1.2,
+            closedPoints: 2,
+            risk: -5,
+            primes: 3,
+        }
     },
-    '14': {  // متوسط
-        pipCount: 2,
-        blots: 3,
-        hits: 2,
-        closedPoints: 3,
-        risk: -8,
-        primes: 8,
+    '14': {  // متوسط با پرایم خیلی قوی
+        opening: {
+            pipCount: 1.5,
+            blots: 2.5,
+            hits: 1.5,
+            closedPoints: 2.5,
+            risk: -6,
+            primes: 7,
+        },
+        middlegame: {
+            pipCount: 2,
+            blots: 3,
+            hits: 2,
+            closedPoints: 3,
+            risk: -8,
+            primes: 8,
+        },
+        endgame: {
+            pipCount: 2.5,
+            blots: 2,
+            hits: 1.2,
+            closedPoints: 2,
+            risk: -5,
+            primes: 4,
+        }
     },
 }
 
@@ -400,8 +652,30 @@ function getClosedPointsValue(board, color) {
     return totalValue;
 }
 
+// نسخه ساده و بهینه نهایی
+function calculateStackingPenalty(board, color) {
+    const phase = detectGamePhase(board, color);
+    if (phase !== 'opening') return 0;
+
+    let penalty = 0;
+
+    for (let i = 1; i <= 24; i++) {
+        const count = board[i];
+        const absoluteCount = Math.abs(count);
+
+        if (((color === 'white' && count > 5) || (color === 'black' && count < -5)) &&
+            absoluteCount > 5) {
+
+            const excess = absoluteCount - 5;
+            penalty += Math.pow(excess, 1.7) * 12;
+        }
+    }
+
+    return -penalty;
+}
+
 // =================== تابع ارزیابی نهایی یک وضعیت ===================
-function evaluateBoard(board, color, weights = AI_LEVELS[3]) {
+function evaluateBoard(board, color, phaseWeights) {
     const opponent = color === 'black' ? 'white' : 'black';
     const myPip = pipCount(board, color);
     const oppPip = pipCount(board, opponent);
@@ -427,14 +701,14 @@ function evaluateBoard(board, color, weights = AI_LEVELS[3]) {
     }
     const averageRisk = riskSum / (myBlots || 1);  // اگر بلات نداشته باشیم، ریسک صفر
 
-
     // ترکیب خطی
     let score = 0;
-    let pipCountPoint = weights.pipCount * pipDiff;
-    let blotPoint = weights.blots * (oppBlots - myBlots);
-    let closedPoint = weights.closedPoints * closedPointValueDiff;
-    let riskPoint = weights.risk * averageRisk;   // weights.risk منفی است
-    let primePoint = weights.primes * (myPrimes - oppPrimes);
+    let pipCountPoint = phaseWeights.pipCount * pipDiff;
+    let blotPoint = phaseWeights.blots * (oppBlots - myBlots);
+    let closedPoint = phaseWeights.closedPoints * closedPointValueDiff;
+    let riskPoint = phaseWeights.risk * averageRisk;   // weights.risk منفی است
+    let primePoint = phaseWeights.primes * (myPrimes - oppPrimes);
+    let stackingPenalty = calculateStackingPenalty(board, color); // مستقیماً اضافه می‌شود چون خودش وزن‌دهی شده
 
 
     score += pipCountPoint;
@@ -442,8 +716,9 @@ function evaluateBoard(board, color, weights = AI_LEVELS[3]) {
     score += closedPoint;
     score += riskPoint;
     score += primePoint;
+    score += stackingPenalty;
 
-    return { score, pipCountPoint, blotPoint, closedPoint, riskPoint, primePoint };
+    return { score, pipCountPoint, blotPoint, closedPoint, riskPoint, primePoint, stackingPenalty };
 }
 
 // =================== ارزیابی یک حرکت خاص ===================
@@ -452,6 +727,12 @@ export const evaluateMove = (board, dice, moveSequence, color, weights = AI_LEVE
     let newBoard = [...board];
     let whiteBornOff = 0;
     let blackBornOff = 0;
+
+    // تشخیص فاز بازی
+    const phase = detectGamePhase(board, color);
+
+    // استخراج وزن‌های فاز مربوطه
+    const phaseWeights = weights && weights[phase] ? weights[phase] : AI_LEVELS['3'][phase];
 
     const isBearOff = isBearOffPhase(board, color);
 
@@ -481,13 +762,13 @@ export const evaluateMove = (board, dice, moveSequence, color, weights = AI_LEVE
         return { finalScore }
     } else {
         // ارزیابی وضعیت نهایی تخته (بدون در نظر گرفتن bornOffها)
-        const { score, pipCountPoint, blotPoint, closedPoint, riskPoint, primePoint } = evaluateBoard(newBoard, color, weights);
+        const { score, pipCountPoint, blotPoint, closedPoint, riskPoint, primePoint, stackingPenalty } = evaluateBoard(newBoard, color, phaseWeights);
         const baseScore = score;
         // استفاده از ارزش وزنی ضربات
-        const hitScore = weights.hits * totalHitValue;
+        const hitScore = phaseWeights.hits * totalHitValue;
         const finalScore = baseScore + hitScore;
 
-        return { finalScore, pipCountPoint, blotPoint, closedPoint, riskPoint, primePoint };
+        return { finalScore, pipCountPoint, blotPoint, closedPoint, riskPoint, primePoint, stackingPenalty };
     }
 
 
@@ -506,6 +787,34 @@ export function selectBestMove(board, dice, moves, currentTurn, difficulty = '3'
             bestMove = move;
         }
     });
+    const myMove = [
+        {
+            "from": 19,
+            "to": 20,
+            "die": 1,
+            "type": "normal"
+        },
+        {
+            "from": 19,
+            "to": 20,
+            "die": 1,
+            "type": "normal"
+        },
+        {
+            "from": 17,
+            "to": 18,
+            "die": 1,
+            "type": "normal"
+        },
+        {
+            "from": 17,
+            "to": 18,
+            "die": 1,
+            "type": "normal"
+        }
+    ];
+    console.log(detectGamePhase(board, currentTurn));
+    console.log('my move', currentTurn, evaluateMove(board, dice, myMove, currentTurn, weights));
     console.log('best move', currentTurn, evaluateMove(board, dice, bestMove, currentTurn, weights));
 
 

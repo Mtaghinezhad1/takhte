@@ -58,7 +58,7 @@ export default function ResultModal() {
                         {/* Black Player */}
                         <View style={styles.playerSection}>
                             <Image
-                                source={aiProfile ? aiProfile.avatar : require('@/assets/avatar/default.jpeg')}
+                                source={aiProfile ? getAvatarByKey(aiProfile.avatarKey) : require('@/assets/avatar/default.jpeg')}
                                 style={[styles.playerImage, styles.blackPlayerBorder]}
                             />
                             <Text style={styles.playerName}>{aiProfile ? aiProfile.name : 'ربات'}</Text>

@@ -16,12 +16,12 @@ const GameStatusBar = () => {
         {currentTurn == 'black' ? (
           <View style={styles.showTurn}>
             <View style={styles.avatar}>
-              <Image style={styles.avatarImg} source={aiProfile ? aiProfile.avatar : require('@/assets/avatar/default.jpeg')} />
+              <Image style={styles.avatarImg} source={aiProfile ? getAvatarByKey(aiProfile.avatarKey) : require('@/assets/avatar/default.jpeg')} />
             </View>
           </View>
         ) : (
           <View style={styles.avatar}>
-            <Image style={styles.avatarImg} source={aiProfile ? aiProfile.avatar : require('@/assets/avatar/default.jpeg')} />
+            <Image style={styles.avatarImg} source={aiProfile ? getAvatarByKey(aiProfile.avatarKey) : require('@/assets/avatar/default.jpeg')} />
           </View>
         )}
         <Text style={styles.rating}>{aiProfile ? aiProfile.baseRating : '1400'}</Text>

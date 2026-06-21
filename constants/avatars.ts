@@ -17,9 +17,9 @@ export const AVATAR_CONFIG = {
     },
     // می‌تونید requirements اضافه کنید
     requirements: {
-        avatar_8: { minElo: 1500 },
-        avatar_9: { minElo: 1800 },
-        avatar_10: { minElo: 2000, minCoins: 500 },
+        avatar_10: { minElo: 1500 },
+        avatar_11: { minElo: 1800 },
+        avatar_12: { minElo: 2000, minCoins: 500 },
     }
 };
 
