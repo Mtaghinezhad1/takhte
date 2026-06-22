@@ -1,5 +1,6 @@
 import { getAvatarByKey } from '@/constants/avatars';
 import useUserStore from '@/stores/useUserStore';
+import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
 
@@ -11,7 +12,12 @@ const ProfileCard = () => {
 
     return (
         <View style={styles.body}>
-            <View style={styles.container}>
+            <LinearGradient
+                colors={['#6495ed' || '#4c669f', '#3b5998', '#192f6a']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={styles.container}
+            >
                 {/* Text section on the left (aligned to the right inside) */}
                 <View style={styles.textSection}>
                     <Text style={styles.name}>{username}</Text>
@@ -27,7 +33,7 @@ const ProfileCard = () => {
                         source={avatarKey ? getAvatarByKey(avatarKey) : require('@/assets/avatar/default.jpeg')}
                     />
                 </View>
-            </View>
+            </LinearGradient>
         </View>
     );
 };
@@ -42,6 +48,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#dee4e0',
         borderRadius: 1 * rem, // 16px
         width: '90%',
+        overflow: 'hidden',
         flexDirection: 'row',     // horizontal layout
         justifyContent: 'flex-end', // push children to the right
         marginTop: 3 * rem,       // 80px
@@ -55,6 +62,7 @@ const styles = StyleSheet.create({
     },
     name: {
         fontFamily: 'Kaghaz',
+        color: 'white',
         fontSize: 1.3 * rem,      // ~26px
     },
     amounts: {
@@ -63,6 +71,7 @@ const styles = StyleSheet.create({
     },
     amountText: {
         fontFamily: 'Kaghaz',
+        color: 'white',
     },
     amountMargin: {
         marginLeft: 2 * rem,      // 32px

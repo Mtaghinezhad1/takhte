@@ -1,6 +1,7 @@
 import { learnData } from '@/constants/learnData';
 import { learnService } from '@/services/learnService';
 import useLearningStore from '@/stores/useLearningStore';
+import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import {
@@ -101,20 +102,27 @@ const LearnScreen = () => {
                                     }
                                 }}
                             >
-                                {/* Progress Bar */}
-                                <View style={styles.loader}>
-                                    <View
-                                        style={[
-                                            styles.progress,
-                                            { height: `${progress}%` },
-                                        ]}
-                                    />
-                                </View>
-                                <View style={styles.textSection}>
-                                    <Text style={[styles.text, { fontSize: getFontSize() }]}>
-                                        {subcat.title}
-                                    </Text>
-                                </View>
+                                <LinearGradient
+                                    colors={['#6495ed' || '#4c669f', '#3b5998', '#192f6a']}
+                                    start={{ x: 0, y: 0 }}
+                                    end={{ x: 1, y: 1 }}
+                                    style={styles.gradient}
+                                >
+                                    {/* Progress Bar */}
+                                    <View style={styles.loader}>
+                                        <View
+                                            style={[
+                                                styles.progress,
+                                                { height: `${progress}%` },
+                                            ]}
+                                        />
+                                    </View>
+                                    <View style={styles.textSection}>
+                                        <Text style={[styles.text, { fontSize: getFontSize() }]}>
+                                            {subcat.title}
+                                        </Text>
+                                    </View>
+                                </LinearGradient>
                             </TouchableOpacity>
                         );
                     })}
@@ -163,15 +171,17 @@ const styles = StyleSheet.create({
     },
     item: {
         width: '100%',
+        overflow: 'hidden',
+        borderRadius: 16,
+        marginTop: 10,
+    },
+    gradient: {
         paddingVertical: 16,
         paddingHorizontal: 16,
         paddingRight: 32,
-        backgroundColor: '#dee4e0',
-        borderRadius: 16,
         flexDirection: 'row',
         justifyContent: 'flex-start',
         alignItems: 'center',
-        marginTop: 10,
     },
     loader: {
         width: 8,
@@ -182,7 +192,7 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-end',
     },
     progress: {
-        backgroundColor: 'green',
+        backgroundColor: '#9EB323',
         width: '100%',
     },
     textSection: {
@@ -191,6 +201,7 @@ const styles = StyleSheet.create({
     text: {
         textAlign: 'right',
         fontSize: 24,
+        color: 'white',
         fontFamily: 'Kaghaz',
     },
 });

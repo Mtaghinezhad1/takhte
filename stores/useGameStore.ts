@@ -37,6 +37,7 @@ const useGameStore = create((set, get) => ({
   finalBlackElo: null,
   oldUserElo: null,
   oldAIElo: null,
+  isLoadedFromSave: false,
 
   // Actions
   initializeGame: (gameMode, targetScore = '3', aiLevel = '3', aiLevelForWhite = '3') => {
@@ -71,11 +72,17 @@ const useGameStore = create((set, get) => ({
       finalBlackElo: null,
       oldUserElo: null,
       oldAIElo: null,
+      isLoadedFromSave: false,
     });
   },
 
   rollDice: () => {
     const state = get();
+
+    if (state.isLoadedFromSave) {
+      set({isLoadedFromSave: false});
+      return;
+    }
 
     if (state.isMatchEndModalVisible) return;
 
@@ -339,6 +346,7 @@ const useGameStore = create((set, get) => ({
       gameMode: savedState.gameMode,
       isAiThinking: false,
       isRolling: false,
+      isLoadedFromSave: true,
     });
 
     // حذف بازی ذخیره شده بعد از بارگذاری

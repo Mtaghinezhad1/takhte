@@ -133,7 +133,7 @@ export default function Index() {
 
   // ریختن تاس در شروع هر نوبت
   useEffect(() => {
-    if (!isLoading) {
+    if (!isLoading && !store.isLoadedFromSave) {
       store.rollDice();
     }
   }, [store.currentTurn, isLoading]);
