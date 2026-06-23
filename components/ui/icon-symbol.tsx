@@ -14,7 +14,8 @@ const MAPPING = {
   'speed': 'speed',
   'person': 'person',
   'info-outline': 'info-outline',
-  'edit': 'edit'
+  'edit': 'edit',
+  'lock': 'lock'
 };
 
 /**

@@ -12,9 +12,11 @@ const useGameStore = create((set, get) => ({
   board: boardService.getInitialBoard(),
   currentTurn: 'black',
   movesCount: 0,
+
   allDice: [1, 1, 1, 1],
   dice: [1, 1, 1, 1],
   activeDice: 1,
+
   whiteBornOff: 0,
   blackBornOff: 0,
   historyStack: [],
@@ -80,7 +82,7 @@ const useGameStore = create((set, get) => ({
     const state = get();
 
     if (state.isLoadedFromSave) {
-      set({isLoadedFromSave: false});
+      set({ isLoadedFromSave: false });
       return;
     }
 
@@ -232,16 +234,12 @@ const useGameStore = create((set, get) => ({
     }
     // 2. اگر حرکت با تاس فعال ممکن نبود، بررسی وضعیت بار و تاس جایگزین
     else if (state.dice.length === 2) {
-      const barPoint = state.currentTurn === 'white' ? 25 : 0;
+      const otherDice = state.dice[0] === state.activeDice ? state.dice[1] : state.dice[0];
 
-      if (state.board[barPoint] != 0) {
-        const otherDice = state.dice[0] === state.activeDice ? state.dice[1] : state.dice[0];
-
-        if (boardService.isValidMove(state.board, pointId, otherDice, state.currentTurn)) {
-          // قبل از حرکت، تاس فعال را در store به‌روزرسانی کن
-          set({ activeDice: otherDice });
-          executeMove(otherDice);
-        }
+      if (boardService.isValidMove(state.board, pointId, otherDice, state.currentTurn)) {
+        // قبل از حرکت، تاس فعال را در store به‌روزرسانی کن
+        set({ activeDice: otherDice });
+        executeMove(otherDice);
       }
     }
   },
@@ -313,6 +311,7 @@ const useGameStore = create((set, get) => ({
       currentTurn: state.currentTurn,
       allDice: state.allDice,
       dice: state.dice,
+      activeDice: state.activeDice,
       aiProfile: state.aiProfile,
       whiteBornOff: state.whiteBornOff,
       blackBornOff: state.blackBornOff,
@@ -336,6 +335,7 @@ const useGameStore = create((set, get) => ({
       currentTurn: savedState.currentTurn,
       allDice: savedState.allDice,
       dice: savedState.dice,
+      activeDice: savedState.activeDice,
       whiteBornOff: savedState.whiteBornOff,
       blackBornOff: savedState.blackBornOff,
       gameScore: savedState.gameScore,

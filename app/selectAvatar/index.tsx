@@ -1,24 +1,33 @@
+import { IconSymbol } from '@/components/ui/icon-symbol';
 import { getAllAvatars, isAvatarUnlocked } from '@/constants/avatars';
 import useUserStore from '@/stores/useUserStore';
 import { router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import {
-    Image, ScrollView, StyleSheet, Text,
-    TouchableOpacity, View
-} from 'react-native';
+import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
+
 
 const SelectAvatar = () => {
     const { username, elo, coins, avatarKey, setAvatar } = useUserStore();
-    
+
     // دریافت لیست تمام آواتارها با key و source
     const avatars = getAllAvatars();
-    
+
     // پیدا کردن ایندکس اولیه بر اساس avatarKey فعلی کاربر
     const getInitialIndex = () => {
         const index = avatars.findIndex(avatar => avatar.key === avatarKey);
         return index !== -1 ? index : 0;
     };
-    
+
+    const { width } = useWindowDimensions(); // واکنش‌گرا به تغییر اندازه صفحه
+
+  
+    // محاسبه اندازه آیکون واکنش‌گرا
+    const getIconSize = () => {
+      if (width < 400) return 24;
+      if (width < 600) return 28;
+      return 32;
+    };
+
     const [activeIndex, setActiveIndex] = useState(getInitialIndex());
 
     // اگر avatarKey در store تغییر کرد، ایندکس فعال را به‌روز کنیم
@@ -32,7 +41,7 @@ const SelectAvatar = () => {
     const handleImagePress = (index) => {
         const selectedAvatar = avatars[index];
         const isUnlocked = isAvatarUnlocked(selectedAvatar.key, elo, coins);
-        
+
         if (isUnlocked) {
             setActiveIndex(index);
         } else {
@@ -44,7 +53,7 @@ const SelectAvatar = () => {
     const handleConfirm = async () => {
         const selectedAvatar = avatars[activeIndex];
         const isUnlocked = isAvatarUnlocked(selectedAvatar.key, elo, coins);
-        
+
         if (isUnlocked) {
             await setAvatar(selectedAvatar.key);
             router.back();
@@ -75,7 +84,7 @@ const SelectAvatar = () => {
                     )}
                 </View>
             </View>
-            
+
             <View style={styles.container}>
                 <ScrollView contentContainerStyle={styles.imgSection}>
                     {avatars.map((avatar, index) => {
@@ -92,10 +101,12 @@ const SelectAvatar = () => {
                                 activeOpacity={0.8}
                                 disabled={locked}
                             >
-                                <Image source={avatar.source} style={[styles.image, locked && styles.lockedImage]} />
+                                <View style={styles.imgPart}>
+                                    <Image source={avatar.source} style={[styles.image, locked && styles.lockedImage]} />
+                                </View>
                                 {locked && (
                                     <View style={styles.lockBadge}>
-                                        <Text style={styles.lockBadgeText}>🔒</Text>
+                                        <IconSymbol size={getIconSize()} name="lock" color='black' />
                                     </View>
                                 )}
                             </TouchableOpacity>
@@ -114,7 +125,7 @@ const SelectAvatar = () => {
 
                     <TouchableOpacity
                         style={[
-                            styles.btn, 
+                            styles.btn,
                             styles.confirm,
                             isAvatarLocked(avatars[activeIndex]) && styles.confirmDisabled
                         ]}
@@ -155,16 +166,19 @@ const styles = StyleSheet.create({
     },
     imgContainer: {
         borderRadius: 999,
-        overflow: 'hidden',
         width: '30%',
         aspectRatio: 1,
         borderWidth: 0,
         marginBottom: 16,
         position: 'relative',
     },
+    imgPart: {
+        borderRadius: '50%',
+        overflow: 'hidden'
+    },
     active: {
         borderWidth: 8,
-        borderColor: 'orange',
+        borderColor: '#6495ed',
         shadowColor: '#000',
         shadowOffset: { width: 2, height: 2 },
         shadowOpacity: 0.15,
@@ -219,18 +233,18 @@ const styles = StyleSheet.create({
     cancel: {
         backgroundColor: '#fff',
         borderWidth: 2,
-        borderColor: 'orange',
+        borderColor: '#6495ed',
         marginRight: 8,
     },
     cancelText: {
-        color: 'orange',
+        color: '#6495ed',
         fontSize: 20,
         fontFamily: 'Kaghaz',
     },
     confirm: {
-        backgroundColor: 'orange',
+        backgroundColor: '#6495ed',
         borderWidth: 3,
-        borderColor: 'orange',
+        borderColor: '#6495ed',
         marginLeft: 8,
     },
     confirmDisabled: {

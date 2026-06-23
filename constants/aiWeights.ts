@@ -1,11 +1,11 @@
 export const AI_LEVELS = {
     '1': {  // افسانه‌ای
         opening: {
-            pipCount: 0.3,
-            blots: 14,
-            hits: 8,
-            closedPoints: 20,
-            risk: -40,
+            pipCount: 0.5,
+            blots: 16,
+            hits: 9,
+            closedPoints: 22,
+            risk: -45,
             primes: 0,
         },
         middlegame: {
@@ -17,21 +17,21 @@ export const AI_LEVELS = {
             primes: 0,
         },
         endgame: {
-            pipCount: 0.8,
-            blots: 10,
-            hits: 5,
-            closedPoints: 15,
-            risk: -30,
+            pipCount: 0.5,
+            blots: 16,
+            hits: 9,
+            closedPoints: 22,
+            risk: -45,
             primes: 0,
         }
     },
     '2': {  // خبره
         opening: {
-            pipCount: 0.7,
-            blots: 8,
-            hits: 4,
-            closedPoints: 10,
-            risk: -22,
+            pipCount: 1.0,
+            blots: 10,
+            hits: 5,
+            closedPoints: 12,
+            risk: -25,
             primes: 0,
         },
         middlegame: {
@@ -43,21 +43,21 @@ export const AI_LEVELS = {
             primes: 0,
         },
         endgame: {
-            pipCount: 1.4,
-            blots: 7,
-            hits: 3,
-            closedPoints: 9,
-            risk: -18,
+            pipCount: 1.0,
+            blots: 10,
+            hits: 5,
+            closedPoints: 12,
+            risk: -25,
             primes: 0,
         }
     },
     '3': {  // استاد
         opening: {
-            pipCount: 0.5,
-            blots: 10,
-            hits: 6,
-            closedPoints: 14,
-            risk: -28,
+            pipCount: 0.8,
+            blots: 13,
+            hits: 7,
+            closedPoints: 16,
+            risk: -32,
             primes: 0,
         },
         middlegame: {
@@ -69,11 +69,11 @@ export const AI_LEVELS = {
             primes: 0,
         },
         endgame: {
-            pipCount: 1.2,
-            blots: 8,
-            hits: 4,
-            closedPoints: 12,
-            risk: -25,
+            pipCount: 0.8,
+            blots: 13,
+            hits: 7,
+            closedPoints: 16,
+            risk: -32,
             primes: 0,
         }
     },
@@ -105,11 +105,11 @@ export const AI_LEVELS = {
     },
     '5': {  // کمی توجه به امنیت
         opening: {
-            pipCount: 3.5,
-            blots: 0.4,
-            hits: 0.2,
-            closedPoints: 0.4,
-            risk: -0.4,
+            pipCount: 4,
+            blots: 0.5,
+            hits: 0.3,
+            closedPoints: 0.5,
+            risk: -0.5,
             primes: 0,
         },
         middlegame: {
@@ -121,21 +121,21 @@ export const AI_LEVELS = {
             primes: 0,
         },
         endgame: {
-            pipCount: 4.5,
-            blots: 0.3,
-            hits: 0.2,
-            closedPoints: 0.3,
-            risk: -0.3,
+            pipCount: 4,
+            blots: 0.5,
+            hits: 0.3,
+            closedPoints: 0.5,
+            risk: -0.5,
             primes: 0,
         }
     },
     '6': {  // نیمه‌حرفه‌ای
         opening: {
-            pipCount: 1.2,
-            blots: 4,
-            hits: 2.5,
-            closedPoints: 4,
-            risk: -10,
+            pipCount: 1.5,
+            blots: 5,
+            hits: 3,
+            closedPoints: 5,
+            risk: -12,
             primes: 0,
         },
         middlegame: {
@@ -147,21 +147,21 @@ export const AI_LEVELS = {
             primes: 0,
         },
         endgame: {
-            pipCount: 2.0,
-            blots: 3.5,
-            hits: 2,
-            closedPoints: 3.5,
-            risk: -8,
+            pipCount: 1.5,
+            blots: 5,
+            hits: 3,
+            closedPoints: 5,
+            risk: -12,
             primes: 0,
         }
     },
     '7': {  // حرفه‌ای
         opening: {
-            pipCount: 0.9,
-            blots: 6,
-            hits: 3.5,
-            closedPoints: 7,
-            risk: -16,
+            pipCount: 1.2,
+            blots: 7,
+            hits: 4,
+            closedPoints: 8,
+            risk: -18,
             primes: 0,
         },
         middlegame: {
@@ -173,21 +173,21 @@ export const AI_LEVELS = {
             primes: 0,
         },
         endgame: {
-            pipCount: 1.6,
-            blots: 5.5,
-            hits: 3,
-            closedPoints: 6.5,
-            risk: -14,
+            pipCount: 1.2,
+            blots: 7,
+            hits: 4,
+            closedPoints: 8,
+            risk: -18,
             primes: 0,
         }
     },
     '8': {  // مبتدی
         opening: {
-            pipCount: 2.5,
-            blots: 0.8,
-            hits: 0.4,
-            closedPoints: 0.8,
-            risk: -1.5,
+            pipCount: 3,
+            blots: 1,
+            hits: 0.5,
+            closedPoints: 1,
+            risk: -2,
             primes: 0,
         },
         middlegame: {
@@ -199,21 +199,21 @@ export const AI_LEVELS = {
             primes: 0,
         },
         endgame: {
-            pipCount: 3.5,
-            blots: 0.7,
-            hits: 0.3,
-            closedPoints: 0.7,
-            risk: -1.2,
+            pipCount: 3,
+            blots: 1,
+            hits: 0.5,
+            closedPoints: 1,
+            risk: -2,
             primes: 0,
         }
     },
     '9': {  // آماتور - توجه بیشتر به امنیت
         opening: {
-            pipCount: 2.0,
-            blots: 1.5,
-            hits: 0.8,
-            closedPoints: 1.5,
-            risk: -4,
+            pipCount: 2.5,
+            blots: 2,
+            hits: 1,
+            closedPoints: 2,
+            risk: -5,
             primes: 0,
         },
         middlegame: {
@@ -225,21 +225,21 @@ export const AI_LEVELS = {
             primes: 0,
         },
         endgame: {
-            pipCount: 3.0,
-            blots: 1.2,
-            hits: 0.6,
-            closedPoints: 1.2,
-            risk: -3,
+            pipCount: 2.5,
+            blots: 2,
+            hits: 1,
+            closedPoints: 2,
+            risk: -5,
             primes: 0,
         }
     },
     '10': {  // متوسط
         opening: {
-            pipCount: 1.5,
-            blots: 1,
-            hits: 1.5,
-            closedPoints: 2.5,
-            risk: -6,
+            pipCount: 2,
+            blots: 3,
+            hits: 2,
+            closedPoints: 3,
+            risk: -8,
             primes: 2,
         },
         middlegame: {
@@ -251,116 +251,12 @@ export const AI_LEVELS = {
             primes: 2,
         },
         endgame: {
-            pipCount: 2.5,
-            blots: 2,
-            hits: 1.2,
-            closedPoints: 2,
-            risk: -5,
-            primes: 2,
-        }
-    },
-    '11': {  // متوسط با پرایم ضعیف
-        opening: {
-            pipCount: 1.5,
-            blots: 2.5,
-            hits: 1.5,
-            closedPoints: 2.5,
-            risk: -6,
-            primes: 1.5,
-        },
-        middlegame: {
             pipCount: 2,
             blots: 3,
             hits: 2,
             closedPoints: 3,
             risk: -8,
             primes: 2,
-        },
-        endgame: {
-            pipCount: 2.5,
-            blots: 2,
-            hits: 1.2,
-            closedPoints: 2,
-            risk: -5,
-            primes: 1,
-        }
-    },
-    '12': {  // متوسط با پرایم متوسط
-        opening: {
-            pipCount: 1.5,
-            blots: 2.5,
-            hits: 1.5,
-            closedPoints: 2.5,
-            risk: -6,
-            primes: 3,
-        },
-        middlegame: {
-            pipCount: 2,
-            blots: 3,
-            hits: 2,
-            closedPoints: 3,
-            risk: -8,
-            primes: 4,
-        },
-        endgame: {
-            pipCount: 2.5,
-            blots: 2,
-            hits: 1.2,
-            closedPoints: 2,
-            risk: -5,
-            primes: 2,
-        }
-    },
-    '13': {  // متوسط با پرایم قوی
-        opening: {
-            pipCount: 1.5,
-            blots: 2.5,
-            hits: 1.5,
-            closedPoints: 2.5,
-            risk: -6,
-            primes: 5,
-        },
-        middlegame: {
-            pipCount: 2,
-            blots: 3,
-            hits: 2,
-            closedPoints: 3,
-            risk: -8,
-            primes: 6,
-        },
-        endgame: {
-            pipCount: 2.5,
-            blots: 2,
-            hits: 1.2,
-            closedPoints: 2,
-            risk: -5,
-            primes: 3,
-        }
-    },
-    '14': {  // متوسط با پرایم خیلی قوی
-        opening: {
-            pipCount: 1.5,
-            blots: 2.5,
-            hits: 1.5,
-            closedPoints: 2.5,
-            risk: -6,
-            primes: 7,
-        },
-        middlegame: {
-            pipCount: 2,
-            blots: 3,
-            hits: 2,
-            closedPoints: 3,
-            risk: -8,
-            primes: 8,
-        },
-        endgame: {
-            pipCount: 2.5,
-            blots: 2,
-            hits: 1.2,
-            closedPoints: 2,
-            risk: -5,
-            primes: 4,
         }
     },
 }

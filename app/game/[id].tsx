@@ -1,8 +1,9 @@
 import * as NavigationBar from 'expo-navigation-bar'; // اضافه شده
-import { useFocusEffect, useLocalSearchParams, useNavigation } from "expo-router";
+import { router, useFocusEffect, useLocalSearchParams, useNavigation } from "expo-router";
 import * as ScreenOrientation from 'expo-screen-orientation';
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { ActivityIndicator, AppState, BackHandler, StyleSheet, useWindowDimensions, View } from "react-native";
+
 
 import HalfBoard from "@/components/game/halfBoard";
 import InformModal from '@/components/game/informModal';
@@ -102,7 +103,7 @@ export default function Index() {
   useEffect(() => {
     const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
       saveGame();
-      navigation.goBack();
+      router.replace('/');
       return true;
     });
 
@@ -133,7 +134,7 @@ export default function Index() {
 
   // ریختن تاس در شروع هر نوبت
   useEffect(() => {
-    if (!isLoading && !store.isLoadedFromSave) {
+    if (!isLoading) {
       store.rollDice();
     }
   }, [store.currentTurn, isLoading]);

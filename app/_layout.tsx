@@ -5,7 +5,7 @@ import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
-import { I18nManager } from "react-native";
+import { I18nManager, View } from "react-native";
 
 // جلوگیری از بسته شدن خودکار SplashScreen
 SplashScreen.preventAutoHideAsync();
@@ -45,15 +45,17 @@ export default function RootLayout() {
   }
 
   return (
-    <ThemeProvider value={DefaultTheme} style = {{flexDirection: isRTL ? 'row-reverse' : 'row' }}>
-      <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="(tabs)" />
-        <Stack.Screen
-          name="game/[id]"
-          options={{ animation: 'slide_from_left' }}
-        />
-      </Stack>
-      <StatusBar style="dark" />
+    <ThemeProvider value={DefaultTheme}>
+      <View style={{ flex: 1, flexDirection: isRTL ? 'row-reverse' : 'row' }}>
+        <Stack screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="(tabs)" />
+          <Stack.Screen
+            name="game/[id]"
+            options={{ animation: 'slide_from_left' }}
+          />
+        </Stack>
+        <StatusBar style="dark" />
+      </View>
     </ThemeProvider>
   );
 }

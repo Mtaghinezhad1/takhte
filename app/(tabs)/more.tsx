@@ -48,7 +48,7 @@ export default function MoreScreen() {
             </View>
             <TouchableOpacity style={styles.edit} onPress={() => router.push(`/selectAvatar`)}>
               <View style={styles.arrow}>
-                <IconSymbol size={getIconSize()} name="edit" color='black' />
+                <IconSymbol size={getIconSize()} name="edit" color='white' />
               </View>
             </TouchableOpacity>
           </View>
@@ -127,7 +127,8 @@ const styles = StyleSheet.create({
     borderRadius: '50%',
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'gray',
+    backgroundColor: '#6495ed',
+    elevation: 4,
   },
   leftBtn: {
     borderTopLeftRadius: 16,
