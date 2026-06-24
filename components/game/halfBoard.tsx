@@ -1,13 +1,16 @@
 import { quarterPoints } from "@/constants/constants";
+import useGameStore from "@/stores/useGameStore";
 import React from "react";
 import { Image, StyleSheet, View } from "react-native";
 import Dice from "./dice";
+import ForfeitGame from "./forfeitGame";
 import PointNumber from "./pointNumber";
 import QuarterBoard from "./quarterBoard";
 import UndoButton from "./undoContinueButton";
 
 const HalfBoard = ({ side }) => {
   const isLeft = side === 'left';
+  const showForfeit = useGameStore(state => state.showForfeit);
   const topQuarter = isLeft ? quarterPoints.topLeft : quarterPoints.topRight;
   const bottomQuarter = isLeft ? quarterPoints.bottomLeft : quarterPoints.bottomRight;
 
@@ -19,21 +22,43 @@ const HalfBoard = ({ side }) => {
         resizeMode="cover"
       />
       <PointNumber pointIds={topQuarter} />
-      <View style={styles.container}>
-        <View style={styles.quarterBoardTop}>
-          <QuarterBoard
-            pointIds={topQuarter}
-          />
-        </View>
-        {isLeft && <UndoButton />}
-        {!isLeft && <Dice />}
+      {showForfeit && side != 'left' && <ForfeitGame />}
+      {!showForfeit && side != 'left' &&
+        <View style={styles.container}>
+          <View style={styles.quarterBoardTop}>
+            <QuarterBoard
+              pointIds={topQuarter}
+            />
+          </View>
+          {isLeft && <UndoButton />}
+          {!isLeft && <Dice />}
 
-        <View style={styles.quarterBoardBottom}>
-          <QuarterBoard
-            pointIds={bottomQuarter}
-          />
+          <View style={styles.quarterBoardBottom}>
+            <QuarterBoard
+              pointIds={bottomQuarter}
+            />
+          </View>
         </View>
-      </View>
+      }
+      {
+        side == 'left' &&
+        <View style={styles.container}>
+          <View style={styles.quarterBoardTop}>
+            <QuarterBoard
+              pointIds={topQuarter}
+            />
+          </View>
+          {isLeft && <UndoButton />}
+          {!isLeft && <Dice />}
+
+          <View style={styles.quarterBoardBottom}>
+            <QuarterBoard
+              pointIds={bottomQuarter}
+            />
+          </View>
+        </View>
+      }
+
       <PointNumber pointIds={bottomQuarter} />
     </View>
   );

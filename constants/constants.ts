@@ -1,18 +1,18 @@
 export const InitialBoard_standard = [
   0,     //numbers of black checkers being hit
-  -2,    //2 black checker
+  15,    //2 black checker
   0, 
   0, 
   0, 
   0, 
-  5,  
+  0,  
   0, 
-  3, 
+  0, 
   0, 
   0, 
   0, 
   -5,
-  5, 
+  0, 
   0, 
   0, 
   0, 
@@ -23,7 +23,7 @@ export const InitialBoard_standard = [
   0, 
   0, 
   0, 
-  2, 
+  0, 
   0,    //whiteCaptured
 ];
 

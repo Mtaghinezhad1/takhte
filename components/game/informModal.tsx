@@ -30,10 +30,8 @@ export default function InformModal() {
         >
             {/* پشت منو را کلیک کنیم بسته شود */}
             <Pressable style={styles.backdrop} onPress={closeInformModal}>
-                <View style={styles.menuWrap}>
-                    <View style={styles.card}>
-                        <Text style={styles.text}>تاس اجبار</Text>
-                    </View>
+                <View style={styles.card}>
+                    <Text style={styles.text}>تاس اجبار</Text>
                 </View>
             </Pressable>
         </Modal>
@@ -46,18 +44,15 @@ const styles = StyleSheet.create({
     backdrop: {
         flex: 1,
         backgroundColor: 'rgba(0,0,0,0)',
-        justifyContent: 'center', 
-        alignItems: 'center', 
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     text: {
         fontFamily: 'Kaghaz',
         textAlign: 'center',
     },
-    menuWrap: {
-        width: '20%',
-    },
     card: {
-        width: '100%',
+        width: '20%',
         backgroundColor: '#FFFFFF',
         borderRadius: 20,
         padding: 20,

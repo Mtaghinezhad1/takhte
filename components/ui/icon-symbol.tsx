@@ -15,7 +15,8 @@ const MAPPING = {
   'person': 'person',
   'info-outline': 'info-outline',
   'edit': 'edit',
-  'lock': 'lock'
+  'lock': 'lock',
+  'close': 'close'
 };
 
 /**

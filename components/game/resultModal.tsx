@@ -41,56 +41,58 @@ export default function ResultModal() {
             onRequestClose={closeResultModal}
         >
             {/* پشت منو را کلیک کنیم بسته شود */}
-            <Pressable style={styles.backdrop} onPress={closeResultModal} />
-
-            <View style={styles.menuWrap}>
-                <View style={styles.card}>
-                    {/* Winner Badge */}
-                    <View style={styles.winnerBadge}>
-                        <View style={[styles.winnerDot, { backgroundColor: `${gameWinner}` }]} />
-                        <Text style={styles.winnerText}>
-                            {(gameWinner && gameWinner === 'white') ? 'برنده: بازیکن سفید' : 'برنده: بازیکن سیاه'}
-                        </Text>
-                    </View>
-
-                    {/* Players Info */}
-                    <View style={styles.playersContainer}>
-                        {/* Black Player */}
-                        <View style={styles.playerSection}>
-                            <Image
-                                source={aiProfile ? getAvatarByKey(aiProfile.avatarKey) : require('@/assets/avatar/default.jpeg')}
-                                style={[styles.playerImage, styles.blackPlayerBorder]}
-                            />
-                            <Text style={styles.playerName}>{aiProfile ? aiProfile.name : 'ربات'}</Text>
-                            <Text style={[styles.playerColor, { color: '#000000' }]}>مهره سیاه</Text>
+            <Pressable style={styles.backdrop} onPress={closeResultModal} >
+                <View style={styles.container}>
+                    <View style={styles.card}>
+                        {/* Winner Badge */}
+                        <View style={styles.winnerBadge}>
+                            <View style={[styles.winnerDot, { backgroundColor: `${gameWinner}` }]} />
+                            <Text style={styles.winnerText}>
+                                {(gameWinner && gameWinner === 'white') ? 'برنده: بازیکن سفید' : 'برنده: بازیکن سیاه'}
+                            </Text>
                         </View>
 
-                        {/* VS Section */}
-                        <View style={styles.vsSection}>
-                            <Text style={styles.vsText}>VS</Text>
-                            <View style={styles.scoreContainer}>
-                                <View style={[styles.scoreBox, { backgroundColor: '#000000' }]}>
-                                    <Text style={styles.scoreText}>{gameScore[1]}</Text>
-                                </View>
-                                <Text style={styles.scoreSeparator}>:</Text>
-                                <View style={[styles.scoreBox, { backgroundColor: '#FFFFFF', borderWidth: 2, borderColor: '#000000' }]}>
-                                    <Text style={[styles.scoreText, { color: '#000000' }]}>{gameScore[0]}</Text>
+                        {/* Players Info */}
+                        <View style={styles.playersContainer}>
+                            {/* Black Player */}
+                            <View style={styles.playerSection}>
+                                <Image
+                                    source={aiProfile ? getAvatarByKey(aiProfile.avatarKey) : require('@/assets/avatar/default.jpeg')}
+                                    style={[styles.playerImage, styles.blackPlayerBorder]}
+                                />
+                                <Text style={styles.playerName}>{aiProfile ? aiProfile.name : 'ربات'}</Text>
+                                <Text style={[styles.playerColor, { color: '#000000' }]}>مهره سیاه</Text>
+                            </View>
+
+                            {/* VS Section */}
+                            <View style={styles.vsSection}>
+                                <Text style={styles.vsText}>VS</Text>
+                                <View style={styles.scoreContainer}>
+                                    <View style={[styles.scoreBox, { backgroundColor: '#000000' }]}>
+                                        <Text style={styles.scoreText}>{gameScore[1]}</Text>
+                                    </View>
+                                    <Text style={styles.scoreSeparator}>:</Text>
+                                    <View style={[styles.scoreBox, { backgroundColor: '#FFFFFF', borderWidth: 2, borderColor: '#000000' }]}>
+                                        <Text style={[styles.scoreText, { color: '#000000' }]}>{gameScore[0]}</Text>
+                                    </View>
                                 </View>
                             </View>
-                        </View>
 
-                        {/* White Player */}
-                        <View style={styles.playerSection}>
-                            <Image
-                                source={avatarKey ? getAvatarByKey(avatarKey) : require('@/assets/avatar/default.jpeg')}
-                                style={[styles.playerImage, styles.whitePlayerBorder]}
-                            />
-                            <Text style={styles.playerName}>{username}</Text>
-                            <Text style={[styles.playerColor, { color: '#666666' }]}>مهره سفید</Text>
+                            {/* White Player */}
+                            <View style={styles.playerSection}>
+                                <Image
+                                    source={avatarKey ? getAvatarByKey(avatarKey) : require('@/assets/avatar/default.jpeg')}
+                                    style={[styles.playerImage, styles.whitePlayerBorder]}
+                                />
+                                <Text style={styles.playerName}>{username}</Text>
+                                <Text style={[styles.playerColor, { color: '#666666' }]}>مهره سفید</Text>
+                            </View>
                         </View>
                     </View>
                 </View>
-            </View>
+            </Pressable>
+
+
         </Modal>
     );
 }
@@ -102,18 +104,16 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: "rgba(0,0,0,0)",
     },
-    menuWrap: {
-        position: "absolute",
-        top: '50%', // می‌توانید با توجه به محل دکمه تنظیمش کنید
-        left: '50%',
-        transform: 'translate(-50%,-50%)',
-        width: '60%',
+    container: {
+        flex: 1,
+        height: '100%',
+        width: '100%',
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
     },
     card: {
-        width: '100%',
+        width: '60%',
         backgroundColor: '#FFFFFF',
         borderRadius: 20,
         padding: 20,
@@ -156,7 +156,6 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        flex: 1,
     },
     playerSection: {
         alignItems: 'center',

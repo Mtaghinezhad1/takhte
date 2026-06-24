@@ -57,7 +57,7 @@ export default function MatchEndModal() {
             animationType="fade"
             onRequestClose={handleGoHome}
         >
-            <View style={styles.menuWrap}>
+            <View style={styles.container}>
                 <View style={[styles.card, { width: '60%' }]}>
                     {/* Winner Badge */}
                     <View style={styles.winnerBadge}>
@@ -128,11 +128,9 @@ export default function MatchEndModal() {
 
 
 const styles = StyleSheet.create({
-    menuWrap: {
-        position: "absolute",
-        top: '50%', // می‌توانید با توجه به محل دکمه تنظیمش کنید
-        left: '50%',
-        transform: 'translate(-50%,-50%)',
+    container: {
+        flex: 1,
+        height: '100%',
         width: '100%',
         display: 'flex',
         justifyContent: 'center',
@@ -182,7 +180,6 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        flex: 1,
     },
     playerSection: {
         alignItems: 'center',

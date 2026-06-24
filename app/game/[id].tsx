@@ -160,6 +160,7 @@ export default function Index() {
   }
 
   return (
+    <>
     <View style={styles.container}>
       <View style={[styles.board, { height: screenHeight }]}>
         <GameStatusBar />
@@ -173,6 +174,7 @@ export default function Index() {
         <MatchEndModal />
       </View>
     </View>
+    </>
   );
 }
 

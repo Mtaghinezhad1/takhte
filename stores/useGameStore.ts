@@ -20,9 +20,13 @@ const useGameStore = create((set, get) => ({
   whiteBornOff: 0,
   blackBornOff: 0,
   historyStack: [],
+
   showContinue: false,
   isModalVisible: false,
+  showForfeit: false,
   showForcedMoveModal: false,
+  isMatchEndModalVisible: false,
+
   isAiThinking: false,
   gameScore: [0, 0],
   availableMoves: [],
@@ -31,7 +35,6 @@ const useGameStore = create((set, get) => ({
   aiLevel: '3',
   aiLevelForWhite: '3',
   isRolling: false,
-  isMatchEndModalVisible: false,
   matchEndWinner: null,
   aiProfile: null,
   targetScore: '3',
@@ -293,6 +296,12 @@ const useGameStore = create((set, get) => ({
     set(updates);
   },
 
+  handleShowForfeit: () => {
+    const state = get();
+    const newShowForfeit = state.showForfeit ? false : true;
+    set({ showForfeit: newShowForfeit });
+  },
+
   handleTimeEnd: (loser) => {
     const state = get();
     if (state.isModalVisible || state.gameWinner) return;
@@ -358,6 +367,7 @@ const useGameStore = create((set, get) => ({
   forfeitHand: () => {
     const state = get();
     if (state.isModalVisible || state.gameWinner) return;
+    set({showForfeit: false})
     get().endCurrentGame('black');
   },
 
@@ -366,7 +376,7 @@ const useGameStore = create((set, get) => ({
 
     // جلوگیری از اجرا در حالت‌های نامعتبر
     if (state.isModalVisible || state.gameWinner || state.isMatchEndModalVisible) return;
-
+    set({showForfeit: false})
     const newScore = gameService.calculateNewScore(state.gameScore, 'black');
     get().endMatch('black', newScore);
   },
