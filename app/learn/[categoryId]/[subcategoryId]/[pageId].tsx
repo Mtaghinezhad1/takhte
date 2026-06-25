@@ -1,8 +1,10 @@
 import { learnData } from '@/constants/learnData';
 import useLearningStore from '@/stores/useLearningStore';
+import * as Localization from 'expo-localization';
 import { router, useLocalSearchParams } from 'expo-router';
-import { useState } from 'react';
-import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
+
+import { useEffect, useState } from 'react';
+import { I18nManager, Image, ScrollView, StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
 
 export default function PageContent() {
     const completeLesson = useLearningStore(state => state.completeLesson);
@@ -18,6 +20,35 @@ export default function PageContent() {
     const category = learnData.find(c => c.key === categoryId);
     const subcategory = category?.subcategories.find(s => s.key === subcategoryId);
     const page = subcategory?.pages.find(p => p.id === Number(pageId));
+    const [isRTL, setIsRTL] = useState(false);
+
+    const checkRTL = () => {
+      try {
+        // روش اول: از Localization
+        const locales = Localization.getLocales();
+        const isRTLSystem = locales[0]?.textDirection === 'rtl';
+  
+        // روش دوم: از I18nManager (برای پشتیبانی از نسخه‌های قدیمی)
+        const isRTLManager = I18nManager.isRTL;
+  
+        // ترکیب هر دو روش
+        const finalRTL = isRTLSystem || isRTLManager;
+  
+        setIsRTL(finalRTL);
+  
+      } catch (error) {
+        console.error('Error checking RTL:', error);
+        // Fallback به I18nManager
+        setIsRTL(I18nManager.isRTL);
+      }
+    };
+  
+  
+    useEffect(() => {
+      checkRTL();
+  
+    }, []);
+
 
     if (!page || !subcategory || !category) {
         return <Text style={styles.notFoundText}>صفحه پیدا نشد</Text>;
@@ -122,7 +153,7 @@ export default function PageContent() {
                 {/* رندر محتوای متنی ساده */}
                 {contentComponent && (
                     <View style={styles.contentContainer}>
-                        <Text style={styles.contentText}>
+                        <Text style={[styles.contentText,{textAlign: isRTL? 'left': 'right'}]}>
                             {contentComponent.value}
                         </Text>
                     </View>
@@ -131,7 +162,7 @@ export default function PageContent() {
                 {/* رندر سوال (quiz) */}
                 {hasQuiz && (
                     <View style={styles.quizContainer}>
-                        <Text style={styles.quizQuestion}>
+                        <Text style={[styles.quizQuestion,{textAlign: isRTL? 'left': 'right'}]}>
                             {quizComponent.question}
                         </Text>
 
@@ -273,7 +304,6 @@ const styles = StyleSheet.create({
     contentText: {
         fontSize: 18,
         lineHeight: 28,
-        textAlign: 'right',
         fontFamily: 'Kaghaz',
         color: '#333',
     },
@@ -307,7 +337,6 @@ const styles = StyleSheet.create({
     quizQuestion: {
         fontSize: 20,
         fontFamily: 'Kaghaz',
-        textAlign: 'right',
         marginBottom: 20,
         color: '#070024',
         fontWeight: 'bold',

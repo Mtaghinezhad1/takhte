@@ -1,6 +1,7 @@
 import useUserStore from '@/stores/useUserStore';
 import { DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
+import * as Localization from 'expo-localization';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
@@ -32,6 +33,7 @@ export default function RootLayout() {
     if ((fontsLoaded || fontError) && !isLoading) {
       SplashScreen.hideAsync();
     }
+    console.log(Localization.getLocales()[0]);
   }, [fontsLoaded, fontError, isLoading]);
 
   // تا زمانی که فونت بارگذاری نشده، چیزی نمایش نده
@@ -46,7 +48,7 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider value={DefaultTheme}>
-      <View style={{ flex: 1, flexDirection: isRTL ? 'row-reverse' : 'row' }}>
+      <View style={{ flex: 1 }}>
         <Stack screenOptions={{ headerShown: false }}>
           <Stack.Screen name="(tabs)" />
           <Stack.Screen

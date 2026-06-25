@@ -1,8 +1,10 @@
+import * as Localization from 'expo-localization';
 import * as NavigationBar from 'expo-navigation-bar'; // اضافه شده
 import { router, useFocusEffect, useLocalSearchParams, useNavigation } from "expo-router";
 import * as ScreenOrientation from 'expo-screen-orientation';
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { ActivityIndicator, AppState, BackHandler, StyleSheet, useWindowDimensions, View } from "react-native";
+import { ActivityIndicator, AppState, BackHandler, I18nManager, StyleSheet, useWindowDimensions, View } from "react-native";
+
 
 
 import HalfBoard from "@/components/game/halfBoard";
@@ -27,6 +29,29 @@ export default function Index() {
   const appState = useRef(AppState.currentState);
   const isSavedRef = useRef(false);
   const [isLoading, setIsLoading] = useState(false);
+  // تشخیص درست RTL
+  const [isRTL, setIsRTL] = useState(false);
+
+  const checkRTL = () => {
+    try {
+      // روش اول: از Localization
+      const locales = Localization.getLocales();
+      const isRTLSystem = locales[0]?.textDirection === 'rtl';
+
+      // روش دوم: از I18nManager (برای پشتیبانی از نسخه‌های قدیمی)
+      const isRTLManager = I18nManager.isRTL;
+
+      // ترکیب هر دو روش
+      const finalRTL = isRTLSystem || isRTLManager;
+
+      setIsRTL(finalRTL);
+
+    } catch (error) {
+      console.error('Error checking RTL:', error);
+      // Fallback به I18nManager
+      setIsRTL(I18nManager.isRTL);
+    }
+  };
 
   const saveGame = () => {
     if (isSavedRef.current) return;
@@ -127,6 +152,7 @@ export default function Index() {
 
   // ذخیره‌سازی هنگام unmount
   useEffect(() => {
+    checkRTL();
     return () => {
       saveGame();
     };
@@ -161,19 +187,19 @@ export default function Index() {
 
   return (
     <>
-    <View style={styles.container}>
-      <View style={[styles.board, { height: screenHeight }]}>
-        <GameStatusBar />
-        <Leftbar />
-        <HalfBoard side="left" />
-        <StaticsBar />
-        <HalfBoard side="right" />
-        <Rightbar />
-        <ResultModal />
-        <InformModal />
-        <MatchEndModal />
+      <View style={styles.container}>
+        <View style={[styles.board, { height: screenHeight, flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+          <GameStatusBar />
+          <Leftbar />
+          <HalfBoard side="left" />
+          <StaticsBar />
+          <HalfBoard side="right" />
+          <Rightbar />
+          <ResultModal />
+          <InformModal />
+          <MatchEndModal />
+        </View>
       </View>
-    </View>
     </>
   );
 }

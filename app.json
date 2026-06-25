@@ -2,8 +2,7 @@
   "expo": {
     "name": "Nard Land",
     "slug": "nardland",
-    "projectId": 
-"1aa67c7c-9030-4c4d-8664-0d05129bb6f1",
+    "projectId": "1aa67c7c-9030-4c4d-8664-0d05129bb6f1",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -24,7 +23,7 @@
       "predictiveBackGestureEnabled": false,
       "package": "com.mtaghinezhad.nardland",
       "versionCode": 1,
-  "permissions": [],
+      "permissions": [],
       "blockedPermissions": [
         "android.permission.SYSTEM_ALERT_WINDOW",
         "android.permission.WRITE_EXTERNAL_STORAGE",
@@ -49,7 +48,8 @@
             "backgroundColor": "#000000"
           }
         }
-      ]
+      ],
+      "expo-localization"
     ],
     "experiments": {
       "typedRoutes": true,
