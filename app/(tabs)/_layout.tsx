@@ -1,10 +1,24 @@
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Tabs } from 'expo-router';
-import React from 'react';
+import * as ScreenOrientation from 'expo-screen-orientation';
+import React, { useEffect } from 'react';
 import { useWindowDimensions } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function TabLayout() {
   const { width, height } = useWindowDimensions();
+  const insets = useSafeAreaInsets(); 
+
+  useEffect(() => {
+    // قفل صفحه به حالت عمودی برای تمام صفحات اصلی
+    ScreenOrientation.lockAsync(
+      ScreenOrientation.OrientationLock.PORTRAIT
+    );
+
+    return () => {
+      ScreenOrientation.unlockAsync();
+    };
+  }, []);
 
   return (
     <Tabs
@@ -14,8 +28,9 @@ export default function TabLayout() {
         tabBarInactiveTintColor: '#888888',
         tabBarStyle: {
           backgroundColor: '#ffffff',
-          height: height * 0.1,
+          height: height * 0.1 + (insets.bottom*0.5 || 0), // ← تغییر
           paddingTop: 4,
+          paddingBottom: insets.bottom || 0, // ← اضافه کن
           borderTopWidth: 0,
           elevation: 10,
           shadowColor: '#000',
