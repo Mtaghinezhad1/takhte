@@ -2,9 +2,13 @@ import Slider from '@react-native-community/slider';
 import { router, useLocalSearchParams } from 'expo-router';
 import React, { useState } from 'react';
 import { SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
 
 export default function PreGameScreen() {
     const { id, gameMode } = useLocalSearchParams();
+    const insets = useSafeAreaInsets();
+
 
     const [gamePoints, setGamePoints] = useState(5);
     const [difficultyLevel, setDifficultyLevel] = useState(3);
@@ -52,7 +56,7 @@ export default function PreGameScreen() {
     };
 
     return (
-        <SafeAreaView style={styles.safeArea}>
+        <SafeAreaView style={[styles.safeArea,{paddingBottom: insets.bottom}]}>
             <ScrollView
                 contentContainerStyle={styles.scrollContainer}
                 showsVerticalScrollIndicator={false}
@@ -178,7 +182,7 @@ export default function PreGameScreen() {
             </ScrollView>
 
             {/* دکمه ثابت پایین */}
-            <TouchableOpacity style={styles.startButton} onPress={startGame}>
+            <TouchableOpacity style={[styles.startButton,{bottom: 24+insets.bottom,}]} onPress={startGame}>
                 <Text style={styles.startButtonText}>شروع بازی</Text>
             </TouchableOpacity>
         </SafeAreaView >
@@ -287,7 +291,6 @@ const styles = StyleSheet.create({
     },
     startButton: {
         position: 'absolute',
-        bottom: 24,
         left: 24,
         right: 24,
         backgroundColor: '#1a4b6e',
