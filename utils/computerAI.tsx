@@ -1,7 +1,76 @@
 import { AI_LEVELS } from "@/constants/aiWeights";
 import { CLOSED_POINT_VALUES, DISTANCE_PROB } from "@/constants/tables";
+import { getAvailableMoves } from "./availableMoves";
 import { isInHomeBoard, makeMove } from "./utils";
 
+
+
+// =================== تنظیمات سطح بازی ===================
+export const LEVEL_CONFIG = {
+    '1': { depth: 0, weights: AI_LEVELS['1'] },  // مبتدی
+    '2': { depth: 0, weights: AI_LEVELS['3'] },  // آسان
+    '3': { depth: 0, weights: AI_LEVELS['5'] },  // متوسط
+    '4': { depth: 0, weights: AI_LEVELS['7'] },  // سخت
+    '5': { depth: 0, weights: AI_LEVELS['10'] }, 
+    '6': { depth: 1, weights: AI_LEVELS['1'] }, 
+    '7': { depth: 1, weights: AI_LEVELS['3'] }, 
+    '8': { depth: 1, weights: AI_LEVELS['5'] }, 
+    '9': { depth: 1, weights: AI_LEVELS['7'] }, 
+    '10': { depth: 1, weights: AI_LEVELS['10'] }, 
+}
+
+// =================== ترکیبات تاس با وزن ===================
+export const ALL_DICE_COMBINATIONS_WITH_WEIGHT = [
+    // تاس‌های تکراری (احتمال 1/36)
+    { dice: [1, 1, 1, 1], weight: 1 },
+    { dice: [2, 2, 2, 2], weight: 1 },
+    { dice: [3, 3, 3, 3], weight: 1 },
+    { dice: [4, 4, 4, 4], weight: 1 },
+    { dice: [5, 5, 5, 5], weight: 1 },
+    { dice: [6, 6, 6, 6], weight: 1 },
+    
+    // ترکیب 1 با سایر اعداد (احتمال 2/36)
+    { dice: [1, 2], weight: 2 },
+    { dice: [1, 3], weight: 2 },
+    { dice: [1, 4], weight: 2 },
+    { dice: [1, 5], weight: 2 },
+    { dice: [1, 6], weight: 2 },
+    
+    // ترکیب 2 با سایر اعداد بزرگتر (احتمال 2/36)
+    { dice: [2, 3], weight: 2 },
+    { dice: [2, 4], weight: 2 },
+    { dice: [2, 5], weight: 2 },
+    { dice: [2, 6], weight: 2 },
+    
+    // ترکیب 3 با سایر اعداد بزرگتر (احتمال 2/36)
+    { dice: [3, 4], weight: 2 },
+    { dice: [3, 5], weight: 2 },
+    { dice: [3, 6], weight: 2 },
+    
+    // ترکیب 4 با سایر اعداد بزرگتر (احتمال 2/36)
+    { dice: [4, 5], weight: 2 },
+    { dice: [4, 6], weight: 2 },
+    
+    // ترکیب 5 با سایر اعداد بزرگتر (احتمال 2/36)
+    { dice: [5, 6], weight: 2 },
+];
+
+
+// =================== تابع شبیه‌سازی حرکت ===================
+function simulateMove(board, moveSequence, color) {
+    let newBoard = [...board];
+    let whiteBornOff = 0;
+    let blackBornOff = 0;
+    
+    for (const step of moveSequence) {
+        const result = makeMove(newBoard, step.from, step.die, color, null, whiteBornOff, blackBornOff);
+        newBoard = result.newBoard;
+        whiteBornOff = result.whiteBornOff;
+        blackBornOff = result.blackBornOff;
+    }
+    
+    return { newBoard, whiteBornOff, blackBornOff };
+}
 
 // =================== توابع کمکی ===================
 
@@ -464,49 +533,83 @@ export const evaluateMove = (board, dice, moveSequence, color, weights = AI_LEVE
 
 }
 
-// انتخاب بهترین حرکت برای AI
+// =================== تابع یکپارچه انتخاب بهترین حرکت ===================
 export function selectBestMove(board, dice, moves, currentTurn, difficulty = '3') {
-    const weights = AI_LEVELS[difficulty] || AI_LEVELS[3];
+    // دریافت تنظیمات سطح
+    const config = LEVEL_CONFIG[difficulty] || LEVEL_CONFIG['3'];
+    const depth = config.depth;
+    const weights = config.weights;
+    
     let bestScore = -Infinity;
     let bestMove = null;
-
+    
+    // تشخیص فاز بازی و نوع Bear Off
+    const isSecureBearOff = detectBearOffType(board, currentTurn) === 'secure_bearoff';
+    const phase = detectGamePhase(board, currentTurn);
+    const isBearOff = isBearOffPhase(board, currentTurn);
+    
     moves.forEach((move) => {
-        const evaluation = evaluateMove(board, dice, move, currentTurn, weights);
-        if (evaluation.finalScore > bestScore) {
-            bestScore = evaluation.finalScore;
+        let score = -Infinity;
+        
+        // ۱. شبیه‌سازی حرکت خودمان
+        const { newBoard: boardAfterMe } = simulateMove(board, move, currentTurn);
+        
+        // اگر عمق ۰ باشد یا در Bear Off امن باشیم یا در فاز Bear Off باشیم، فقط حرکت خود را ارزیابی می‌کنیم
+        if (depth === 0 || isSecureBearOff || isBearOff) {
+            const evaluation = evaluateMove(board, dice, move, currentTurn, weights);
+            score = evaluation.finalScore;
+        } else if (depth >= 1) {
+            // ۲. همه حالات ممکن تاس برای حریف را بررسی می‌کنیم
+            const opponent = currentTurn === 'white' ? 'black' : 'white';
+            let totalWeightedScore = 0;
+            let totalWeight = 0;
+            
+            ALL_DICE_COMBINATIONS_WITH_WEIGHT.forEach(({ dice: opponentDice, weight }) => {
+                // دریافت حرکات ممکن حریف با این تاس‌ها
+                const opponentMoves = getAvailableMoves(boardAfterMe, opponentDice, opponent);
+                
+                let worstScoreForUs = Infinity;
+                
+                if (opponentMoves.length === 0) {
+                    // اگر حریف حرکتی نداشت، وضعیت فعلی را ارزیابی می‌کنیم
+                    const phaseWeights = weights[phase] || weights['middlegame'];
+                    const evaluation = evaluateBoard(boardAfterMe, currentTurn, phaseWeights);
+                    worstScoreForUs = evaluation.score;
+                } else {
+                    // بهترین حرکت حریف (بدترین برای ما) را پیدا می‌کنیم
+                    opponentMoves.forEach((opponentMove) => {
+                        const { newBoard: boardAfterOpponent } = simulateMove(boardAfterMe, opponentMove, opponent);
+                        const phaseWeights = weights[phase] || weights['middlegame'];
+                        const evaluation = evaluateBoard(boardAfterOpponent, currentTurn, phaseWeights);
+                        const scoreForUs = evaluation.score;
+                        
+                        if (scoreForUs < worstScoreForUs) {
+                            worstScoreForUs = scoreForUs;
+                        }
+                    });
+                }
+                
+                // اضافه کردن امتیاز وزنی
+                totalWeightedScore += worstScoreForUs * weight;
+                totalWeight += weight;
+            });
+            
+            score = totalWeightedScore / totalWeight;
+        }
+        
+        // انتخاب بهترین حرکت
+        if (score > bestScore) {
+            bestScore = score;
             bestMove = move;
         }
     });
-    const myMove = [
-        {
-            "from": 19,
-            "to": 20,
-            "die": 1,
-            "type": "normal"
-        },
-        {
-            "from": 19,
-            "to": 20,
-            "die": 1,
-            "type": "normal"
-        },
-        {
-            "from": 17,
-            "to": 18,
-            "die": 1,
-            "type": "normal"
-        },
-        {
-            "from": 17,
-            "to": 18,
-            "die": 1,
-            "type": "normal"
-        }
-    ];
-    console.log(detectGamePhase(board, currentTurn));
-    console.log('my move', currentTurn, evaluateMove(board, dice, myMove, currentTurn, weights));
-    console.log('best move', currentTurn, evaluateMove(board, dice, bestMove, currentTurn, weights));
-
-
+    
+    // لاگ برای دیباگ (اختیاری)
+    if (bestMove) {
+        console.log('Game Phase:', detectGamePhase(board, currentTurn));
+        console.log('Difficulty:', difficulty, 'Depth:', depth);
+        console.log('Best move selected with score:', bestScore);
+    }
+    
     return bestMove;
 }
