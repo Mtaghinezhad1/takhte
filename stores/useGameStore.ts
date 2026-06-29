@@ -1,5 +1,5 @@
 import { getAIProfile } from '@/constants/aiProfiles';
-import { aiService } from '@/services/aiService';
+import { aiService } from '@/services/ai/aiService';
 import { boardService } from '@/services/boardService';
 import { gameService } from '@/services/gameService';
 import storageService from '@/services/storageService';

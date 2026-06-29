@@ -1,132 +1,59 @@
-import { AI_LEVELS } from "@/constants/aiWeights";
 import { CLOSED_POINT_VALUES, DISTANCE_PROB } from "@/constants/tables";
-import { getAvailableMoves } from "./availableMoves";
+import { boardService } from "@/services/boardService";
 import { isInHomeBoard, makeMove } from "./utils";
 
 
-
-// =================== تنظیمات سطح بازی ===================
-export const LEVEL_CONFIG = {
-    '1': { depth: 0, weights: AI_LEVELS['1'] },  // مبتدی
-    '2': { depth: 0, weights: AI_LEVELS['3'] },  // آسان
-    '3': { depth: 0, weights: AI_LEVELS['5'] },  // متوسط
-    '4': { depth: 0, weights: AI_LEVELS['7'] },  // سخت
-    '5': { depth: 0, weights: AI_LEVELS['10'] }, 
-    '6': { depth: 1, weights: AI_LEVELS['1'] }, 
-    '7': { depth: 1, weights: AI_LEVELS['3'] }, 
-    '8': { depth: 1, weights: AI_LEVELS['5'] }, 
-    '9': { depth: 1, weights: AI_LEVELS['7'] }, 
-    '10': { depth: 1, weights: AI_LEVELS['10'] }, 
-}
-
-// =================== ترکیبات تاس با وزن ===================
-export const ALL_DICE_COMBINATIONS_WITH_WEIGHT = [
-    // تاس‌های تکراری (احتمال 1/36)
-    { dice: [1, 1, 1, 1], weight: 1 },
-    { dice: [2, 2, 2, 2], weight: 1 },
-    { dice: [3, 3, 3, 3], weight: 1 },
-    { dice: [4, 4, 4, 4], weight: 1 },
-    { dice: [5, 5, 5, 5], weight: 1 },
-    { dice: [6, 6, 6, 6], weight: 1 },
-    
-    // ترکیب 1 با سایر اعداد (احتمال 2/36)
-    { dice: [1, 2], weight: 2 },
-    { dice: [1, 3], weight: 2 },
-    { dice: [1, 4], weight: 2 },
-    { dice: [1, 5], weight: 2 },
-    { dice: [1, 6], weight: 2 },
-    
-    // ترکیب 2 با سایر اعداد بزرگتر (احتمال 2/36)
-    { dice: [2, 3], weight: 2 },
-    { dice: [2, 4], weight: 2 },
-    { dice: [2, 5], weight: 2 },
-    { dice: [2, 6], weight: 2 },
-    
-    // ترکیب 3 با سایر اعداد بزرگتر (احتمال 2/36)
-    { dice: [3, 4], weight: 2 },
-    { dice: [3, 5], weight: 2 },
-    { dice: [3, 6], weight: 2 },
-    
-    // ترکیب 4 با سایر اعداد بزرگتر (احتمال 2/36)
-    { dice: [4, 5], weight: 2 },
-    { dice: [4, 6], weight: 2 },
-    
-    // ترکیب 5 با سایر اعداد بزرگتر (احتمال 2/36)
-    { dice: [5, 6], weight: 2 },
-];
-
-
 // =================== تابع شبیه‌سازی حرکت ===================
-function simulateMove(board, moveSequence, color) {
+export const simulateMove = (board, moveSequence, color) => {
     let newBoard = [...board];
     let whiteBornOff = 0;
     let blackBornOff = 0;
-    
+
     for (const step of moveSequence) {
         const result = makeMove(newBoard, step.from, step.die, color, null, whiteBornOff, blackBornOff);
         newBoard = result.newBoard;
         whiteBornOff = result.whiteBornOff;
         blackBornOff = result.blackBornOff;
     }
-    
+
     return { newBoard, whiteBornOff, blackBornOff };
 }
 
 // =================== توابع کمکی ===================
-
-// محاسبه تعداد پیپ برای یک رنگ (فاصله تا خانه)
-export const pipCount = (board, color) => {
-    let total = 0;
-    for (let i = 1; i <= 24; i++) {
-        const count = board[i];
-        if ((color === 'black' && count < 0) || (color === 'white' && count > 0)) {
-            const pipIndex = color === 'black' ? (25 - i) : (i);
-            total += Math.abs(count) * pipIndex;
-        }
-    }
-    if ((color == 'black' && board[0] != 0)) {
-        total += Math.abs(board[0]) * 25;
-    }
-    if ((color == 'white' && board[25] != 0)) {
-        total += Math.abs(board[25]) * 25;
-    }
-    return total;
-}
-
-function detectBearOffType(board, color) {
+export const detectBearOffType = (board, color) => {
     // اول بررسی کن که آیا اصلاً در فاز Bear Off هستیم
     if (!isBearOffPhase(board, color)) {
         return null;  // اصلاً فاز Bear Off نیست
     }
-    
+
     const opponent = color === 'white' ? 'black' : 'white';
     const opponentBar = color === 'white' ? 0 : 25;
     const homeStart = color === 'white' ? 1 : 19;  // شروع خانه خودی
     const homeEnd = color === 'white' ? 6 : 24;     // پایان خانه خودی
-    
+
     // بررسی وجود مهره حریف در خانه ما
     let opponentInOurHome = false;
-    
+
     for (let i = homeStart; i <= homeEnd; i++) {
         const checker = board[i];
-        if ((opponent === 'white' && checker > 0) || 
+        if ((opponent === 'white' && checker > 0) ||
             (opponent === 'black' && checker < 0)) {
             opponentInOurHome = true;
             break;
         }
     }
-    
+
     // بررسی مهره‌های خورده شده حریف که می‌تونن وارد خانه ما بشن
-    
+
     if (board[opponentBar] !== 0) {
         opponentInOurHome = true;
     }
-    
+
     return opponentInOurHome ? 'unsecure_bearoff' : 'secure_bearoff';
 }
 
 // شمارش بلات (مهره‌های تنها)
-function countBlots(board, color) {
+export const countBlots = (board, color) => {
     let blots = 0;
     for (let i = 1; i <= 24; i++) {
         if ((color === 'black' && board[i] === -1) || (color === 'white' && board[i] === 1)) {
@@ -136,7 +63,7 @@ function countBlots(board, color) {
     return blots;
 }
 
-function countPrimes(board, color) {
+export const countPrimes = (board, color) => {
     let maxConsecutive = 0;
     let currentStreak = 0;
 
@@ -157,12 +84,10 @@ function countPrimes(board, color) {
     return maxConsecutive >= 6 ? maxConsecutive * 2 : maxConsecutive;
 }
 
-
-
 /**
  * احتمال اینکه یک بلات توسط حریف ضربه بخورد (با در نظر گرفتن همه مهره‌های حریف)
  */
-function getBlotHitProbability(board, blotPoint, color) {
+export const getBlotHitProbability = (board, blotPoint, color) => {
     const opponent = color === 'white' ? 'black' : 'white';
     const direction = opponent === 'white' ? -1 : 1;
     let unionProb = 0;
@@ -215,23 +140,23 @@ function getBlotHitProbability(board, blotPoint, color) {
     return unionProb;
 }
 
-function getHitValue(to, color) {
+export const getHitValue = (to, color) => {
     // ارزش نقاط مختلف را وزن‌دهی کنید
     const pointValue = color === 'white' ? to : (25 - to);
     return pointValue / 24; // نرمال‌سازی به 0-1
 }
 
-function checkerValueByPosition(point, color) {
+export const checkerValueByPosition = (point, color) => {
     const pointValue = color === 'white' ? (25 - point) : point;
     return pointValue / 24; // نرمال‌سازی به 0-1
 }
 
 // =================== Bear Off ===================
-function isBearOffPhase(board, color) {
+export const isBearOffPhase = (board, color) => {
     return isInHomeBoard(color, board);
 }
 
-function countRemainingCheckers(board, color) {
+export const countRemainingCheckers = (board, color) => {
     let count = 0;
     if (color === 'white') {
         for (let i = 1; i <= 25; i++) {
@@ -245,7 +170,7 @@ function countRemainingCheckers(board, color) {
     return count;
 }
 
-function calculateAverageDistance(board, color) {
+export const calculateAverageDistance = (board, color) => {
     let totalDistance = 0;
     let totalCheckers = 0;
 
@@ -269,7 +194,7 @@ function calculateAverageDistance(board, color) {
     return totalCheckers > 0 ? totalDistance / totalCheckers : 0;
 }
 
-function calculateDiceUtilization(board, color) {
+export const calculateDiceUtilization = (board, color) => {
     let score = 0;
 
     for (let die = 1; die <= 6; die++) {
@@ -310,47 +235,11 @@ function calculateDiceUtilization(board, color) {
     return (score / 6) * 100;
 }
 
-function evaluateBearOff(board, color, weights = null) {
-    const bearOffType = detectBearOffType(board, color);
-    const opponent = color === 'white' ? 'black' : 'white';
-    
-    // امتیاز پایه Bear Off
-    const remainingCheckers = countRemainingCheckers(board, color);
-    const bornOff = 15 - remainingCheckers;
-    const diceUtil = calculateDiceUtilization(board, color);
-    const avgDist = calculateAverageDistance(board, color);
-    
-    let score = (bornOff * 100) + (diceUtil * 2) - (avgDist * 5);
-    
-    // اگر Bear Off ناامن باشد، باید فاکتورهای امنیتی را در نظر بگیریم
-    if (bearOffType === 'unsecure_bearoff') {
-        // ۱. محاسبه ریسک بلات‌های خودی
-        let blotsInHome = 0;
-        let totalBlotRisk = 0;
-        const homeStart = color === 'white' ? 1 : 19;  // شروع خانه خودی
-        const homeEnd = color === 'white' ? 6 : 24;     // پایان خانه خودی
-        
-        for (let i = homeStart; i <= homeEnd; i++) {
-            const count = board[i];
-            if ((color === 'white' && count === 1) || (color === 'black' && count === -1)) {
-                blotsInHome++;
-                totalBlotRisk += getBlotHitProbability(board, i, color);
-            }
-        }
-        
-        
-        score -= totalBlotRisk*1000;
-        
-    }
-    
-    return score;
-}
-
 // ======================================================================
-function detectGamePhase(board, color) {
-    const myPips = pipCount(board, color);
+export const detectGamePhase = (board, color) => {
+    const myPips = boardService.pipCount(board, color);
     const opponent = color === 'white' ? 'black' : 'white';
-    const oppPips = pipCount(board, opponent);
+    const oppPips = boardService.pipCount(board, opponent);
 
     // اگر در فاز بیرون بردن هستیم = آخر بازی
     if (isBearOffPhase(board, color)) {
@@ -382,7 +271,7 @@ function detectGamePhase(board, color) {
     }
 }
 
-function getClosedPointsValue(board, color) {
+export const getClosedPointsValue = (board, color) => {
     // تشخیص فاز بازی
     const phase = detectGamePhase(board, color);
     const pointValues = CLOSED_POINT_VALUES[phase];
@@ -412,7 +301,7 @@ function getClosedPointsValue(board, color) {
 }
 
 // نسخه ساده و بهینه نهایی
-function calculateStackingPenalty(board, color) {
+export const calculateStackingPenalty = (board, color) => {
     const phase = detectGamePhase(board, color);
     if (phase !== 'opening') return 0;
 
@@ -433,183 +322,8 @@ function calculateStackingPenalty(board, color) {
     return -penalty;
 }
 
-// =================== تابع ارزیابی نهایی یک وضعیت ===================
-function evaluateBoard(board, color, phaseWeights) {
-    const opponent = color === 'black' ? 'white' : 'black';
-    const myPip = pipCount(board, color);
-    const oppPip = pipCount(board, opponent);
-    const pipDiff = (oppPip - myPip);
-
-    const myBlots = countBlots(board, color);
-    const oppBlots = countBlots(board, opponent);
-
-    const myClosedValue = getClosedPointsValue(board, color);
-    const oppClosedValue = getClosedPointsValue(board, opponent);
-    const closedPointValueDiff = myClosedValue - oppClosedValue;
-
-    const myPrimes = countPrimes(board, color);
-    const oppPrimes = countPrimes(board, opponent);
-
-    // محاسبه ریسک (میانگین احتمال ضربه خوردن بلات‌های خودی)
-    let riskSum = 0;
-    for (let i = 1; i <= 24; i++) {
-        const count = board[i];
-        if ((color === 'white' && count === 1) || (color === 'black' && count === -1)) {
-            riskSum += getBlotHitProbability(board, i, color) * checkerValueByPosition(i, color);
-        }
-    }
-    const averageRisk = riskSum / (myBlots || 1);  // اگر بلات نداشته باشیم، ریسک صفر
-
-    // ترکیب خطی
-    let score = 0;
-    let pipCountPoint = phaseWeights.pipCount * pipDiff;
-    let blotPoint = phaseWeights.blots * (oppBlots - myBlots);
-    let closedPoint = phaseWeights.closedPoints * closedPointValueDiff;
-    let riskPoint = phaseWeights.risk * averageRisk;   // weights.risk منفی است
-    let primePoint = phaseWeights.primes * (myPrimes - oppPrimes);
-    let stackingPenalty = calculateStackingPenalty(board, color); // مستقیماً اضافه می‌شود چون خودش وزن‌دهی شده
 
 
-    score += pipCountPoint;
-    score += blotPoint;
-    score += closedPoint;
-    score += riskPoint;
-    score += primePoint;
-    score += stackingPenalty;
-
-    return { score, pipCountPoint, blotPoint, closedPoint, riskPoint, primePoint, stackingPenalty };
-}
-
-// =================== ارزیابی یک حرکت خاص ===================
-export const evaluateMove = (board, dice, moveSequence, color, weights = AI_LEVELS[3]) => {
-    // کپی از تخته و مقادیر اولیه bornOff (در ارزیابی تأثیری ندارند، اما برای makeMove لازمند)
-    let newBoard = [...board];
-    let whiteBornOff = 0;
-    let blackBornOff = 0;
-
-    // تشخیص فاز بازی
-    const phase = detectGamePhase(board, color);
-
-    // استخراج وزن‌های فاز مربوطه
-    const phaseWeights = weights && weights[phase] ? weights[phase] : AI_LEVELS['3'][phase];
-
-    const isBearOff = isBearOffPhase(board, color);
-
-    // متغیر برای جمع ارزش ضربات
-    let totalHitValue = 0;
-
-    // اعمال تک‌تک گام‌های حرکت با استفاده از makeMove
-    for (const step of moveSequence) {
-        const { from, to, die } = step;
-        // قبل از حرکت، بررسی می‌کنیم که آیا در مقصد مهره حریف وجود دارد
-        const hasOpponentChecker = (color === 'white' && newBoard[to] == -1) || (color === 'black' && newBoard[to] == 1);
-        if (hasOpponentChecker) {
-            // ارزش ضربه را محاسبه و اضافه می‌کنیم
-            totalHitValue += getHitValue(to, color);
-        }
-
-        // فراخوانی makeMove؛ prevBoard را null می‌دهیم (چون برای انیمیشن نیست)
-        const result = makeMove(newBoard, from, die, color, null, whiteBornOff, blackBornOff);
-        // به‌روزرسانی وضعیت پس از هر حرکت
-        newBoard = result.newBoard;
-        whiteBornOff = result.whiteBornOff;
-        blackBornOff = result.blackBornOff;
-    }
-
-    if (isBearOff) {
-        const finalScore = evaluateBearOff(newBoard, color, weights = null);
-        return { finalScore }
-    } else {
-        // ارزیابی وضعیت نهایی تخته (بدون در نظر گرفتن bornOffها)
-        const { score, pipCountPoint, blotPoint, closedPoint, riskPoint, primePoint, stackingPenalty } = evaluateBoard(newBoard, color, phaseWeights);
-        const baseScore = score;
-        // استفاده از ارزش وزنی ضربات
-        const hitScore = phaseWeights.hits * totalHitValue;
-        const finalScore = baseScore + hitScore;
-
-        return { finalScore, pipCountPoint, blotPoint, closedPoint, riskPoint, primePoint, stackingPenalty };
-    }
 
 
-}
 
-// =================== تابع یکپارچه انتخاب بهترین حرکت ===================
-export function selectBestMove(board, dice, moves, currentTurn, difficulty = '3') {
-    // دریافت تنظیمات سطح
-    const config = LEVEL_CONFIG[difficulty] || LEVEL_CONFIG['3'];
-    const depth = config.depth;
-    const weights = config.weights;
-    
-    let bestScore = -Infinity;
-    let bestMove = null;
-    
-    // تشخیص فاز بازی و نوع Bear Off
-    const isSecureBearOff = detectBearOffType(board, currentTurn) === 'secure_bearoff';
-    const phase = detectGamePhase(board, currentTurn);
-    const isBearOff = isBearOffPhase(board, currentTurn);
-    
-    moves.forEach((move) => {
-        let score = -Infinity;
-        
-        // ۱. شبیه‌سازی حرکت خودمان
-        const { newBoard: boardAfterMe } = simulateMove(board, move, currentTurn);
-        
-        // اگر عمق ۰ باشد یا در Bear Off امن باشیم یا در فاز Bear Off باشیم، فقط حرکت خود را ارزیابی می‌کنیم
-        if (depth === 0 || isSecureBearOff || isBearOff) {
-            const evaluation = evaluateMove(board, dice, move, currentTurn, weights);
-            score = evaluation.finalScore;
-        } else if (depth >= 1) {
-            // ۲. همه حالات ممکن تاس برای حریف را بررسی می‌کنیم
-            const opponent = currentTurn === 'white' ? 'black' : 'white';
-            let totalWeightedScore = 0;
-            let totalWeight = 0;
-            
-            ALL_DICE_COMBINATIONS_WITH_WEIGHT.forEach(({ dice: opponentDice, weight }) => {
-                // دریافت حرکات ممکن حریف با این تاس‌ها
-                const opponentMoves = getAvailableMoves(boardAfterMe, opponentDice, opponent);
-                
-                let worstScoreForUs = Infinity;
-                
-                if (opponentMoves.length === 0) {
-                    // اگر حریف حرکتی نداشت، وضعیت فعلی را ارزیابی می‌کنیم
-                    const phaseWeights = weights[phase] || weights['middlegame'];
-                    const evaluation = evaluateBoard(boardAfterMe, currentTurn, phaseWeights);
-                    worstScoreForUs = evaluation.score;
-                } else {
-                    // بهترین حرکت حریف (بدترین برای ما) را پیدا می‌کنیم
-                    opponentMoves.forEach((opponentMove) => {
-                        const { newBoard: boardAfterOpponent } = simulateMove(boardAfterMe, opponentMove, opponent);
-                        const phaseWeights = weights[phase] || weights['middlegame'];
-                        const evaluation = evaluateBoard(boardAfterOpponent, currentTurn, phaseWeights);
-                        const scoreForUs = evaluation.score;
-                        
-                        if (scoreForUs < worstScoreForUs) {
-                            worstScoreForUs = scoreForUs;
-                        }
-                    });
-                }
-                
-                // اضافه کردن امتیاز وزنی
-                totalWeightedScore += worstScoreForUs * weight;
-                totalWeight += weight;
-            });
-            
-            score = totalWeightedScore / totalWeight;
-        }
-        
-        // انتخاب بهترین حرکت
-        if (score > bestScore) {
-            bestScore = score;
-            bestMove = move;
-        }
-    });
-    
-    // لاگ برای دیباگ (اختیاری)
-    if (bestMove) {
-        console.log('Game Phase:', detectGamePhase(board, currentTurn));
-        console.log('Difficulty:', difficulty, 'Depth:', depth);
-        console.log('Best move selected with score:', bestScore);
-    }
-    
-    return bestMove;
-}

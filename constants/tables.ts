@@ -35,3 +35,39 @@ export const DISTANCE_PROB = {
     11: 2 / 36,
     12: 1 / 36,
 };
+
+// =================== ترکیبات تاس با وزن ===================
+export const ALL_DICE_COMBINATIONS_WITH_WEIGHT = [
+    // تاس‌های تکراری (احتمال 1/36)
+    { dice: [1, 1, 1, 1], weight: 1 },
+    { dice: [2, 2, 2, 2], weight: 1 },
+    { dice: [3, 3, 3, 3], weight: 1 },
+    { dice: [4, 4, 4, 4], weight: 1 },
+    { dice: [5, 5, 5, 5], weight: 1 },
+    { dice: [6, 6, 6, 6], weight: 1 },
+
+    // ترکیب 1 با سایر اعداد (احتمال 2/36)
+    { dice: [1, 2], weight: 2 },
+    { dice: [1, 3], weight: 2 },
+    { dice: [1, 4], weight: 2 },
+    { dice: [1, 5], weight: 2 },
+    { dice: [1, 6], weight: 2 },
+
+    // ترکیب 2 با سایر اعداد بزرگتر (احتمال 2/36)
+    { dice: [2, 3], weight: 2 },
+    { dice: [2, 4], weight: 2 },
+    { dice: [2, 5], weight: 2 },
+    { dice: [2, 6], weight: 2 },
+
+    // ترکیب 3 با سایر اعداد بزرگتر (احتمال 2/36)
+    { dice: [3, 4], weight: 2 },
+    { dice: [3, 5], weight: 2 },
+    { dice: [3, 6], weight: 2 },
+
+    // ترکیب 4 با سایر اعداد بزرگتر (احتمال 2/36)
+    { dice: [4, 5], weight: 2 },
+    { dice: [4, 6], weight: 2 },
+
+    // ترکیب 5 با سایر اعداد بزرگتر (احتمال 2/36)
+    { dice: [5, 6], weight: 2 },
+];

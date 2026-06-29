@@ -260,3 +260,17 @@ export const AI_LEVELS = {
         }
     },
 }
+
+// =================== تنظیمات سطح بازی ===================
+export const LEVEL_CONFIG = {
+    '1': { depth: 0, weights: AI_LEVELS['1'] },  // مبتدی
+    '2': { depth: 0, weights: AI_LEVELS['3'] },  // آسان
+    '3': { depth: 0, weights: AI_LEVELS['5'] },  // متوسط
+    '4': { depth: 0, weights: AI_LEVELS['7'] },  // سخت
+    '5': { depth: 0, weights: AI_LEVELS['10'] },
+    '6': { depth: 1, weights: AI_LEVELS['1'] },
+    '7': { depth: 1, weights: AI_LEVELS['3'] },
+    '8': { depth: 1, weights: AI_LEVELS['5'] },
+    '9': { depth: 1, weights: AI_LEVELS['7'] },
+    '10': { depth: 1, weights: AI_LEVELS['10'] },
+}
