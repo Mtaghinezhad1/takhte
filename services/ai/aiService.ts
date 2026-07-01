@@ -60,53 +60,15 @@ export const aiService = {
         const phase = detectGamePhase(board, currentTurn);
         const isBearOff = isBearOffPhase(board, currentTurn);
 
+
         moves.forEach((move) => {
             let score = -Infinity;
 
-            // ۱. شبیه‌سازی حرکت خودمان
-            const { newBoard: boardAfterMe } = simulateMove(board, move, currentTurn);
-
-            // اگر عمق ۰ باشد یا در Bear Off امن باشیم یا در فاز Bear Off باشیم، فقط حرکت خود را ارزیابی می‌کنیم
+            // اگر عمق ۰ باشد یا در Bear Off امن باشیم، فقط حرکت خود را ارزیابی می‌کنیم
             if (depth === 0 || isSecureBearOff || isBearOff) {
-                const evaluation = this.evaluateMove(board, dice, move, currentTurn, weights);
-                score = evaluation.finalScore;
+                score = this.evaluateMoveWithoutDepth(board, move, currentTurn, weights).finalScore;
             } else if (depth >= 1) {
-                // ۲. همه حالات ممکن تاس برای حریف را بررسی می‌کنیم
-                const opponent = currentTurn === 'white' ? 'black' : 'white';
-                let totalWeightedScore = 0;
-                let totalWeight = 0;
-
-                ALL_DICE_COMBINATIONS_WITH_WEIGHT.forEach(({ dice: opponentDice, weight }) => {
-                    // دریافت حرکات ممکن حریف با این تاس‌ها
-                    const opponentMoves = getAvailableMoves(boardAfterMe, opponentDice, opponent);
-
-                    let worstScoreForUs = Infinity;
-
-                    if (opponentMoves.length === 0) {
-                        // اگر حریف حرکتی نداشت، وضعیت فعلی را ارزیابی می‌کنیم
-                        const phaseWeights = weights[phase] || weights['middlegame'];
-                        const evaluation = this.evaluateBoard(boardAfterMe, currentTurn, phaseWeights);
-                        worstScoreForUs = evaluation.score;
-                    } else {
-                        // بهترین حرکت حریف (بدترین برای ما) را پیدا می‌کنیم
-                        opponentMoves.forEach((opponentMove) => {
-                            const { newBoard: boardAfterOpponent } = simulateMove(boardAfterMe, opponentMove, opponent);
-                            const phaseWeights = weights[phase] || weights['middlegame'];
-                            const evaluation = this.evaluateBoard(boardAfterOpponent, currentTurn, phaseWeights);
-                            const scoreForUs = evaluation.score;
-
-                            if (scoreForUs < worstScoreForUs) {
-                                worstScoreForUs = scoreForUs;
-                            }
-                        });
-                    }
-
-                    // اضافه کردن امتیاز وزنی
-                    totalWeightedScore += worstScoreForUs * weight;
-                    totalWeight += weight;
-                });
-
-                score = totalWeightedScore / totalWeight;
+                score = this.evaluateMoveWithDepth(board, move, currentTurn, weights, phase);
             }
 
             // انتخاب بهترین حرکت
@@ -119,8 +81,51 @@ export const aiService = {
         return bestMove;
     },
 
+    // =================== ارزیابی حرکت با عمق (Minimax یک لایه) ===================
+    evaluateMoveWithDepth(board, moveSequence, currentTurn, weights, phase) {
+        // ۱. شبیه‌سازی حرکت خودمان
+        const { newBoard: boardAfterMe } = simulateMove(board, moveSequence, currentTurn);
+
+        // ۲. همه حالات ممکن تاس برای حریف را بررسی می‌کنیم
+        const opponent = currentTurn === 'white' ? 'black' : 'white';
+        let totalWeightedScore = 0;
+        let totalWeight = 0;
+
+        ALL_DICE_COMBINATIONS_WITH_WEIGHT.forEach(({ dice: opponentDice, weight }) => {
+            // دریافت حرکات ممکن حریف با این تاس‌ها
+            const opponentMoves = getAvailableMoves(boardAfterMe, opponentDice, opponent);
+
+            let worstScoreForUs = Infinity;
+
+            if (opponentMoves.length === 0) {
+                // اگر حریف حرکتی نداشت، وضعیت فعلی را ارزیابی می‌کنیم
+                const phaseWeights = weights[phase] || weights['middlegame'];
+                const evaluation = this.evaluateBoard(boardAfterMe, currentTurn, phaseWeights);
+                worstScoreForUs = evaluation.score;
+            } else {
+                // بهترین حرکت حریف (بدترین برای ما) را پیدا می‌کنیم
+                opponentMoves.forEach((opponentMove) => {
+                    const { newBoard: boardAfterOpponent } = simulateMove(boardAfterMe, opponentMove, opponent);
+                    const phaseWeights = weights[phase] || weights['middlegame'];
+                    const evaluation = this.evaluateBoard(boardAfterOpponent, currentTurn, phaseWeights);
+                    const scoreForUs = evaluation.score;
+
+                    if (scoreForUs < worstScoreForUs) {
+                        worstScoreForUs = scoreForUs;
+                    }
+                });
+            }
+
+            // اضافه کردن امتیاز وزنی
+            totalWeightedScore += worstScoreForUs * weight;
+            totalWeight += weight;
+        });
+
+        return totalWeightedScore / totalWeight;
+    },
+
     // =================== ارزیابی یک حرکت خاص ===================
-    evaluateMove(board, dice, moveSequence, color, weights = AI_LEVELS[3]) {
+    evaluateMoveWithoutDepth(board, moveSequence, color, weights = AI_LEVELS[3]) {
         // کپی از تخته و مقادیر اولیه bornOff (در ارزیابی تأثیری ندارند، اما برای makeMove لازمند)
         let newBoard = [...board];
         let whiteBornOff = 0;
