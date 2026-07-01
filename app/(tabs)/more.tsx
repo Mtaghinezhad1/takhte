@@ -58,16 +58,16 @@ export default function MoreScreen() {
 
           <View style={[styles.btnContainer, { gap: width * 0.015 }]}>
 
-            <View style={[styles.btn, styles.leftBtn, { padding: getPadding() }]}>
+            {/* <View style={[styles.btn, { padding: getPadding() }]}>
               <View style={styles.textBtn}>
                 <Text style={[styles.btnText, { fontSize: getFontSize() }]}>سکه: {coins}</Text>
               </View>
               <View style={styles.icon}>
                 <IconSymbol size={getIconSize()} name="attach-money" color='black' />
               </View>
-            </View>
+            </View> */}
 
-            <View style={[styles.btn, styles.rightBtn, { padding: getPadding() }]}>
+            <View style={[styles.btn, { padding: getPadding() }]}>
               <View style={styles.textBtn}>
                 <Text style={[styles.btnText, { fontSize: getFontSize() }]}>توانایی: {elo}</Text>
               </View>
@@ -81,7 +81,7 @@ export default function MoreScreen() {
 
 
         <View style={styles.itemContainer}>
-          <ItemRow icon='person' text="ویرایش پروفایل" />
+          {/* <ItemRow icon='person' text="ویرایش پروفایل" /> */}
           {/* <ItemRow text="آشنایی با قوانین تخته نرد" />
           <ItemRow text="آشنایی با قوانین تخته نرد"  /> */}
         </View>
@@ -112,6 +112,8 @@ const styles = StyleSheet.create({
   btnContainer: {
     flexDirection: 'row',
     marginBottom: 16,
+    borderRadius: 16,
+    overflow: 'hidden',
   },
   btn: {
     flex: 1,
@@ -120,6 +122,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 0,
+    borderRadius: 3,
   },
   arrow: {
     width: 30,
@@ -129,18 +132,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#6495ed',
     elevation: 4,
-  },
-  leftBtn: {
-    borderTopLeftRadius: 16,
-    borderBottomLeftRadius: 16,
-    borderTopRightRadius: 3,
-    borderBottomRightRadius: 3,
-  },
-  rightBtn: {
-    borderTopRightRadius: 16,
-    borderBottomRightRadius: 16,
-    borderTopLeftRadius: 3,
-    borderBottomLeftRadius: 3,
   },
   textBtn: {
     textAlign: 'right',

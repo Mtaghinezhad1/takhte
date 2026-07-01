@@ -22,7 +22,7 @@ const ProfileCard = () => {
                 <View style={styles.textSection}>
                     <Text style={styles.name}>{username}</Text>
                     <View style={styles.amounts}>
-                        <Text style={styles.amountText}>سکه: {coins}</Text>
+                        {/* <Text style={styles.amountText}>سکه: {coins}</Text> */}
                         <Text style={[styles.amountMargin, styles.amountText]}>توانایی: {elo}</Text>
                     </View>
                 </View>
