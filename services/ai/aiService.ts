@@ -1,13 +1,17 @@
-import { AI_LEVELS, LEVEL_CONFIG } from '@/constants/aiWeights';
+import { AI_LEVELS_MULTIPLIER, LEVEL_CONFIG, STRATEGY_PHASE_WEIGHTS } from '@/constants/aiWeights';
 import { ALL_DICE_COMBINATIONS_WITH_WEIGHT } from '@/constants/tables';
 import { getAvailableMoves } from '@/utils/availableMoves';
-import { calculateAverageDistance, calculateDiceUtilization, calculateStackingPenalty, checkerValueByPosition, countBlots, countPrimes, countRemainingCheckers, detectBearOffType, detectGamePhase, getBlotHitProbability, getClosedPointsValue, getHitValue, isBearOffPhase, simulateMove } from '@/utils/computerAI';
-import { makeMove } from '@/utils/utils';
+import { calculateAverageDistance, calculateDiceUtilization, calculateStackingPenalty, checkerValueByPosition, countBlots, countPrimes, countRemainingCheckers, detectBearOffType, getBlotHitProbability, getClosedPointsValue, getHitValue, isBearOffPhase, simulateMove } from '@/utils/computerAI';
 import { boardService } from '../boardService';
+import { featureExtractor } from './featureExtractor';
+import { scoreCalculator } from './scoreCalculator';
+import { strategyEngine } from './strategyEngine';
 
 export const aiService = {
     executeBestMove(board, dice, sequences, currentTurn, whiteBornOff, blackBornOff, difficulty = '3') {
-        const bestMove = this.selectBestMove(board, dice, sequences, currentTurn, difficulty);
+        const strategyInfo = strategyEngine.determineStrategy(board, currentTurn);
+
+        const bestMove = this.selectBestMove(board, dice, sequences, currentTurn, difficulty, strategyInfo);
 
         let currentBoard = [...board];
         let currentDice = [...dice];
@@ -41,37 +45,47 @@ export const aiService = {
             remainingDice: currentDice,
             whiteBornOff: currentWhiteBornOff,
             blackBornOff: currentBlackBornOff,
-            turnComplete
+            turnComplete,
+            strategyInfo
         };
     },
 
     // =================== تابع یکپارچه انتخاب بهترین حرکت ===================
-    selectBestMove(board, dice, moves, currentTurn, difficulty = '3') {
+    selectBestMove(board, dice, moves, currentTurn, difficulty = '5', strategyInfo = null) {
         // دریافت تنظیمات سطح
         const config = LEVEL_CONFIG[difficulty] || LEVEL_CONFIG['3'];
         const depth = config.depth;
-        const weights = config.weights;
+        const difficultyLevel = config.difficulty || '5'; // سطح دشواری برای ضریب‌ها
+
+        if (!strategyInfo) {
+            strategyInfo = strategyEngine.determineStrategy(board, currentTurn);
+        }
+        const { strategy, phase } = strategyInfo;
 
         let bestScore = -Infinity;
         let bestMove = null;
 
-        // تشخیص فاز بازی و نوع Bear Off
         const isSecureBearOff = detectBearOffType(board, currentTurn) === 'secure_bearoff';
-        const phase = detectGamePhase(board, currentTurn);
         const isBearOff = isBearOffPhase(board, currentTurn);
-
 
         moves.forEach((move) => {
             let score = -Infinity;
 
-            // اگر عمق ۰ باشد یا در Bear Off امن باشیم، فقط حرکت خود را ارزیابی می‌کنیم
             if (depth === 0 || isSecureBearOff || isBearOff) {
-                score = this.evaluateMoveWithoutDepth(board, move, currentTurn, weights).finalScore;
+                // ارسال difficultyLevel به تابع ارزیابی
+                score = this.evaluateMoveWithoutDepth(
+                    board, move, currentTurn,
+                    difficultyLevel, // <-- اضافه شد
+                    strategy, phase
+                );
             } else if (depth >= 1) {
-                score = this.evaluateMoveWithDepth(board, move, currentTurn, weights, phase);
+                score = this.evaluateMoveWithDepth(
+                    board, move, currentTurn,
+                    difficultyLevel, // <-- اضافه شد
+                    phase, strategy
+                );
             }
 
-            // انتخاب بهترین حرکت
             if (score > bestScore) {
                 bestScore = score;
                 bestMove = move;
@@ -82,41 +96,36 @@ export const aiService = {
     },
 
     // =================== ارزیابی حرکت با عمق (Minimax یک لایه) ===================
-    evaluateMoveWithDepth(board, moveSequence, currentTurn, weights, phase) {
-        // ۱. شبیه‌سازی حرکت خودمان
+    evaluateMoveWithDepth(board, moveSequence, currentTurn, difficulty, phase, strategy = 'neutral') {
         const { newBoard: boardAfterMe } = simulateMove(board, moveSequence, currentTurn);
-
-        // ۲. همه حالات ممکن تاس برای حریف را بررسی می‌کنیم
         const opponent = currentTurn === 'white' ? 'black' : 'white';
         let totalWeightedScore = 0;
         let totalWeight = 0;
 
         ALL_DICE_COMBINATIONS_WITH_WEIGHT.forEach(({ dice: opponentDice, weight }) => {
-            // دریافت حرکات ممکن حریف با این تاس‌ها
             const opponentMoves = getAvailableMoves(boardAfterMe, opponentDice, opponent);
-
             let worstScoreForUs = Infinity;
 
             if (opponentMoves.length === 0) {
-                // اگر حریف حرکتی نداشت، وضعیت فعلی را ارزیابی می‌کنیم
-                const phaseWeights = weights[phase] || weights['middlegame'];
-                const evaluation = this.evaluateBoard(boardAfterMe, currentTurn, phaseWeights);
-                worstScoreForUs = evaluation.score;
+                const features = featureExtractor.extractFeatures(boardAfterMe, currentTurn);
+                // ارسال difficulty به scoreCalculator
+                worstScoreForUs = scoreCalculator.calculateScore(
+                    features, strategy, phase, difficulty
+                );
             } else {
-                // بهترین حرکت حریف (بدترین برای ما) را پیدا می‌کنیم
                 opponentMoves.forEach((opponentMove) => {
-                    const { newBoard: boardAfterOpponent } = simulateMove(boardAfterMe, opponentMove, opponent);
-                    const phaseWeights = weights[phase] || weights['middlegame'];
-                    const evaluation = this.evaluateBoard(boardAfterOpponent, currentTurn, phaseWeights);
-                    const scoreForUs = evaluation.score;
-
-                    if (scoreForUs < worstScoreForUs) {
-                        worstScoreForUs = scoreForUs;
-                    }
+                    const { newBoard: boardAfterOpponent } = simulateMove(
+                        boardAfterMe, opponentMove, opponent
+                    );
+                    const features = featureExtractor.extractFeatures(boardAfterOpponent, currentTurn);
+                    // ارسال difficulty به scoreCalculator
+                    const scoreForUs = scoreCalculator.calculateScore(
+                        features, strategy, phase, difficulty
+                    );
+                    worstScoreForUs = Math.min(worstScoreForUs, scoreForUs);
                 });
             }
 
-            // اضافه کردن امتیاز وزنی
             totalWeightedScore += worstScoreForUs * weight;
             totalWeight += weight;
         });
@@ -125,60 +134,46 @@ export const aiService = {
     },
 
     // =================== ارزیابی یک حرکت خاص ===================
-    evaluateMoveWithoutDepth(board, moveSequence, color, weights = AI_LEVELS[3]) {
-        // کپی از تخته و مقادیر اولیه bornOff (در ارزیابی تأثیری ندارند، اما برای makeMove لازمند)
-        let newBoard = [...board];
-        let whiteBornOff = 0;
-        let blackBornOff = 0;
-
-        // تشخیص فاز بازی
-        const phase = detectGamePhase(board, color);
-
-        // استخراج وزن‌های فاز مربوطه
-        const phaseWeights = weights && weights[phase] ? weights[phase] : AI_LEVELS['3'][phase];
-
+    evaluateMoveWithoutDepth(board, moveSequence, color, difficulty, strategy = 'neutral', phase = null) {
+        const { newBoard } = simulateMove(board, moveSequence, color);
         const isBearOff = isBearOffPhase(board, color);
 
-        // متغیر برای جمع ارزش ضربات
-        let totalHitValue = 0;
+        if (isBearOff) {
+            return this.evaluateBearOff(newBoard, color, difficulty);
+        } else {
+            const features = featureExtractor.extractFeatures(newBoard, color);
+            features.metadata.phase = phase;
 
-        // اعمال تک‌تک گام‌های حرکت با استفاده از makeMove
-        for (const step of moveSequence) {
-            const { from, to, die } = step;
-            // قبل از حرکت، بررسی می‌کنیم که آیا در مقصد مهره حریف وجود دارد
-            const hasOpponentChecker = (color === 'white' && newBoard[to] == -1) || (color === 'black' && newBoard[to] == 1);
-            if (hasOpponentChecker) {
-                // ارزش ضربه را محاسبه و اضافه می‌کنیم
-                totalHitValue += getHitValue(to, color);
+            // ارسال difficulty به scoreCalculator
+            let score = scoreCalculator.calculateScore(
+                features, strategy, phase, difficulty
+            );
+
+            // اضافه کردن امتیاز ضربات
+            if (strategy === 'BLITZ' || strategy === 'HOLDING') {
+                let totalHitValue = 0;
+                for (const step of moveSequence) {
+                    const { to } = step;
+                    const hasOpponent = (color === 'white' && board[to] == -1) ||
+                        (color === 'black' && board[to] == 1);
+                    if (hasOpponent) {
+                        totalHitValue += getHitValue(to, color);
+                    }
+                }
+                const weights = scoreCalculator.getBaseWeights(strategy, phase);
+                const hitWeight = weights?.hits || 0;
+                // اعمال ضریب دشواری روی ضربه
+                const multiplier = AI_LEVELS_MULTIPLIER[difficulty];
+                const adjustedHitWeight = hitWeight * (multiplier?.hits || 1);
+                score += totalHitValue * adjustedHitWeight;
             }
 
-            // فراخوانی makeMove؛ prevBoard را null می‌دهیم (چون برای انیمیشن نیست)
-            const result = makeMove(newBoard, from, die, color, null, whiteBornOff, blackBornOff);
-            // به‌روزرسانی وضعیت پس از هر حرکت
-            newBoard = result.newBoard;
-            whiteBornOff = result.whiteBornOff;
-            blackBornOff = result.blackBornOff;
+            return score;
         }
-
-        if (isBearOff) {
-            const finalScore = this.evaluateBearOff(newBoard, color, weights = null);
-            return { finalScore }
-        } else {
-            // ارزیابی وضعیت نهایی تخته (بدون در نظر گرفتن bornOffها)
-            const { score, pipCountPoint, blotPoint, closedPoint, riskPoint, primePoint, stackingPenalty } = this.evaluateBoard(newBoard, color, phaseWeights);
-            const baseScore = score;
-            // استفاده از ارزش وزنی ضربات
-            const hitScore = phaseWeights.hits * totalHitValue;
-            const finalScore = baseScore + hitScore;
-
-            return { finalScore, pipCountPoint, blotPoint, closedPoint, riskPoint, primePoint, stackingPenalty };
-        }
-
-
     },
 
     // =================== تابع ارزیابی نهایی یک وضعیت ===================
-    evaluateBoard(board, color, phaseWeights) {
+    evaluateBoard(board, color, phaseWeights, phase, strategy = 'neutral') {
         const opponent = color === 'black' ? 'white' : 'black';
         const myPip = boardService.pipCount(board, color);
         const oppPip = boardService.pipCount(board, opponent);
@@ -204,14 +199,19 @@ export const aiService = {
         }
         const averageRisk = riskSum / (myBlots || 1);  // اگر بلات نداشته باشیم، ریسک صفر
 
+        // ✨ تنظیم وزن‌ها بر اساس استراتژی
+        const adjustedWeights = this.adjustWeightsForStrategy(
+            phaseWeights, strategy, phase, board, color
+        );
+
         // ترکیب خطی
         let score = 0;
-        let pipCountPoint = phaseWeights.pipCount * pipDiff;
-        let blotPoint = phaseWeights.blots * (oppBlots - myBlots);
-        let closedPoint = phaseWeights.closedPoints * closedPointValueDiff;
-        let riskPoint = phaseWeights.risk * averageRisk;   // weights.risk منفی است
-        let primePoint = phaseWeights.primes * (myPrimes - oppPrimes);
-        let stackingPenalty = calculateStackingPenalty(board, color); // مستقیماً اضافه می‌شود چون خودش وزن‌دهی شده
+        let pipCountPoint = adjustedWeights.pipCount * pipDiff;
+        let blotPoint = adjustedWeights.blots * (oppBlots - myBlots);
+        let closedPoint = adjustedWeights.closedPoints * closedPointValueDiff;
+        let riskPoint = adjustedWeights.risk * averageRisk;
+        let primePoint = adjustedWeights.primes * (myPrimes - oppPrimes);
+        let stackingPenalty = calculateStackingPenalty(board, color);
 
 
         score += pipCountPoint;
@@ -258,7 +258,106 @@ export const aiService = {
         }
 
         return score;
-    }
+    },
+
+    adjustWeightsForStrategy(baseWeights, strategy, phase) {
+        // ✨ اگر استراتژی در STRATEGY_PHASE_WEIGHTS وجود داشته باشد، از آن استفاده می‌کنیم
+        if (STRATEGY_PHASE_WEIGHTS[strategy] && STRATEGY_PHASE_WEIGHTS[strategy][phase]) {
+            const strategicWeights = STRATEGY_PHASE_WEIGHTS[strategy][phase];
+
+            // وزن‌های استراتژیک را با وزن‌های پایه ترکیب می‌کنیم
+            const adjusted = { ...baseWeights };
+
+            // برای هر کلید در وزن‌های استراتژیک، مقدار را تنظیم می‌کنیم
+            for (const key in strategicWeights) {
+                if (adjusted.hasOwnProperty(key)) {
+                    // ترکیب: 60% وزن استراتژیک + 40% وزن پایه (برای حفظ تعادل)
+                    adjusted[key] = (strategicWeights[key] * 0.6) + (adjusted[key] * 0.4);
+                } else {
+                    adjusted[key] = strategicWeights[key];
+                }
+            }
+
+            return adjusted;
+        }
+
+        // اگر استراتژی پیدا نشد، از روش قبلی استفاده می‌کنیم
+        const adjusted = { ...baseWeights };
+
+        switch (strategy) {
+            case 'blitz':
+                adjusted.blots = (baseWeights.blots || 0) * 1.5;
+                adjusted.closedPoints = (baseWeights.closedPoints || 0) * 1.3;
+                adjusted.risk = (baseWeights.risk || 0) * 0.7;
+                break;
+            case 'prime':
+                adjusted.primes = (baseWeights.primes || 0) * 1.5;
+                adjusted.risk = (baseWeights.risk || 0) * 1.3;
+                adjusted.pipCount = (baseWeights.pipCount || 0) * 0.8;
+                break;
+            case 'neutral':
+            default:
+                break;
+        }
+
+        return adjusted;
+    },
+
+    hasAdvancedAnchor(board, color) {
+        if (color === 'white') {
+            return (board[20] >= 2 || board[21] >= 2);
+        } else {
+            return (board[4] <= -2 || board[5] <= -2);
+        }
+    },
+
+    countOpponentBlotsInHome(board, currentTurn) {
+        let count = 0;
+        const homeStart = currentTurn === 'white' ? 19 : 1;
+        const homeEnd = currentTurn === 'white' ? 24 : 6;
+        for (let i = homeStart; i <= homeEnd; i++) {
+            if ((currentTurn === 'white' && board[i] === -1) ||
+                (currentTurn === 'black' && board[i] === 1)) {
+                count++;
+            }
+        }
+        return count;
+    },
+
+    calculatePrimeLength(board, color) {
+        let maxPrime = 0;
+        let currentPrime = 0;
+        for (let i = 1; i <= 24; i++) {
+            const isMyPoint = (color === 'white' && board[i] >= 2) ||
+                (color === 'black' && board[i] <= -2);
+            if (isMyPoint) {
+                currentPrime++;
+                maxPrime = Math.max(maxPrime, currentPrime);
+            } else {
+                currentPrime = 0;
+            }
+        }
+        return maxPrime;
+    },
+
+    countClosedPoints(board, color) {
+        let closedPoints = 0;
+        for (let i = 1; i <= 24; i++) {
+            if ((color === 'white' && board[i] >= 2) ||
+                (color === 'black' && board[i] <= -2)) {
+                closedPoints++;
+            }
+        }
+        return closedPoints;
+    },
+
+    calculateTiming(board, currentTurn, myPips, oppPips) {
+        const remainingMoves = Math.ceil(myPips / 8);
+        const opponentRemaining = Math.ceil(oppPips / 8);
+        if (remainingMoves < opponentRemaining - 5) return 'CRITICAL';
+        if (remainingMoves < opponentRemaining) return 'AHEAD';
+        return 'BEHIND';
+    },
 
 
 };

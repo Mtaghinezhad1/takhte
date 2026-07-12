@@ -81,14 +81,14 @@ export default function MoreScreen() {
 
 
         <View style={styles.itemContainer}>
-          {/* <ItemRow icon='person' text="ویرایش پروفایل" /> */}
+          <ItemRow icon='person' text="ویرایش پروفایل" onPress={() => router.push(`/editProfile`)} />
           {/* <ItemRow text="آشنایی با قوانین تخته نرد" />
           <ItemRow text="آشنایی با قوانین تخته نرد"  /> */}
         </View>
 
         <View style={styles.itemContainer}>
           {/* <ItemRow text="درباره ما"  /> */}
-          <ItemRow icon='info-outline' onPress={() => console.log('ss')} text="نسخه اپلیکیشن              1.0.0" />
+          <ItemRow icon='info-outline' onPress={() => console.log('ss')} text="نسخه اپلیکیشن              1.2.0" />
         </View>
       </ScrollView>
     </SafeAreaView>

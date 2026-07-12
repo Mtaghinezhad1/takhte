@@ -8,6 +8,12 @@ const useUserStore = create((set, get) => ({
   avatarKey: 'avatar_3',
   elo: 1500,
   coins: 0,
+  age: null,
+  gender: null,
+  city: '',
+  province: '',
+  phoneNumber: '',
+  email: '',
   isLoading: false,
 
 
@@ -23,13 +29,13 @@ const useUserStore = create((set, get) => ({
         avatarKey: userData.avatarKey || 'avatar_1',
         elo: userData.elo || 1500,
         coins: userData.coins || 0,
+        age: userData.age || null,
+        gender: userData.gender || null,
+        city: userData.city || '',
+        province: userData.province || '',
+        phoneNumber: userData.phoneNumber || '',
+        email: userData.email || '',
       });
-    }
-
-    // بارگذاری تنظیمات بازی
-    const gameSettings = await storageService.loadGameSettings();
-    if (gameSettings && gameSettings.defaultAiLevel) {
-      // می‌توانیم تنظیمات را در جای دیگری ذخیره کنیم
     }
 
     set({ isLoading: false });
@@ -42,19 +48,30 @@ const useUserStore = create((set, get) => ({
       username: name,
       avatarKey: currentState.avatarKey,
       elo: currentState.elo,
-      coins: currentState.coins
+      coins: currentState.coins,
+      age: currentState.age,
+      gender: currentState.gender,
+      city: currentState.city,
+      province: currentState.province,
+      phoneNumber: currentState.phoneNumber,
+      email: currentState.email,
     });
   },
 
   setAvatar: async (avatarKey) => {
     set({ avatarKey });
-
     const currentState = get();
     await storageService.saveUserData({
       username: currentState.username,
       avatarKey: avatarKey,
       elo: currentState.elo,
-      coins: currentState.coins
+      coins: currentState.coins,
+      age: currentState.age,
+      gender: currentState.gender,
+      city: currentState.city,
+      province: currentState.province,
+      phoneNumber: currentState.phoneNumber,
+      email: currentState.email,
     });
   },
 
@@ -65,7 +82,13 @@ const useUserStore = create((set, get) => ({
       username: currentState.username,
       avatarKey: currentState.avatarKey,
       elo: currentState.elo,
-      coins: amount
+      coins: amount,
+      age: currentState.age,
+      gender: currentState.gender,
+      city: currentState.city,
+      province: currentState.province,
+      phoneNumber: currentState.phoneNumber,
+      email: currentState.email,
     });
   },
 
@@ -77,7 +100,13 @@ const useUserStore = create((set, get) => ({
       username: currentState.username,
       avatarKey: currentState.avatarKey,
       elo: currentState.elo,
-      coins: newCoins
+      coins: newCoins,
+      age: currentState.age,
+      gender: currentState.gender,
+      city: currentState.city,
+      province: currentState.province,
+      phoneNumber: currentState.phoneNumber,
+      email: currentState.email,
     });
   },
 
@@ -89,12 +118,130 @@ const useUserStore = create((set, get) => ({
       username: currentState.username,
       avatarKey: currentState.avatarKey,
       elo: currentState.elo,
-      coins: newCoins
+      coins: newCoins,
+      age: currentState.age,
+      gender: currentState.gender,
+      city: currentState.city,
+      province: currentState.province,
+      phoneNumber: currentState.phoneNumber,
+      email: currentState.email,
+    });
+  },
+
+  setAge: async (age) => {
+    set({ age });
+    const currentState = get();
+    await storageService.saveUserData({
+      username: currentState.username,
+      avatarKey: currentState.avatarKey,
+      elo: currentState.elo,
+      coins: currentState.coins,
+      age: age,
+      gender: currentState.gender,
+      city: currentState.city,
+      province: currentState.province,
+      phoneNumber: currentState.phoneNumber,
+      email: currentState.email,
+    });
+  },
+
+  setGender: async (gender) => {
+    set({ gender });
+    const currentState = get();
+    await storageService.saveUserData({
+      username: currentState.username,
+      avatarKey: currentState.avatarKey,
+      elo: currentState.elo,
+      coins: currentState.coins,
+      age: currentState.age,
+      gender: gender,
+      city: currentState.city,
+      province: currentState.province,
+      phoneNumber: currentState.phoneNumber,
+      email: currentState.email,
+    });
+  },
+
+  setCity: async (city) => {
+    set({ city });
+    const currentState = get();
+    await storageService.saveUserData({
+      username: currentState.username,
+      avatarKey: currentState.avatarKey,
+      elo: currentState.elo,
+      coins: currentState.coins,
+      age: currentState.age,
+      gender: currentState.gender,
+      city: city,
+      province: currentState.province,
+      phoneNumber: currentState.phoneNumber,
+      email: currentState.email,
+    });
+  },
+
+  setProvince: async (province) => {
+    set({ province });
+    const currentState = get();
+    await storageService.saveUserData({
+      username: currentState.username,
+      avatarKey: currentState.avatarKey,
+      elo: currentState.elo,
+      coins: currentState.coins,
+      age: currentState.age,
+      gender: currentState.gender,
+      city: currentState.city,
+      province: province,
+      phoneNumber: currentState.phoneNumber,
+      email: currentState.email,
+    });
+  },
+
+  setPhoneNumber: async (phoneNumber) => {
+    // اعتبارسنجی ساده شماره موبایل (اختیاری)
+    const phoneRegex = /^09[0-9]{9}$/;
+    if (phoneNumber && !phoneRegex.test(phoneNumber)) {
+      console.warn('شماره موبایل نامعتبر است');
+    }
+    set({ phoneNumber });
+    const currentState = get();
+    await storageService.saveUserData({
+      username: currentState.username,
+      avatarKey: currentState.avatarKey,
+      elo: currentState.elo,
+      coins: currentState.coins,
+      age: currentState.age,
+      gender: currentState.gender,
+      city: currentState.city,
+      province: currentState.province,
+      phoneNumber: phoneNumber,
+      email: currentState.email,
+    });
+  },
+
+  setEmail: async (email) => {
+    // اعتبارسنجی ساده ایمیل (اختیاری)
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (email && !emailRegex.test(email)) {
+      console.warn('آدرس ایمیل نامعتبر است');
+    }
+    set({ email });
+    const currentState = get();
+    await storageService.saveUserData({
+      username: currentState.username,
+      avatarKey: currentState.avatarKey,
+      elo: currentState.elo,
+      coins: currentState.coins,
+      age: currentState.age,
+      gender: currentState.gender,
+      city: currentState.city,
+      province: currentState.province,
+      phoneNumber: currentState.phoneNumber,
+      email: email,
     });
   },
 
   updateEloAfterMatch: async (winner, userColor, opponentElo, matchLength = 5) => {
-    const { elo: userElo, username, avatarKey, coins } = get();
+    const { elo: userElo, username, avatarKey, coins, age, gender, city, province, phoneNumber, email } = get();
     const isWin = (userColor === winner);
 
     const newUserElo = userService.calculateElo(userElo, opponentElo, isWin, matchLength);
@@ -107,7 +254,13 @@ const useUserStore = create((set, get) => ({
       username,
       avatarKey,
       elo: newUserElo,
-      coins
+      coins,
+      age,
+      gender,
+      city,
+      province,
+      phoneNumber,
+      email,
     });
 
     return { newUserElo, newOpponentElo };
@@ -119,6 +272,12 @@ const useUserStore = create((set, get) => ({
       avatarKey: 'avatar_1',
       elo: 1500,
       coins: 0,
+      age: null,
+      gender: null,
+      city: '',
+      province: '',
+      phoneNumber: '',
+      email: '',
     };
     set(defaultData);
     await storageService.saveUserData(defaultData);

@@ -243,12 +243,12 @@ export const detectGamePhase = (board, color) => {
 
     // اگر در فاز بیرون بردن هستیم = آخر بازی
     if (isBearOffPhase(board, color)) {
-        return 'endgame';
+        return 'ENDGAME';
     }
 
     // اگر حریف در فاز بیرون بردن است = آخر بازی برای ما هم
     if (isBearOffPhase(board, opponent)) {
-        return 'endgame';
+        return 'ENDGAME';
     }
 
     // معیار پیپ کانت:
@@ -259,15 +259,15 @@ export const detectGamePhase = (board, color) => {
     const totalPips = myPips + oppPips;
 
     if (totalPips > 280) {  // هر دو بازیکن پیمایش بالایی دارند
-        return 'opening';
+        return 'OPENING';
     } else if (totalPips < 120) {  // بازی رو به پایان است
-        return 'endgame';
+        return 'ENDGAME';
     } else if (myPips < 80 || oppPips < 80) {
-        return 'endgame';
+        return 'ENDGAME';
     } else if (myPips > 140) {
-        return 'opening';
+        return 'OPENING';
     } else {
-        return 'middlegame';
+        return 'MIDDLEGAME';
     }
 }
 
@@ -300,10 +300,36 @@ export const getClosedPointsValue = (board, color) => {
     return totalValue;
 }
 
-// نسخه ساده و بهینه نهایی
+// نسخه بهینه با آستانه‌های پویا بر اساس فاز بازی!
 export const calculateStackingPenalty = (board, color) => {
     const phase = detectGamePhase(board, color);
-    if (phase !== 'opening') return 0;
+    
+    // تعیین آستانه بر اساس فاز بازی
+    let threshold;
+    let penaltyMultiplier;
+    let exponent;
+    
+    switch(phase) {
+        case 'OPENING':
+            threshold = 5;      // در شروع بازی بیش از 5 مهره جریمه
+            penaltyMultiplier = 15;
+            exponent = 1.8;
+            break;
+        case 'MIDDLEGAME':
+            threshold = 4;      // در میانه بازی بیش از 4 مهره جریمه
+            penaltyMultiplier = 12;
+            exponent = 1.6;
+            break;
+        case 'ENDGAME':
+            threshold = 4;      // در آخر بازی بیش از 4 مهره جریمه
+            penaltyMultiplier = 8;
+            exponent = 1.4;
+            break;
+        default:
+            threshold = 5;
+            penaltyMultiplier = 12;
+            exponent = 1.7;
+    }
 
     let penalty = 0;
 
@@ -311,15 +337,18 @@ export const calculateStackingPenalty = (board, color) => {
         const count = board[i];
         const absoluteCount = Math.abs(count);
 
-        if (((color === 'white' && count > 5) || (color === 'black' && count < -5)) &&
-            absoluteCount > 5) {
+        // بررسی وجود مهره‌های ما در نقطه
+        if (((color === 'white' && count > 0) || (color === 'black' && count < 0)) &&
+            absoluteCount > threshold) {
 
-            const excess = absoluteCount - 5;
-            penalty += Math.pow(excess, 1.7) * 12;
+            const excess = absoluteCount - threshold;
+            // جریمه با توان غیرخطی و ضریب متناسب با فاز
+            penalty += Math.pow(excess, exponent) * penaltyMultiplier;
+            
         }
     }
 
-    return -penalty;
+    return -penalty; // برگرداندن مقدار منفی برای جریمه
 }
 
 
