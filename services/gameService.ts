@@ -25,7 +25,7 @@ export const gameService = {
   },
 
   generateDice() {
-    // const dice1 = 1;
+    // const dice1 = 6;
     // const dice2 = 1;
     const dice1 = Math.floor(Math.random() * 6) + 1;
     const dice2 = Math.floor(Math.random() * 6) + 1;

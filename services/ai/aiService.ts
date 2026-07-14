@@ -92,6 +92,23 @@ export const aiService = {
             }
         });
 
+        const myMove = [
+            { from: 24, to: 20, die: 4 },
+            { from: 13, to: 11, die: 2 }
+        ];
+        console.log('bestMove')
+        this.evaluateMoveWithoutDepth(
+            board, bestMove, currentTurn,
+            difficultyLevel, // <-- اضافه شد
+            strategy, phase, true
+        );
+
+        // console.log('myMove')
+        // this.evaluateMoveWithoutDepth(
+        //     board, myMove, currentTurn,
+        //     difficultyLevel, // <-- اضافه شد
+        //     strategy, phase, true
+        // );
         return bestMove;
     },
 
@@ -134,7 +151,7 @@ export const aiService = {
     },
 
     // =================== ارزیابی یک حرکت خاص ===================
-    evaluateMoveWithoutDepth(board, moveSequence, color, difficulty, strategy = 'neutral', phase = null) {
+    evaluateMoveWithoutDepth(board, moveSequence, color, difficulty, strategy = 'neutral', phase = null, showDetails= false) {
         const { newBoard } = simulateMove(board, moveSequence, color);
         const isBearOff = isBearOffPhase(board, color);
 
@@ -146,9 +163,9 @@ export const aiService = {
 
             // ارسال difficulty به scoreCalculator
             let score = scoreCalculator.calculateScore(
-                features, strategy, phase, difficulty
+                features, strategy, phase, difficulty, showDetails
             );
-
+            
             // اضافه کردن امتیاز ضربات
             if (strategy === 'BLITZ' || strategy === 'HOLDING') {
                 let totalHitValue = 0;
@@ -358,6 +375,291 @@ export const aiService = {
         if (remainingMoves < opponentRemaining) return 'AHEAD';
         return 'BEHIND';
     },
+
+
+
+
+
+
+
+
+
+
+
+
+
+    /**
+ * دیباگ و مقایسه دو حرکت با نمایش جزئیات امتیازات
+ */
+debugCompareMoves(board, dice, sequences, currentTurn, difficulty = '5', myMove) {
+    const strategyInfo = strategyEngine.determineStrategy(board, currentTurn);
+    const { strategy, phase } = strategyInfo;
+    
+    // 1. پیدا کردن بهترین حرکت کامپیوتر
+    const computerMove = this.selectBestMove(board, dice, sequences, currentTurn, difficulty, strategyInfo);
+    
+    // 2. ارزیابی هر دو حرکت
+    const computerScore = this.evaluateMoveWithDetails(board, computerMove, currentTurn, difficulty, strategy, phase);
+    const myScore = this.evaluateMoveWithDetails(board, myMove, currentTurn, difficulty, strategy, phase);
+    
+    // 3. نمایش جزئیات
+    console.log('═══════════════════════════════════════════');
+    console.log('🔍 مقایسه حرکت‌ها');
+    console.log('─────────────────────────────────────────');
+    console.log(`📊 استراتژی: ${strategy} | فاز: ${phase} | سطح: ${difficulty}`);
+    console.log('─────────────────────────────────────────');
+    
+    // نمایش حرکت کامپیوتر
+    console.log('🤖 حرکت کامپیوتر:');
+    computerMove.forEach((move, i) => {
+        console.log(`   ${i+1}. از ${move.from} → ${move.to || 'بیرون'} (تاس: ${move.die})`);
+    });
+    console.log(`   امتیاز نهایی: ${computerScore.totalScore.toFixed(2)}`);
+    console.log(`   ─── جزئیات ───`);
+    this.printScoreDetails(computerScore.details);
+    
+    console.log('─────────────────────────────────────────');
+    
+    // نمایش حرکت کاربر
+    console.log('👤 حرکت شما:');
+    myMove.forEach((move, i) => {
+        console.log(`   ${i+1}. از ${move.from} → ${move.to || 'بیرون'} (تاس: ${move.die})`);
+    });
+    console.log(`   امتیاز نهایی: ${myScore.totalScore.toFixed(2)}`);
+    console.log(`   ─── جزئیات ───`);
+    this.printScoreDetails(myScore.details);
+    
+    console.log('─────────────────────────────────────────');
+    const diff = myScore.totalScore - computerScore.totalScore;
+    console.log(`📈 تفاوت امتیاز: ${diff > 0 ? '+' : ''}${diff.toFixed(2)}`);
+    console.log(`🏆 ${diff > 0 ? '✅ حرکت شما بهتر است' : diff < 0 ? '❌ حرکت کامپیوتر بهتر است' : '⚖️ مساوی'}`);
+    console.log('═══════════════════════════════════════════');
+    
+    return {
+        computer: { move: computerMove, score: computerScore },
+        my: { move: myMove, score: myScore },
+        strategyInfo
+    };
+},
+
+/**
+ * ارزیابی حرکت با جزئیات کامل
+ */
+evaluateMoveWithDetails(board, moveSequence, color, difficulty, strategy, phase) {
+    const { newBoard } = simulateMove(board, moveSequence, color);
+    const features = featureExtractor.extractFeatures(newBoard, color);
+    features.metadata.phase = phase;
+    
+    // دریافت وزن‌ها
+    const baseWeights = scoreCalculator.getBaseWeights(strategy, phase) || {};
+    const weights = scoreCalculator.applyDifficultyMultiplier(baseWeights, difficulty);
+    
+    // محاسبه هر جزء به صورت جداگانه
+    const details = this.calculateScoreComponents(features, weights);
+    
+    // محاسبه امتیاز نهایی
+    const totalScore = scoreCalculator.calculateRawScore(features, weights);
+    const noise = scoreCalculator.getNoiseLevel(difficulty);
+    const finalScore = totalScore * (1 + (Math.random() - 0.5) * noise);
+    
+    return {
+        totalScore: finalScore,
+        rawScore: totalScore,
+        details,
+        features,
+        weights
+    };
+},
+
+/**
+ * محاسبه اجزای امتیاز به صورت جداگانه
+ */
+calculateScoreComponents(features, weights) {
+    const details = {};
+    
+    // محاسبه هر جزء
+    const pipDiff = features.pipCount?.pipDiff || 0;
+    const blotDiff = features.blot?.blotDiff || 0;
+    const closedDiff = features.closedPoints?.closedDiff || 0;
+    const risk = features.blot?.totalRisk || 0;
+    const primeDiff = features.prime?.primeDiff || 0;
+    const hits = features.attack?.totalHitValue || 0;
+    const stacking = features.structure?.stackingPenalty || 0;
+    
+    details.pipCount = {
+        value: pipDiff,
+        weight: weights.pipCount || 0,
+        contribution: pipDiff * (weights.pipCount || 0)
+    };
+    
+    details.blots = {
+        value: blotDiff,
+        weight: weights.blots || 0,
+        contribution: blotDiff * (weights.blots || 0)
+    };
+    
+    details.closedPoints = {
+        value: closedDiff,
+        weight: weights.closedPoints || 0,
+        contribution: closedDiff * (weights.closedPoints || 0)
+    };
+    
+    details.risk = {
+        value: risk,
+        weight: weights.risk || 0,
+        contribution: risk * (weights.risk || 0)
+    };
+    
+    details.primes = {
+        value: primeDiff,
+        weight: weights.primes || 0,
+        contribution: primeDiff * (weights.primes || 0)
+    };
+    
+    details.hits = {
+        value: hits,
+        weight: weights.hits || 0,
+        contribution: hits * (weights.hits || 0)
+    };
+    
+    details.stackingPenalty = {
+        value: stacking,
+        weight: weights.stackingPenalty || 0,
+        contribution: stacking * (weights.stackingPenalty || 0)
+    };
+    
+    // ویژگی‌های اضافی
+    if (weights.homeBoardStrength) {
+        const myClosed = features.closedPoints?.myClosedCount || 0;
+        details.homeBoardStrength = {
+            value: myClosed,
+            weight: weights.homeBoardStrength,
+            contribution: myClosed * weights.homeBoardStrength
+        };
+    }
+    
+    if (weights.opponentOnBar) {
+        const oppOnBar = features.attack?.opponentOnBar || 0;
+        details.opponentOnBar = {
+            value: oppOnBar,
+            weight: weights.opponentOnBar,
+            contribution: oppOnBar * weights.opponentOnBar
+        };
+    }
+    
+    if (weights.anchorStrength) {
+        const anchors = features.defense?.anchors?.length || 0;
+        details.anchorStrength = {
+            value: anchors,
+            weight: weights.anchorStrength,
+            contribution: anchors * weights.anchorStrength
+        };
+    }
+    
+    if (weights.bearoffEfficiency) {
+        const diceUtil = features.bearoff?.diceUtilization || 0;
+        const avgDist = features.bearoff?.averageDistance || 0;
+        details.bearoffEfficiency = {
+            value: diceUtil - avgDist * 0.1,
+            weight: weights.bearoffEfficiency,
+            contribution: (diceUtil - avgDist * 0.1) * weights.bearoffEfficiency
+        };
+    }
+    
+    if (weights.flexibility) {
+        const flex = features.structure?.flexibility || 0;
+        details.flexibility = {
+            value: flex,
+            weight: weights.flexibility,
+            contribution: flex * weights.flexibility
+        };
+    }
+    
+    if (weights.timingValue) {
+        const timing = features.metadata?.timing || 0;
+        details.timingValue = {
+            value: timing,
+            weight: weights.timingValue,
+            contribution: timing * weights.timingValue
+        };
+    }
+    
+    if (weights.safety) {
+        const myBlots = features.blot?.myBlots || 0;
+        details.safety = {
+            value: -myBlots * 0.5,
+            weight: weights.safety,
+            contribution: -myBlots * 0.5 * weights.safety
+        };
+    }
+    
+    if (weights.diceUtilization) {
+        const diceUtil = features.bearoff?.diceUtilization || 0;
+        details.diceUtilization = {
+            value: diceUtil,
+            weight: weights.diceUtilization,
+            contribution: diceUtil * weights.diceUtilization
+        };
+    }
+    
+    // اضافه کردن مجموع
+    details.total = 0;
+    for (const key in details) {
+        if (details[key]?.contribution !== undefined) {
+            details.total += details[key].contribution;
+        }
+    }
+    
+    return details;
+},
+
+/**
+ * چاپ جزئیات امتیازات
+ */
+printScoreDetails(details) {
+    const keys = [
+        'pipCount', 'blots', 'closedPoints', 'risk', 'primes', 'hits', 'stackingPenalty',
+        'homeBoardStrength', 'opponentOnBar', 'anchorStrength', 'bearoffEfficiency',
+        'flexibility', 'timingValue', 'safety', 'diceUtilization'
+    ];
+    
+    let maxLen = 0;
+    const labels = {
+        pipCount: 'پیپ کانت',
+        blots: 'بلات‌ها',
+        closedPoints: 'نقاط بسته',
+        risk: 'ریسک',
+        primes: 'پرایم‌ها',
+        hits: 'ضربات',
+        stackingPenalty: 'جریمه ازدحام',
+        homeBoardStrength: 'قدرت تخته خانه',
+        opponentOnBar: 'حریف روی Bar',
+        anchorStrength: 'قدرت لنگر',
+        bearoffEfficiency: 'کارایی بیرون‌آوردن',
+        flexibility: 'انعطاف‌پذیری',
+        timingValue: 'تایمینگ',
+        safety: 'ایمنی',
+        diceUtilization: 'استفاده از تاس'
+    };
+    
+    const persianKeys = [];
+    for (const key of keys) {
+        if (details[key] && details[key].contribution !== undefined) {
+            const label = labels[key] || key;
+            persianKeys.push({ key, label });
+            maxLen = Math.max(maxLen, label.length);
+        }
+    }
+    
+    for (const { key, label } of persianKeys) {
+        const d = details[key];
+        const sign = d.contribution >= 0 ? '+' : '';
+        console.log(`   ${label.padEnd(maxLen + 2)}: ${d.value.toFixed(2)} × ${d.weight.toFixed(2)} = ${sign}${d.contribution.toFixed(2)}`);
+    }
+    
+    console.log(`   ${'─'.repeat(maxLen + 25)}`);
+    console.log(`   ${'مجموع'.padEnd(maxLen + 2)}: ${details.total.toFixed(2)}`);
+},
 
 
 };
