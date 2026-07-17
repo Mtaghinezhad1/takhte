@@ -119,7 +119,7 @@ const styles = StyleSheet.create({
   },
   textCard: {
     color: '#ffffff',
-    fontFamily: 'Kaghaz',
+    fontWeight: '900',
     fontSize: 18,
     textAlign: 'right',
     marginLeft: '4%',
@@ -139,7 +139,7 @@ const styles = StyleSheet.create({
   },
   playBtnText: {
     fontSize: 16,
-    fontFamily: 'Kaghaz',
+    fontWeight: '900',
   },
   cardImg: {
     borderRadius: 12,

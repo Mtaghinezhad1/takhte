@@ -1,5 +1,6 @@
 import board1 from '@/assets/images/learn/board-learn-1.png';
 import board2 from '@/assets/images/learn/board-learn-2.png';
+import board3 from '@/assets/images/learn/board-learn-3.png';
 
 export const learnData = [
   {
@@ -85,10 +86,9 @@ export const learnData = [
               },
             ],
           },
-          /*
           {
             id: 4,
-            title: 'درس 3',
+            title: 'درس 4',
             components: [
               {
                 type: 'hero',
@@ -100,7 +100,7 @@ export const learnData = [
               },
               {
                 type: 'image',
-                src: def,
+                src: board3,
                 alt: 'عکس',
               },
               {
@@ -110,7 +110,7 @@ export const learnData = [
                 correctAnswer: 1,
               },
             ],
-          }, */
+          },
         ],
       },
       /*

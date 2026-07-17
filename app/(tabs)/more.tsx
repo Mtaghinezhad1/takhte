@@ -138,7 +138,7 @@ const styles = StyleSheet.create({
   },
   btnText: {
     color: '#1f1f1f',
-    fontFamily: 'Kaghaz',
+    fontWeight: '900',
   },
   itemContainer: {
     marginTop: 32,
@@ -174,7 +174,7 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   profileName: {
-    fontFamily: 'Kaghaz',
+    fontWeight: '900',
     fontSize: 20,
     color: '#1a1a1a',
     marginBottom: 4,

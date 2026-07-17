@@ -185,6 +185,118 @@ class StorageService {
     return gameState !== null && !gameState.isMatchEndModalVisible && !gameState.gameWinner;
   }
 
+  async saveStatistics(stats) {
+    try {
+      // اطمینان از وجود تمام فیلدها
+      const fullStats = {
+        totalGames: stats.totalGames || 0,
+        wins: stats.wins || 0,
+        losses: stats.losses || 0,
+        draws: stats.draws || 0,
+        highestElo: stats.highestElo || 1500,
+        totalWins: stats.totalWins || 0, // کل بردهای کل بازی‌ها
+        totalGamesPlayed: stats.totalGamesPlayed || 0, // کل بازی‌های انجام شده
+        winStreak: stats.winStreak || 0, // برد پیاپی فعلی
+        maxWinStreak: stats.maxWinStreak || 0 // بیشترین برد پیاپی
+      };
+
+      const jsonValue = JSON.stringify(fullStats);
+      await AsyncStorage.setItem(STORAGE_KEYS.STATISTICS, jsonValue);
+      return true;
+    } catch (error) {
+      console.error('خطا در ذخیره آمار بازی:', error);
+      return false;
+    }
+  }
+
+  // بارگذاری آمار بازی با مقادیر پیش‌فرض جدید
+  async loadStatistics() {
+    try {
+      const jsonValue = await AsyncStorage.getItem(STORAGE_KEYS.STATISTICS);
+      return jsonValue != null ? JSON.parse(jsonValue) : {
+        totalGames: 0,
+        wins: 0,
+        losses: 0,
+        draws: 0,
+        highestElo: 1500,
+        totalWins: 0,
+        totalGamesPlayed: 0,
+        winStreak: 0,
+        maxWinStreak: 0
+      };
+    } catch (error) {
+      console.error('خطا در بارگذاری آمار بازی:', error);
+      return {
+        totalGames: 0,
+        wins: 0,
+        losses: 0,
+        draws: 0,
+        highestElo: 1500,
+        totalWins: 0,
+        totalGamesPlayed: 0,
+        winStreak: 0,
+        maxWinStreak: 0
+      };
+    }
+  }
+
+  // به‌روزرسانی آمار پس از هر بازی
+  async updateStatistics(gameResult, eloChange) {
+    try {
+      const stats = await this.loadStatistics();
+
+      // به‌روزرسانی تعداد کل بازی‌ها
+      stats.totalGamesPlayed = (stats.totalGamesPlayed || 0) + 1;
+
+      // به‌روزرسانی بردها
+      if (gameResult === 'win') {
+        stats.totalWins = (stats.totalWins || 0) + 1;
+        stats.winStreak = (stats.winStreak || 0) + 1;
+        // به‌روزرسانی بیشترین برد پیاپی
+        if (stats.winStreak > (stats.maxWinStreak || 0)) {
+          stats.maxWinStreak = stats.winStreak;
+        }
+      } else if (gameResult === 'loss') {
+        // شکست: ریست کردن برد پیاپی
+        stats.winStreak = 0;
+      }
+
+      // به‌روزرسانی الو
+      if (eloChange && eloChange > 0) {
+        stats.highestElo = Math.max(stats.highestElo || 1500, eloChange);
+      }
+
+      // ذخیره آمار به‌روز شده
+      await this.saveStatistics(stats);
+      return stats;
+    } catch (error) {
+      console.error('خطا در به‌روزرسانی آمار:', error);
+      return null;
+    }
+  }
+
+  // دریافت آمار کامل
+  async getFullStatistics() {
+    return await this.loadStatistics();
+  }
+
+  // ریست کردن آمار
+  async resetStatistics() {
+    const defaultStats = {
+      totalGames: 0,
+      wins: 0,
+      losses: 0,
+      draws: 0,
+      highestElo: 1500,
+      totalWins: 0,
+      totalGamesPlayed: 0,
+      winStreak: 0,
+      maxWinStreak: 0
+    };
+    await this.saveStatistics(defaultStats);
+    return defaultStats;
+  }
+
   // حذف تمام داده‌ها
   async clearAllData() {
     try {

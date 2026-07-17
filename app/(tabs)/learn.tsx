@@ -159,7 +159,7 @@ const styles = StyleSheet.create({
     },
     btnText: {
         color: '#000',
-        fontFamily: 'Kaghaz',
+        fontWeight: '900',
     },
     activeBtnText: {
         color: '#fff',
@@ -202,7 +202,7 @@ const styles = StyleSheet.create({
         textAlign: 'right',
         fontSize: 24,
         color: 'white',
-        fontFamily: 'Kaghaz',
+        fontWeight: '900',
     },
 });
 

@@ -10,7 +10,7 @@ import useUserStore from './useUserStore';
 const useGameStore = create((set, get) => ({
   // State
   board: boardService.getInitialBoard(),
-  currentTurn: 'black',
+  currentTurn: 'white',
   movesCount: 0,
 
   allDice: [1, 1, 1, 1],
@@ -55,7 +55,7 @@ const useGameStore = create((set, get) => ({
       aiLevel,
       aiLevelForWhite,
       aiProfile,
-      currentTurn: 'black',
+      currentTurn: 'white',
       movesCount: 0,
       dice: [1, 1],
       activeDice: 1,
@@ -114,7 +114,6 @@ const useGameStore = create((set, get) => ({
   },
 
   endMatch: async (winner, newGameScore) => {
-
     const state = get();
     const opponentElo = state.aiProfile.baseRating;
     const currentUserElo = useUserStore.getState().elo; //before change
@@ -367,7 +366,7 @@ const useGameStore = create((set, get) => ({
   forfeitHand: () => {
     const state = get();
     if (state.isModalVisible || state.gameWinner) return;
-    set({showForfeit: false})
+    set({ showForfeit: false })
     get().endCurrentGame('black');
   },
 
@@ -376,7 +375,7 @@ const useGameStore = create((set, get) => ({
 
     // جلوگیری از اجرا در حالت‌های نامعتبر
     if (state.isModalVisible || state.gameWinner || state.isMatchEndModalVisible) return;
-    set({showForfeit: false})
+    set({ showForfeit: false })
     const newScore = gameService.calculateNewScore(state.gameScore, 'black');
     get().endMatch('black', newScore);
   },
@@ -463,6 +462,9 @@ const useGameStore = create((set, get) => ({
     set(updates);
   },
 
+
+
+
   executeAIMove: () => {
     const state = get();
     if (state.dice.length === 0 || state.isAiThinking || state.gameWinner || state.isModalVisible || state.isMatchEndModalVisible) return;
@@ -501,7 +503,8 @@ const useGameStore = create((set, get) => ({
 
 
 
-  }
+  },
+
 }));
 
 export default useGameStore;

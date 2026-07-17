@@ -73,7 +73,7 @@ const styles = StyleSheet.create({
   itemText: {
     color: '#1f1f1f',
     textAlign: 'right',
-    fontFamily: 'Kaghaz',
+    fontWeight: '900',
   },
   icon: {
     justifyContent: 'center',

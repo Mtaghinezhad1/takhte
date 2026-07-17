@@ -16,6 +16,18 @@ const useUserStore = create((set, get) => ({
   email: '',
   isLoading: false,
 
+  // آمار جدید
+  statistics: {
+    totalGames: 0,
+    wins: 0,
+    losses: 0,
+    draws: 0,
+    highestElo: 1500,
+    totalWins: 0,
+    totalGamesPlayed: 0,
+    winStreak: 0,
+    maxWinStreak: 0
+  },
 
   // مقداردهی اولیه از حافظه
   initializeFromStorage: async () => {
@@ -38,7 +50,41 @@ const useUserStore = create((set, get) => ({
       });
     }
 
+    // بارگذاری آمار
+    const stats = await storageService.loadStatistics();
+    if (stats) {
+      set({ statistics: stats });
+    }
+
     set({ isLoading: false });
+  },
+
+  // به‌روزرسانی آمار پس از بازی
+  updateStatisticsAfterMatch: async (result, eloChange) => {
+    try {
+      const updatedStats = await storageService.updateStatistics(result, eloChange);
+      if (updatedStats) {
+        set({ statistics: updatedStats });
+      }
+      return updatedStats;
+    } catch (error) {
+      console.error('خطا در به‌روزرسانی آمار:', error);
+      return null;
+    }
+  },
+
+  // دریافت آمار کامل
+  getStatistics: async () => {
+    const stats = await storageService.getFullStatistics();
+    set({ statistics: stats });
+    return stats;
+  },
+
+  // ریست کردن آمار
+  resetStatistics: async () => {
+    const defaultStats = await storageService.resetStatistics();
+    set({ statistics: defaultStats });
+    return defaultStats;
   },
 
   setUsername: async (name) => {
@@ -241,13 +287,17 @@ const useUserStore = create((set, get) => ({
   },
 
   updateEloAfterMatch: async (winner, userColor, opponentElo, matchLength = 5) => {
-    const { elo: userElo, username, avatarKey, coins, age, gender, city, province, phoneNumber, email } = get();
+    const { elo: userElo, username, avatarKey, coins, age, gender, city, province, phoneNumber, email, statistics } = get();
     const isWin = (userColor === winner);
 
     const newUserElo = userService.calculateElo(userElo, opponentElo, isWin, matchLength);
     const newOpponentElo = userService.calculateElo(opponentElo, userElo, !isWin, matchLength);
 
     set({ elo: newUserElo });
+
+    // به‌روزرسانی آمار
+    const result = isWin ? 'win' : 'loss';
+    await get().updateStatisticsAfterMatch(result, newUserElo);
 
     // ذخیره اطلاعات به‌روز شده
     await storageService.saveUserData({

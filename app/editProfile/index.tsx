@@ -231,6 +231,11 @@ const styles = StyleSheet.create({
     borderColor: '#6495ed',
     marginLeft: 8,
   },
+  confirmText: {
+    color: '#fff',
+    fontSize: 20,
+    fontFamily: 'Kaghaz',
+},
 });
 
 export default EditProfile;

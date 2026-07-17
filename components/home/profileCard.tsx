@@ -61,7 +61,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between', // separates name and amounts
     },
     name: {
-        fontFamily: 'Kaghaz',
+        fontWeight: '900',
         color: 'white',
         fontSize: 1.3 * rem,      // ~26px
     },
@@ -70,7 +70,7 @@ const styles = StyleSheet.create({
         marginTop: 0,             // adjust if needed
     },
     amountText: {
-        fontFamily: 'Kaghaz',
+        fontWeight: '900',
         color: 'white',
     },
     amountMargin: {

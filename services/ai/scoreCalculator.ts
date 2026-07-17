@@ -24,8 +24,8 @@ export const scoreCalculator = {
             console.log(`استراتژی: ${strategy}`);
             console.log(`فاز: ${phase}`);
             console.log(`سطح دشواری: ${difficulty}`);
-            // console.log('\nوزن‌های تعدیل شده:');
-            // console.table(adjustedWeights);
+            console.log('\nوزن‌های تعدیل شده:');
+            console.table(adjustedWeights);
             console.log('\nامتیاز هر بخش:');
             console.table(details);
             console.log(`امتیاز نهایی): ${finalScore}`);
