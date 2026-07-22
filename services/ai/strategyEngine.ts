@@ -145,16 +145,17 @@ export const strategyEngine = {
         else if (features.myPrimeLength >= 4) {
             scores.PRIME += 0.05;
         }
-        else if (features.oppPrimeLength >= 4 && features.pipDiff < 0) {
+        
+        if (features.oppPrimeLength >= 4 && features.pipDiff < 0) {
             scores.BACKGAME += 0.10;
             scores.RACE -= 0.15;
         }
 
         // لایه ۳: تماس و بلات‌ها (وزن ۲۰٪)
         if (features.opponentBlotsInOurHome >= 2 && features.myHomeClosedPoints >= 2) {
-            scores.BLITZ += 0.20;
+            scores.BLITZ += 0.15;
         }
-        else if (features.opponentOnBar >= 1 && features.myHomeClosedPoints >= 2) {
+        if (features.opponentOnBar >= 1 && features.myHomeClosedPoints >= 2) {
             scores.BLITZ += 0.05;
         }
 

@@ -99,7 +99,7 @@ export const featureExtractor = {
             oppClosedValue: oppValue,
             closedDiff: myValue - oppValue,
             myClosedCount: this.countTotalClosedPoints(board, color),
-            oppClosedCount: this.countTotalClosedPoints(board, opponent)
+            oppClosedCount: this.countTotalClosedPoints(board, opponent),
         };
     },
 
