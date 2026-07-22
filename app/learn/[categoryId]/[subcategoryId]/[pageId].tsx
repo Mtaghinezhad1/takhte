@@ -113,7 +113,7 @@ export default function PageContent() {
     };
 
     return (
-        <View style={[styles.container,{paddingBottom: insets.bottom}]}>
+        <View style={[styles.container, { paddingBottom: insets.bottom }]}>
             {/* هدر */}
             <View style={styles.header}>
                 <TouchableOpacity onPress={() => router.back()} style={styles.closeButton}>
@@ -308,7 +308,7 @@ const styles = StyleSheet.create({
     contentText: {
         fontSize: 18,
         lineHeight: 28,
-        fontFamily: 'Kaghaz',
+        fontWeight: '800',
         color: '#333',
     },
     imageContainer: {

@@ -1,6 +1,9 @@
 import board1 from '@/assets/images/learn/board-learn-1.png';
 import board2 from '@/assets/images/learn/board-learn-2.png';
 import board3 from '@/assets/images/learn/board-learn-3.png';
+import board4 from '@/assets/images/learn/board-learn-4.png';
+import board5 from '@/assets/images/learn/board-learn-5.png';
+import board6 from '@/assets/images/learn/board-learn-6.png';
 
 export const learnData = [
   {
@@ -107,6 +110,80 @@ export const learnData = [
                 type: 'quiz',
                 question: 'دو تاس ۱ (جفت یک) به چه معناست؟',
                 options: ['دو بار حرکت به اندازه ۱', 'چهار بار حرکت به اندازه ۱'],
+                correctAnswer: 1,
+              },
+            ],
+          },
+          {
+            id: 5,
+            title: 'درس 5',
+            components: [
+              {
+                type: 'hero',
+                title: 'نحوه زدن حریف',
+              },
+              {
+                type: 'content',
+                value: `در بازی تخته‌نرد، اگر حریفتان مهرهٔ تنها (تک) در خانه‌ای داشته باشد، می‌توانید با آوردن یکی از مهره‌های خود دقیقاً روی آن خانه، ضربه بزنید و مهرهٔ او را به بیرون از تخته بفرستید. اما توجه داشته باشید که نمی‌توانید به خانه‌های بسته‌ای ضربه بزنید که دو یا چند مهره از حریف روی آنها قرار دارد.`,
+              },
+              {
+                type: 'image',
+                src: board4,
+              },
+              {
+                type: 'quiz',
+                question: 'به عنوان بازیکن سفید به مهره کدام خانه میتوانید ضربه بزنید؟',
+                options: ['خانه 22', 'خانه 21', 'خانه 20', 'خانه 19'],
+                correctAnswer: 2,
+              },
+            ],
+          },
+          {
+            id: 6,
+            title: 'درس 6',
+            components: [
+              {
+                type: 'hero',
+                title: 'برگشتن به صفحه',
+              },
+              {
+                type: 'content',
+                value: `وقتی مهره‌هایتان ضربه خورد و بیرون رفت، برای برگرداندنشان به صفحه باید تاس بیندازید و طبق تاس مهره را در خانه اش وارد کنید. اگر خانه بسته باشد (یعنی دو یا چند مهره حریف در آن باشد)، نمی‌توانید در آن بنشینید و نوبتتان می‌سوزد.
+                `,
+              },
+              {
+                type: 'image',
+                src: board5,
+              },
+              {
+                type: 'quiz',
+                question: 'بازیکن سیاه با چه تاس هایی میتواند در صفحه بنشید؟',
+                options: ['2 و 5', '1 و 3', '1 و 4', '4 و 6'],
+                correctAnswer: 2,
+              },
+            ],
+          },
+          {
+            id: 7,
+            title: 'درس 7',
+            components: [
+              {
+                type: 'hero',
+                title: 'خارج کردن مهره ها',
+              },
+              {
+                type: 'content',
+                value: `برای خارج کردن مهره در تخته نرد، ابتدا باید تمام مهره های خودتان را وارد خانه خود کنید. سپس میتوانید مهره هاتان را از تخته خارج کنید و برنده شوید. هر بازیکنی که زودتر تمام مهره هایش را خارج کند برنده میشود.`,
+              },
+              {
+                type: 'image',
+                src: board6,
+                alt: 'عکس',
+              },
+              {
+                type: 'quiz',
+                question: 'بازیکن سفید میتواند مهره هایش را از تخته خارج کند؟',
+                options: [ 'بله میتواند', 'نه نمیتواند'],
                 correctAnswer: 1,
               },
             ],

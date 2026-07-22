@@ -12,6 +12,7 @@ import InformModal from '@/components/game/informModal';
 import Leftbar from "@/components/game/Leftbar";
 import GameStatusBar from "@/components/game/leftStatusBar";
 import MatchEndModal from "@/components/game/matchEndModal";
+import NoMoveModal from '@/components/game/noMoveModal';
 import ResultModal from '@/components/game/resultModal';
 import Rightbar from "@/components/game/rightbar";
 import StaticsBar from "@/components/game/staticsBar";
@@ -161,7 +162,9 @@ export default function Index() {
   // ریختن تاس در شروع هر نوبت
   useEffect(() => {
     if (!isLoading) {
-      store.rollDice();
+      if (!store.showNoMoveModal) {
+        store.rollDice();
+      }
     }
   }, [store.currentTurn, isLoading]);
 
@@ -197,6 +200,7 @@ export default function Index() {
           <Rightbar />
           <ResultModal />
           <InformModal />
+          <NoMoveModal />
           <MatchEndModal />
         </View>
       </View>

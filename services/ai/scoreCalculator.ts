@@ -19,18 +19,18 @@ export const scoreCalculator = {
         const finalScore = rawScore;
 
         // نمایش جزئیات در صورت درخواست
-        if (showDetails) {
-            console.log('===== جزئیات محاسبه امتیاز =====');
-            console.log(`استراتژی: ${strategy}`);
-            console.log(`فاز: ${phase}`);
-            console.log(`سطح دشواری: ${difficulty}`);
-            console.log('\nوزن‌های تعدیل شده:');
-            console.table(adjustedWeights);
-            console.log('\nامتیاز هر بخش:');
-            console.table(details);
-            console.log(`امتیاز نهایی): ${finalScore}`);
-            console.log('================================\n');
-        }
+        // if (showDetails) {
+        //     console.log('===== جزئیات محاسبه امتیاز =====');
+        //     console.log(`استراتژی: ${strategy}`);
+        //     console.log(`فاز: ${phase}`);
+        //     console.log(`سطح دشواری: ${difficulty}`);
+        //     console.log('\nوزن‌های تعدیل شده:');
+        //     console.table(adjustedWeights);
+        //     console.log('\nامتیاز هر بخش:');
+        //     console.table(details);
+        //     console.log(`امتیاز نهایی): ${finalScore}`);
+        //     console.log('================================\n');
+        // }
 
         return finalScore;
     },

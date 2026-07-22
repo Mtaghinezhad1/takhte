@@ -2,6 +2,7 @@
 import { PHASES, STRATEGIES } from '@/constants/aiWeights';
 import { detectGamePhase } from '@/utils/computerAI';
 import { boardService } from '../boardService';
+import { featureExtractor } from './featureExtractor';
 
 export const strategyEngine = {
     determineStrategy(board, currentTurn) {
@@ -21,6 +22,7 @@ export const strategyEngine = {
         const winningStrategy = Object.entries(scores)
             .sort(([, a], [, b]) => b - a)[0];
 
+        console.log(winningStrategy[0], scores);
         return {
             strategy: winningStrategy[0],
             confidence: winningStrategy[1],
@@ -35,8 +37,12 @@ export const strategyEngine = {
         const oppPips = boardService.pipCount(board, opponent);
 
         // شمارش نقاط بسته
-        const myClosedPoints = this.countClosedPoints(board, currentTurn);
-        const oppClosedPoints = this.countClosedPoints(board, opponent);
+        const myClosedPoints = featureExtractor.countTotalClosedPoints(board, currentTurn);
+        const oppClosedPoints = featureExtractor.countTotalClosedPoints(board, opponent);
+
+        // شمارش نقاط بسته
+        const myHomeClosedPoints = featureExtractor.countHomeClosedPoints(board, currentTurn);
+        const oppHomeClosedPoints = featureExtractor.countHomeClosedPoints(board, opponent);
 
         // بررسی مهره‌های روی bar
         const opponentOnBar = currentTurn === 'white' ?
@@ -65,6 +71,8 @@ export const strategyEngine = {
             pipDiff: myPips - oppPips,
             myClosedPoints,
             oppClosedPoints,
+            myHomeClosedPoints,
+            oppHomeClosedPoints,
             opponentOnBar,
             myPrimeLength,
             oppPrimeLength,
@@ -116,38 +124,40 @@ export const strategyEngine = {
         };
 
         // لایه ۱: تخته داخلی (وزن ۳۵٪)
-        if (features.myClosedPoints >= 3) {
-            scores.BLITZ += 0.25;
+        if (features.myHomeClosedPoints >= 4) {
+            scores.BLITZ += 0.30;
             scores.HOLDING -= 0.10;
         }
-        if (features.myClosedPoints >= 4) {
-            scores.BLITZ += 0.10;
+        else if (features.myHomeClosedPoints >= 3) {
+            scores.BLITZ += 0.20;
+            scores.HOLDING -= 0.10;
         }
-        if (features.myClosedPoints <= 1) {
+        else if (features.myHomeClosedPoints <= 1) {
             scores.RACE += 0.10;
             scores.HOLDING += 0.15;
         }
 
         // لایه ۲: پرایم (وزن ۲۵٪)
         if (features.myPrimeLength >= 5) {
-            scores.PRIME += 0.20;
+            scores.PRIME += 0.25;
             scores.RACE -= 0.05;
         }
-        if (features.myPrimeLength >= 4) {
+        else if (features.myPrimeLength >= 4) {
             scores.PRIME += 0.05;
         }
-        if (features.oppPrimeLength >= 4 && features.pipDiff < 0) {
+        else if (features.oppPrimeLength >= 4 && features.pipDiff < 0) {
             scores.BACKGAME += 0.10;
             scores.RACE -= 0.15;
         }
 
         // لایه ۳: تماس و بلات‌ها (وزن ۲۰٪)
-        if (features.opponentBlotsInOurHome >= 2 && features.myClosedPoints >= 2) {
-            scores.BLITZ += 0.15;
+        if (features.opponentBlotsInOurHome >= 2 && features.myHomeClosedPoints >= 2) {
+            scores.BLITZ += 0.20;
         }
-        if (features.opponentOnBar >= 1 && features.myClosedPoints >= 2) {
+        else if (features.opponentOnBar >= 1 && features.myHomeClosedPoints >= 2) {
             scores.BLITZ += 0.05;
         }
+
         if (features.iHaveAdvancedAnchor && features.pipDiff < -10) {
             scores.HOLDING += 0.15;
             scores.BLITZ -= 0.05;
@@ -179,17 +189,6 @@ export const strategyEngine = {
         }
 
         return scores;
-    },
-
-    countClosedPoints(board, color) {
-        let closedPoints = 0;
-        for (let i = 1; i <= 24; i++) {
-            if ((color === 'white' && board[i] >= 2) ||
-                (color === 'black' && board[i] <= -2)) {
-                closedPoints++;
-            }
-        }
-        return closedPoints;
     },
 
     calculatePrimeLength(board, color) {

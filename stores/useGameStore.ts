@@ -25,6 +25,7 @@ const useGameStore = create((set, get) => ({
   isModalVisible: false,
   showForfeit: false,
   showForcedMoveModal: false,
+  showNoMoveModal: false,
   isMatchEndModalVisible: false,
 
   isAiThinking: false,
@@ -65,6 +66,7 @@ const useGameStore = create((set, get) => ({
       showContinue: false,
       isModalVisible: false,
       showForcedMoveModal: false,
+      showNoMoveModal: false,
       isAiThinking: false,
       gameScore: [0, 0],
       availableMoves: [],
@@ -100,11 +102,19 @@ const useGameStore = create((set, get) => ({
     });
 
     if (!boardService.hasAnyMove(state.board, newDice.allDice, state.currentTurn)) {
-      set({
-        currentTurn: gameService.getNextTurn(state.currentTurn),
-        movesCount: 0
-      });
-    }
+      const newShowModal = true;
+      set({ showNoMoveModal: newShowModal });
+
+      setTimeout(() => {
+        if (newShowModal) {
+          set({
+            currentTurn: gameService.getNextTurn(state.currentTurn),
+            movesCount: 0,
+            showNoMoveModal: false,
+          });
+        }
+      }, 1000);
+       }
   },
 
   isMatchCompleted: (newGameScore) => {
@@ -363,6 +373,15 @@ const useGameStore = create((set, get) => ({
     }, 100);
   },
 
+  handleNoMoveModalClose: () => {
+    const state = get();
+    set({
+      currentTurn: gameService.getNextTurn(state.currentTurn),
+      movesCount: 0,
+      showNoMoveModal: false
+    });
+  },
+
   forfeitHand: () => {
     const state = get();
     if (state.isModalVisible || state.gameWinner) return;
@@ -467,7 +486,7 @@ const useGameStore = create((set, get) => ({
 
   executeAIMove: () => {
     const state = get();
-    if (state.dice.length === 0 || state.isAiThinking || state.gameWinner || state.isModalVisible || state.isMatchEndModalVisible) return;
+    if (state.dice.length === 0 || state.isAiThinking || state.showNoMoveModal || state.gameWinner || state.isModalVisible || state.isMatchEndModalVisible) return;
 
     const uniqueMoves = boardService.getAvailableMoves(state.board, state.dice, state.currentTurn);
     set({ availableMoves: uniqueMoves });

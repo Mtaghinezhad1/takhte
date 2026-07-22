@@ -78,8 +78,6 @@ export default function MoreScreen() {
           </View>
         </View>
 
-
-
         <View style={styles.itemContainer}>
           <ItemRow icon='person' text="ویرایش پروفایل" onPress={() => router.push(`/editProfile`)} />
           {/* <ItemRow text="آشنایی با قوانین تخته نرد" />

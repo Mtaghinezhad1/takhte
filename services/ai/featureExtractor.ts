@@ -98,8 +98,8 @@ export const featureExtractor = {
             myClosedValue: myValue,
             oppClosedValue: oppValue,
             closedDiff: myValue - oppValue,
-            myClosedCount: this.countClosedPoints(board, color),
-            oppClosedCount: this.countClosedPoints(board, opponent)
+            myClosedCount: this.countTotalClosedPoints(board, color),
+            oppClosedCount: this.countTotalClosedPoints(board, opponent)
         };
     },
 
@@ -179,7 +179,7 @@ export const featureExtractor = {
         return rawPips + Math.abs(wastage);
     },
 
-    countClosedPoints(board, color) {
+    countTotalClosedPoints(board, color) {
         let count = 0;
         for (let i = 1; i <= 24; i++) {
             if ((color === 'white' && board[i] >= 2) || 
@@ -187,6 +187,21 @@ export const featureExtractor = {
                 count++;
             }
         }
+        return count;
+    },
+
+    countHomeClosedPoints(board, color) {
+        let count = 0;
+        if (color === 'white') {
+            for (let i = 1; i <= 6; i++) {
+                if (board[i] >= 2) count++
+            } 
+        } else {
+            for (let i = 19; i <= 24; i++) {
+                if (board[i] <= -2) count++
+            }  
+        }
+
         return count;
     },
 

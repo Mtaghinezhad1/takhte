@@ -96,12 +96,12 @@ export const aiService = {
             { from: 24, to: 20, die: 4 },
             { from: 13, to: 11, die: 2 }
         ];
-        console.log('bestMove')
-        this.evaluateMoveWithoutDepth(
-            board, bestMove, currentTurn,
-            difficultyLevel, // <-- اضافه شد
-            strategy, phase, true
-        );
+        // console.log('estMove')
+        // this.evaluateMoveWithoutDepth(
+        //     board, bestMove, currentTurn,
+        //     difficultyLevel, // <-- اضافه شد
+        //     strategy, phase, true
+        // );
 
         // console.log('myMove')
         // this.evaluateMoveWithoutDepth(
@@ -355,17 +355,6 @@ export const aiService = {
             }
         }
         return maxPrime;
-    },
-
-    countClosedPoints(board, color) {
-        let closedPoints = 0;
-        for (let i = 1; i <= 24; i++) {
-            if ((color === 'white' && board[i] >= 2) ||
-                (color === 'black' && board[i] <= -2)) {
-                closedPoints++;
-            }
-        }
-        return closedPoints;
     },
 
     calculateTiming(board, currentTurn, myPips, oppPips) {
