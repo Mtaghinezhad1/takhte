@@ -1,17 +1,19 @@
 import { getAvatarByKey } from '@/constants/avatars';
 import useUserStore from '@/stores/useUserStore';
 import { LinearGradient } from 'expo-linear-gradient';
+import { router } from 'expo-router';
 import React from 'react';
-import { Image, StyleSheet, Text, View } from 'react-native';
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 // 1rem ≈ 16px (converted from your CSS)
 const rem = 16;
 
 const ProfileCard = () => {
-    const { username, elo, coins, avatarKey } = useUserStore();
+    const { username, coins, avatarKey } = useUserStore();
+    const elo = useUserStore.getState().getCurrentElo();
 
     return (
-        <View style={styles.body}>
+        <TouchableOpacity style={styles.body} onPress={() => router.push(`/charts`)}>
             <LinearGradient
                 colors={['#6495ed' || '#4c669f', '#3b5998', '#192f6a']}
                 start={{ x: 0, y: 0 }}
@@ -34,7 +36,7 @@ const ProfileCard = () => {
                     />
                 </View>
             </LinearGradient>
-        </View>
+        </TouchableOpacity>
     );
 };
 

@@ -17,7 +17,7 @@ export default function ResultModal() {
     const gameScore = useGameStore(state => state.gameScore);
     const gameWinner = useGameStore(state => state.gameWinner);
     const aiProfile = useGameStore(state => state.aiProfile);
-    const { username, elo, avatarKey } = useUserStore();
+    const { username, avatarKey } = useUserStore();
 
 
     useEffect(() => {

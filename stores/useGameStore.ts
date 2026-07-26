@@ -114,7 +114,7 @@ const useGameStore = create((set, get) => ({
           });
         }
       }, 1000);
-       }
+    }
   },
 
   isMatchCompleted: (newGameScore) => {
@@ -126,7 +126,7 @@ const useGameStore = create((set, get) => ({
   endMatch: async (winner, newGameScore) => {
     const state = get();
     const opponentElo = state.aiProfile.baseRating;
-    const currentUserElo = useUserStore.getState().elo; //before change
+    const currentUserElo = useUserStore.getState().getCurrentElo(); //before change
 
     const oldUserElo = currentUserElo;
     const oldAIElo = opponentElo;

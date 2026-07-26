@@ -1,11 +1,12 @@
+import useThemeStore from '@/stores/useThemeStore';
 import useUserStore from '@/stores/useUserStore';
-import { DefaultTheme, ThemeProvider } from '@react-navigation/native';
+import { DarkTheme, DefaultTheme, ThemeProvider as NavigationThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
-import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
-import { I18nManager, View } from "react-native";
+import { StatusBar, View } from "react-native";
+
 
 // جلوگیری از بسته شدن خودکار SplashScreen
 SplashScreen.preventAutoHideAsync();
@@ -19,34 +20,43 @@ export default function RootLayout() {
     'Kaghaz': require('../assets/fonts/Kaghaz.ttf'),
     'KaghazBold': require('../assets/fonts/KaghazBold.ttf'),
   });
+  
   const initializeFromStorage = useUserStore(state => state.initializeFromStorage);
   const isLoading = useUserStore(state => state.isLoading);
+  const { initialize: initializeTheme, isDark, getColors, isLoading: themeLoading } = useThemeStore();
+  const colors = getColors();
 
-  const isRTL = I18nManager.isRTL;
+  // مقداردهی اولیه تم
+  useEffect(() => {
+    initializeTheme();
+  }, []);
+
 
   useEffect(() => {
     initializeFromStorage();
   }, []);
 
   useEffect(() => {
-    if ((fontsLoaded || fontError) && !isLoading) {
+    if ((fontsLoaded || fontError) && !isLoading && !themeLoading) {
       SplashScreen.hideAsync();
     }
-  }, [fontsLoaded, fontError, isLoading]);
+  }, [fontsLoaded, fontError, isLoading, themeLoading]);
+
+  useEffect(() => {
+    StatusBar.setBarStyle(isDark ? 'light-content' : 'dark-content');
+    StatusBar.setBackgroundColor(colors.background);
+  }, [isDark, colors.background]);
 
   // تا زمانی که فونت بارگذاری نشده، چیزی نمایش نده
-  if (!fontsLoaded && !fontError) {
-    return null;
-  }
+  if (!fontsLoaded && !fontError) return null;
+  if (isLoading || themeLoading) return null;
 
-  if (isLoading) {
-    // می‌توانید یک صفحه لودینگ نشان دهید
-    return null;
-  }
+  const navigationTheme = isDark ? DarkTheme : DefaultTheme;
+
 
   return (
-    <ThemeProvider value={DefaultTheme}>
-      <View style={{ flex: 1 }}>
+    <NavigationThemeProvider value={navigationTheme}>
+      <View style={{ flex: 1, backgroundColor: colors.background }}>
         <Stack screenOptions={{ headerShown: false }}>
           <Stack.Screen name="(tabs)" />
           <Stack.Screen
@@ -54,8 +64,8 @@ export default function RootLayout() {
             options={{ animation: 'slide_from_left' }}
           />
         </Stack>
-        <StatusBar style="dark" />
+        <StatusBar style={isDark ? 'light' : 'dark'} />
       </View>
-    </ThemeProvider>
+    </NavigationThemeProvider>
   );
 }

@@ -16,7 +16,9 @@ const MAPPING = {
   'info-outline': 'info-outline',
   'edit': 'edit',
   'lock': 'lock',
-  'close': 'close'
+  'close': 'close',
+  'timeline': 'timeline',
+  'darkMode': 'contrast'
 };
 
 /**

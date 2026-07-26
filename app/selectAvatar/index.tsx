@@ -1,5 +1,6 @@
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { getAllAvatars, isAvatarUnlocked } from '@/constants/avatars';
+import useThemeStore from '@/stores/useThemeStore';
 import useUserStore from '@/stores/useUserStore';
 import { router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
@@ -7,7 +8,10 @@ import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, useWindowDimensi
 
 
 const SelectAvatar = () => {
-    const { username, elo, coins, avatarKey, setAvatar } = useUserStore();
+    const { username, coins, avatarKey, setAvatar } = useUserStore();
+    const elo = useUserStore.getState().getCurrentElo();
+    const { colors } = useThemeStore();
+
 
     // دریافت لیست تمام آواتارها با key و source
     const avatars = getAllAvatars();
@@ -20,12 +24,12 @@ const SelectAvatar = () => {
 
     const { width } = useWindowDimensions(); // واکنش‌گرا به تغییر اندازه صفحه
 
-  
+
     // محاسبه اندازه آیکون واکنش‌گرا
     const getIconSize = () => {
-      if (width < 400) return 24;
-      if (width < 600) return 28;
-      return 32;
+        if (width < 400) return 24;
+        if (width < 600) return 28;
+        return 32;
     };
 
     const [activeIndex, setActiveIndex] = useState(getInitialIndex());
@@ -85,7 +89,7 @@ const SelectAvatar = () => {
                 </View>
             </View>
 
-            <View style={styles.container}>
+            <View style={[styles.container,{ backgroundColor: colors.card}]}>
                 <ScrollView contentContainerStyle={styles.imgSection}>
                     {avatars.map((avatar, index) => {
                         const locked = isAvatarLocked(avatar);
@@ -127,7 +131,8 @@ const SelectAvatar = () => {
                         style={[
                             styles.btn,
                             styles.confirm,
-                            isAvatarLocked(avatars[activeIndex]) && styles.confirmDisabled
+                            isAvatarLocked(avatars[activeIndex]) && styles.confirmDisabled,
+                            // { backgroundColor: colors.primary}
                         ]}
                         onPress={handleConfirm}
                         activeOpacity={0.7}
@@ -146,7 +151,6 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'flex-start',
         alignItems: 'center',
-        backgroundColor: '#fff',
     },
     container: {
         shadowColor: '#000',
@@ -157,7 +161,6 @@ const styles = StyleSheet.create({
         padding: 16,
         width: '90%',
         borderRadius: 16,
-        backgroundColor: '#fff',
     },
     imgSection: {
         flexDirection: 'row',
@@ -231,7 +234,6 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     cancel: {
-        backgroundColor: '#fff',
         borderWidth: 2,
         borderColor: '#6495ed',
         marginRight: 8,
@@ -259,7 +261,6 @@ const styles = StyleSheet.create({
     profileSection: {
         padding: 32,
         alignItems: 'center',
-        backgroundColor: '#ffffff',
     },
     avatar: {
         width: '35%',

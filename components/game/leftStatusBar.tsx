@@ -6,7 +6,8 @@ import { Image, StyleSheet, Text, View } from 'react-native';
 
 const GameStatusBar = () => {
   const aiProfile = useGameStore(state => state.aiProfile);
-  const { username, elo, avatarKey } = useUserStore();
+  const { username, avatarKey } = useUserStore();
+  const elo = useUserStore.getState().getCurrentElo();
   const currentTurn = useGameStore(state => state.currentTurn);
   const targetScore = useGameStore(state => state.targetScore);
   return (

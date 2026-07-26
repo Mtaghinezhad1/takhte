@@ -1,3 +1,4 @@
+import useThemeStore from '@/stores/useThemeStore';
 import useUserStore from '@/stores/useUserStore';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useEffect, useState } from 'react';
@@ -20,6 +21,8 @@ const AchievementCard = ({
   onPress,
 }) => {
   const progressPercentage = Math.min(Math.max(progress, 0), 100);
+  const { colors } = useThemeStore();
+
 
   const getCardStyles = () => {
     if (locked) return styles.lockedCard;
@@ -47,18 +50,18 @@ const AchievementCard = ({
 
   const getTitleColor = () => {
     if (locked) return '#6a6a8a';
-    return '#1a1a2e';
+    return colors.text;
   };
 
   const getDescColor = () => {
     if (locked) return '#8a8aaa';
-    return '#5a5a7a';
+    return colors.text;
   };
 
   return (
     <TouchableOpacity
       activeOpacity={0.8}
-      style={[styles.card, getCardStyles()]}
+      style={[styles.card, getCardStyles(), { backgroundColor: colors.card }]}
       onPress={onPress}
     >
       <View style={[styles.iconContainer, getIconStyles()]}>
@@ -91,6 +94,8 @@ const AchievementCard = ({
 const AchievementsScreen = () => {
   const { statistics } = useUserStore();
   const [achievements, setAchievements] = useState([]);
+  const { colors } = useThemeStore();
+
 
   useEffect(() => {
     // دریافت آمار از store
@@ -212,7 +217,7 @@ const AchievementsScreen = () => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>🏅 دستاوردها</Text>
+        <Text style={[styles.headerTitle,{color: colors.text}]}>🏅 دستاوردها</Text>
         <Text style={styles.headerSubtitle}>
           {achievements.filter(a => a.completed).length} از {achievements.length} تکمیل شده
         </Text>
@@ -242,7 +247,6 @@ const AchievementsScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffffff',
     padding: 16,
   },
   header: {
@@ -256,7 +260,6 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 24,
     fontWeight: '800',
-    color: '#1a1a2e',
     textAlign: 'center',
     marginBottom: 4,
   },
@@ -276,7 +279,6 @@ const styles = StyleSheet.create({
   card: {
     flex: 1,
     aspectRatio: 5 / 9,
-    backgroundColor: '#ffffff',
     borderRadius: 16,
     padding: 8,
     borderWidth: 1,

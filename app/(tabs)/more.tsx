@@ -1,6 +1,8 @@
 import ItemRow from '@/components/more/itemRow';
+import { ThemeToggle } from '@/components/ThemeToggle';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { getAvatarByKey } from '@/constants/avatars';
+import useThemeStore from '@/stores/useThemeStore';
 import useUserStore from '@/stores/useUserStore';
 import { router } from 'expo-router';
 import React from 'react';
@@ -8,7 +10,10 @@ import { Image, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, Touchable
 
 
 export default function MoreScreen() {
-  const { username, elo, coins, avatarKey } = useUserStore();
+  const { username, coins, avatarKey } = useUserStore();
+  const elo = useUserStore.getState().getCurrentElo();
+  const { colors } = useThemeStore();
+
   const { width } = useWindowDimensions(); // واکنش‌گرا به تغییر اندازه صفحه
 
   // محاسبه اندازه فونت واکنش‌گرا
@@ -53,7 +58,7 @@ export default function MoreScreen() {
             </TouchableOpacity>
           </View>
 
-          <Text style={styles.profileName}>{username}</Text>
+          <Text style={[styles.profileName, { color: colors.text}]}>{username}</Text>
           {/* <Text style={styles.profileBio}>ID: 737848826</Text> */}
 
           <View style={[styles.btnContainer, { gap: width * 0.015 }]}>
@@ -66,27 +71,32 @@ export default function MoreScreen() {
                 <IconSymbol size={getIconSize()} name="attach-money" color='black' />
               </View>
             </View> */}
-
-            <View style={[styles.btn, { padding: getPadding() }]}>
+            <TouchableOpacity style={[styles.btn, { padding: getPadding(), backgroundColor: colors.card }]} onPress={() => router.push(`/charts`)}>
               <View style={styles.textBtn}>
-                <Text style={[styles.btnText, { fontSize: getFontSize() }]}>توانایی: {elo}</Text>
+                <Text style={[styles.btnText, { fontSize: getFontSize(), color: colors.text }]}>توانایی: {elo}</Text>
               </View>
               <View style={styles.icon}>
-                <IconSymbol size={getIconSize()} name="speed" color='black' />
+                <IconSymbol size={getIconSize()} name="speed" color={colors.text} />
               </View>
-            </View>
+            </TouchableOpacity>
+
           </View>
         </View>
 
+        
         <View style={styles.itemContainer}>
           <ItemRow icon='person' text="ویرایش پروفایل" onPress={() => router.push(`/editProfile`)} />
-          {/* <ItemRow text="آشنایی با قوانین تخته نرد" />
-          <ItemRow text="آشنایی با قوانین تخته نرد"  /> */}
+          <ItemRow icon='timeline' text="آمار" onPress={() => router.push(`/charts`)} />
+          {/* <ItemRow text="آشنایی با قوانین تخته نرد"  /> */}
+        </View>
+
+        <View style={styles.itemContainer}>
+          <ItemRow icon='darkMode' text="حالت تاریک" ><ThemeToggle /></ItemRow>
         </View>
 
         <View style={styles.itemContainer}>
           {/* <ItemRow text="درباره ما"  /> */}
-          <ItemRow icon='info-outline' onPress={() => console.log('ss')} text="نسخه اپلیکیشن              1.2.0" />
+          <ItemRow icon='info-outline' onPress={() => console.log('ss')} text="نسخه اپلیکیشن              1.3.0" />
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -96,15 +106,12 @@ export default function MoreScreen() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#ffffff',
   },
   container: {
     flex: 1,
-    backgroundColor: '#fff',
     padding: 16,
   },
   scrollContent: {
-    backgroundColor: '#ffffff',
     paddingBottom: 20,
   },
   btnContainer: {
@@ -115,7 +122,6 @@ const styles = StyleSheet.create({
   },
   btn: {
     flex: 1,
-    backgroundColor: '#dee4e0',
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
@@ -135,7 +141,6 @@ const styles = StyleSheet.create({
     textAlign: 'right',
   },
   btnText: {
-    color: '#1f1f1f',
     fontWeight: '900',
   },
   itemContainer: {
@@ -153,7 +158,6 @@ const styles = StyleSheet.create({
   profileSection: {
     padding: 32,
     alignItems: 'center',
-    backgroundColor: '#ffffff',
   },
   avatarSection: {
     position: 'relative',
@@ -174,7 +178,6 @@ const styles = StyleSheet.create({
   profileName: {
     fontWeight: '900',
     fontSize: 20,
-    color: '#1a1a1a',
     marginBottom: 4,
   },
   profileBio: {

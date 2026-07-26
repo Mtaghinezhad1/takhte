@@ -5,11 +5,14 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context'; // ← اضافه کن
 
 
+import useThemeStore from '@/stores/useThemeStore';
 import { useEffect, useState } from 'react';
 import { I18nManager, Image, ScrollView, StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
 
 export default function PageContent() {
     const insets = useSafeAreaInsets(); // ← اضافه کن
+    const { colors } = useThemeStore();
+
 
     const completeLesson = useLearningStore(state => state.completeLesson);
     const resetProgress = useLearningStore(state => state.resetProgress);
@@ -140,7 +143,7 @@ export default function PageContent() {
 
                 {/* رندر تصویر */}
                 {imageComponent && imageComponent.src && (
-                    <View style={styles.imageContainer}>
+                    <View style={[styles.imageContainer,{backgroundColor: colors.card}]}>
                         <Image
                             source={imageComponent.src}
                             style={styles.image}
@@ -157,7 +160,7 @@ export default function PageContent() {
                 {/* رندر محتوای متنی ساده */}
                 {contentComponent && (
                     <View style={styles.contentContainer}>
-                        <Text style={[styles.contentText, { textAlign: isRTL ? 'left' : 'right' }]}>
+                        <Text style={[styles.contentText, { textAlign: isRTL ? 'left' : 'right', color: colors.text }]}>
                             {contentComponent.value}
                         </Text>
                     </View>
@@ -165,8 +168,8 @@ export default function PageContent() {
 
                 {/* رندر سوال (quiz) */}
                 {hasQuiz && (
-                    <View style={styles.quizContainer}>
-                        <Text style={[styles.quizQuestion, { textAlign: isRTL ? 'left' : 'right' }]}>
+                    <View style={[styles.quizContainer,{backgroundColor: colors.card}]}>
+                        <Text style={[styles.quizQuestion, { textAlign: isRTL ? 'left' : 'right', color: colors.text  }]}>
                             {quizComponent.question}
                         </Text>
 
@@ -256,7 +259,6 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 16,
-        backgroundColor: '#fff',
     },
     notFoundText: {
         fontSize: 18,
@@ -309,12 +311,10 @@ const styles = StyleSheet.create({
         fontSize: 18,
         lineHeight: 28,
         fontWeight: '800',
-        color: '#333',
     },
     imageContainer: {
         marginVertical: 10,
         alignItems: 'center',
-        backgroundColor: '#f9f9f9',
         borderRadius: 12,
         overflow: 'hidden',
     },
@@ -331,18 +331,15 @@ const styles = StyleSheet.create({
         fontFamily: 'Kaghaz',
     },
     quizContainer: {
-        backgroundColor: '#f5f5f5',
         padding: 20,
         borderRadius: 16,
         marginVertical: 20,
         borderWidth: 1,
-        borderColor: '#e0e0e0',
     },
     quizQuestion: {
         fontSize: 20,
         fontFamily: 'Kaghaz',
         marginBottom: 20,
-        color: '#070024',
         fontWeight: 'bold',
     },
     quizOption: {

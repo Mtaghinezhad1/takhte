@@ -1,4 +1,4 @@
-import useUserStore from '@/stores/useUserStore';
+import useThemeStore from '@/stores/useThemeStore';
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
 import { IconSymbol } from '../ui/icon-symbol';
@@ -6,7 +6,8 @@ import { IconSymbol } from '../ui/icon-symbol';
 // 1rem ≈ 16px (converted from your CSS)
 const rem = 16;
 
-const ItemRow = ({ text, icon, onPress }) => {
+const ItemRow = ({ text, icon, onPress, children = null }) => {
+  const { colors } = useThemeStore();
   const { width } = useWindowDimensions(); // واکنش‌گرا به تغییر اندازه صفحه
 
   // محاسبه اندازه فونت واکنش‌گرا
@@ -29,18 +30,20 @@ const ItemRow = ({ text, icon, onPress }) => {
     return 16;
   };
 
-  const { username, elo, coins, avatar } = useUserStore();
-
   return (
-    <TouchableOpacity style={[styles.item, { padding: getPadding() }]} onPress={onPress}>
+    <TouchableOpacity  style={[styles.item, { padding: getPadding(), backgroundColor: colors.card, borderColor: colors.border }]} onPress={onPress}>
       <View style={styles.arrow}>
-        <Text style={[styles.arrowText, { fontSize: getFontSize() }]}>{'<'}</Text>
+        {children}
+        {
+          !children &&
+          <Text style={[styles.arrowText, { fontSize: getFontSize(), color: colors.text }]}>{'<'}</Text>
+        }
       </View>
       <View style={styles.textItem}>
-        <Text style={[styles.itemText, { fontSize: getFontSize() }]}>{text}</Text>
+        <Text style={[styles.itemText, { fontSize: getFontSize(), color: colors.text }]}>{text}</Text>
       </View>
       <View style={styles.icon}>
-        <IconSymbol size={getIconSize()} name={icon} color='black' />
+        <IconSymbol size={getIconSize()} name={icon} color={colors.text} />
       </View>
     </TouchableOpacity>
   );
@@ -51,19 +54,16 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'flex-start',
     alignItems: 'center',
-    backgroundColor: '#dee4e0',
     borderRadius: 5,
   },
   arrow: {
     justifyContent: 'center',
     alignItems: 'center',
     fontSize: 24,
-    color: '#cccccc',
     marginRight: 10,
     fontWeight: '300',
   },
   arrowText: {
-    color: '#1f1f1f',
     fontFamily: 'Kaghaz',
   },
   textItem: {
@@ -71,7 +71,6 @@ const styles = StyleSheet.create({
     textAlign: 'right',
   },
   itemText: {
-    color: '#1f1f1f',
     textAlign: 'right',
     fontWeight: '900',
   },

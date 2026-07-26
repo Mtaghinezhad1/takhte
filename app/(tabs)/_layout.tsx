@@ -1,4 +1,5 @@
 import { IconSymbol } from '@/components/ui/icon-symbol';
+import useThemeStore from '@/stores/useThemeStore';
 import { Tabs } from 'expo-router';
 import * as ScreenOrientation from 'expo-screen-orientation';
 import React, { useEffect } from 'react';
@@ -7,7 +8,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function TabLayout() {
   const { width, height } = useWindowDimensions();
-  const insets = useSafeAreaInsets(); 
+  const insets = useSafeAreaInsets();
+  const { getColors, isDark, colors } = useThemeStore();
 
   useEffect(() => {
     // قفل صفحه به حالت عمودی برای تمام صفحات اصلی
@@ -24,18 +26,18 @@ export default function TabLayout() {
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: '#1d5cdd',
-        tabBarInactiveTintColor: '#888888',
+        tabBarActiveTintColor: colors.primary,
+        tabBarInactiveTintColor: colors.tabBarInactive,
         tabBarStyle: {
-          backgroundColor: '#ffffff',
-          height: height * 0.1 + (insets.bottom*0.5 || 0), // ← تغییر
+          backgroundColor: colors.tabBar,
+          height: height * 0.1 + (insets.bottom * 0.5 || 0),
           paddingTop: 4,
-          paddingBottom: insets.bottom || 0, // ← اضافه کن
+          paddingBottom: insets.bottom || 0,
           borderTopWidth: 0,
           elevation: 10,
-          shadowColor: '#000',
+          shadowColor: colors.shadow,
           shadowOffset: { width: 0, height: -3 },
-          shadowOpacity: 0.1,
+          shadowOpacity: isDark ? 0.3 : 0.1,
           shadowRadius: 6,
         },
         tabBarLabelStyle: {

@@ -5,10 +5,79 @@ const STORAGE_KEYS = {
   GAME_SETTINGS: '@backgammon_game_settings',
   STATISTICS: '@backgammon_statistics',
   LEARNING_PROGRESS: '@backgammon_learning_progress',
-  ACTIVE_GAMES: '@backgammon_active_games'
+  ACTIVE_GAMES: '@backgammon_active_games',
+  ELO_HISTORY: '@backgammon_elo_history',
+  THEME: '@backgammon_theme'
 };
 
 class StorageService {
+  // ذخیره تاریخچه الو
+  async saveEloHistory(history) {
+    try {
+      const jsonValue = JSON.stringify(history);
+      await AsyncStorage.setItem(STORAGE_KEYS.ELO_HISTORY, jsonValue);
+      return true;
+    } catch (error) {
+      console.error('خطا در ذخیره تاریخچه الو:', error);
+      return false;
+    }
+  }
+
+  // بارگذاری تاریخچه الو
+  async loadEloHistory() {
+    try {
+      const jsonValue = await AsyncStorage.getItem(STORAGE_KEYS.ELO_HISTORY);
+      return jsonValue != null ? JSON.parse(jsonValue) : [];
+    } catch (error) {
+      console.error('خطا در بارگذاری تاریخچه الو:', error);
+      return [];
+    }
+  }
+
+  // اضافه کردن رکورد جدید به تاریخچه
+  async addEloRecord(elo, gameMode, opponent, result, matchLength = 5, timestamp = Date.now()) {
+    try {
+      const history = await this.loadEloHistory();
+
+      const newRecord = {
+        elo,
+        gameMode,
+        opponent,
+        result, // 'win', 'loss', 'draw'
+        matchLength,
+        timestamp
+      };
+
+      // محدود کردن به 1000 رکورد آخر
+      const updatedHistory = [...history, newRecord].slice(-1000);
+
+      await this.saveEloHistory(updatedHistory);
+      return newRecord;
+    } catch (error) {
+      console.error('خطا در اضافه کردن رکورد الو:', error);
+      return null;
+    }
+  }
+
+  // دریافت آخرین الو
+  async getCurrentElo() {
+    const history = await this.loadEloHistory();
+    return history.length > 0 ? history[history.length - 1].elo : 1500;
+  }
+
+  // دریافت بالاترین الو
+  async getHighestElo() {
+    const history = await this.loadEloHistory();
+    return history.length > 0 ? Math.max(...history.map(r => r.elo)) : 1500;
+  }
+
+  // ریست کردن تاریخچه
+  async resetEloHistory() {
+    const defaultHistory = [{ elo: 1500, timestamp: Date.now(), gameMode: 'initial', opponent: 'system', result: 'initial', matchLength: 0 }];
+    await this.saveEloHistory(defaultHistory);
+    return defaultHistory;
+  }
+
   // ذخیره اطلاعات کاربر
   async saveUserData(userData) {
     try {
@@ -58,7 +127,18 @@ class StorageService {
   // ذخیره آمار بازی
   async saveStatistics(stats) {
     try {
-      const jsonValue = JSON.stringify(stats);
+      const fullStats = {
+        totalGames: stats.totalGames || 0,
+        wins: stats.wins || 0,
+        losses: stats.losses || 0,
+        draws: stats.draws || 0,
+        totalWins: stats.totalWins || 0,
+        totalGamesPlayed: stats.totalGamesPlayed || 0,
+        winStreak: stats.winStreak || 0,
+        maxWinStreak: stats.maxWinStreak || 0
+      };
+
+      const jsonValue = JSON.stringify(fullStats);
       await AsyncStorage.setItem(STORAGE_KEYS.STATISTICS, jsonValue);
       return true;
     } catch (error) {
@@ -76,7 +156,10 @@ class StorageService {
         wins: 0,
         losses: 0,
         draws: 0,
-        highestElo: 1500
+        totalWins: 0,
+        totalGamesPlayed: 0,
+        winStreak: 0,
+        maxWinStreak: 0
       };
     } catch (error) {
       console.error('خطا در بارگذاری آمار بازی:', error);
@@ -85,7 +168,10 @@ class StorageService {
         wins: 0,
         losses: 0,
         draws: 0,
-        highestElo: 1500
+        totalWins: 0,
+        totalGamesPlayed: 0,
+        winStreak: 0,
+        maxWinStreak: 0
       };
     }
   }
@@ -185,88 +271,25 @@ class StorageService {
     return gameState !== null && !gameState.isMatchEndModalVisible && !gameState.gameWinner;
   }
 
-  async saveStatistics(stats) {
-    try {
-      // اطمینان از وجود تمام فیلدها
-      const fullStats = {
-        totalGames: stats.totalGames || 0,
-        wins: stats.wins || 0,
-        losses: stats.losses || 0,
-        draws: stats.draws || 0,
-        highestElo: stats.highestElo || 1500,
-        totalWins: stats.totalWins || 0, // کل بردهای کل بازی‌ها
-        totalGamesPlayed: stats.totalGamesPlayed || 0, // کل بازی‌های انجام شده
-        winStreak: stats.winStreak || 0, // برد پیاپی فعلی
-        maxWinStreak: stats.maxWinStreak || 0 // بیشترین برد پیاپی
-      };
-
-      const jsonValue = JSON.stringify(fullStats);
-      await AsyncStorage.setItem(STORAGE_KEYS.STATISTICS, jsonValue);
-      return true;
-    } catch (error) {
-      console.error('خطا در ذخیره آمار بازی:', error);
-      return false;
-    }
-  }
-
-  // بارگذاری آمار بازی با مقادیر پیش‌فرض جدید
-  async loadStatistics() {
-    try {
-      const jsonValue = await AsyncStorage.getItem(STORAGE_KEYS.STATISTICS);
-      return jsonValue != null ? JSON.parse(jsonValue) : {
-        totalGames: 0,
-        wins: 0,
-        losses: 0,
-        draws: 0,
-        highestElo: 1500,
-        totalWins: 0,
-        totalGamesPlayed: 0,
-        winStreak: 0,
-        maxWinStreak: 0
-      };
-    } catch (error) {
-      console.error('خطا در بارگذاری آمار بازی:', error);
-      return {
-        totalGames: 0,
-        wins: 0,
-        losses: 0,
-        draws: 0,
-        highestElo: 1500,
-        totalWins: 0,
-        totalGamesPlayed: 0,
-        winStreak: 0,
-        maxWinStreak: 0
-      };
-    }
-  }
-
   // به‌روزرسانی آمار پس از هر بازی
-  async updateStatistics(gameResult, eloChange) {
+  async updateStatistics(gameResult) {
     try {
       const stats = await this.loadStatistics();
 
-      // به‌روزرسانی تعداد کل بازی‌ها
       stats.totalGamesPlayed = (stats.totalGamesPlayed || 0) + 1;
 
-      // به‌روزرسانی بردها
       if (gameResult === 'win') {
         stats.totalWins = (stats.totalWins || 0) + 1;
         stats.winStreak = (stats.winStreak || 0) + 1;
-        // به‌روزرسانی بیشترین برد پیاپی
         if (stats.winStreak > (stats.maxWinStreak || 0)) {
           stats.maxWinStreak = stats.winStreak;
         }
       } else if (gameResult === 'loss') {
-        // شکست: ریست کردن برد پیاپی
         stats.winStreak = 0;
       }
 
-      // به‌روزرسانی الو
-      if (eloChange && eloChange > 0) {
-        stats.highestElo = Math.max(stats.highestElo || 1500, eloChange);
-      }
+      // ❌ حذف: بخش به‌روزرسانی highestElo
 
-      // ذخیره آمار به‌روز شده
       await this.saveStatistics(stats);
       return stats;
     } catch (error) {
@@ -287,7 +310,6 @@ class StorageService {
       wins: 0,
       losses: 0,
       draws: 0,
-      highestElo: 1500,
       totalWins: 0,
       totalGamesPlayed: 0,
       winStreak: 0,
@@ -295,6 +317,28 @@ class StorageService {
     };
     await this.saveStatistics(defaultStats);
     return defaultStats;
+  }
+
+  // ذخیره تم
+  async saveTheme(theme) {
+    try {
+      await AsyncStorage.setItem(STORAGE_KEYS.THEME, theme);
+      return true;
+    } catch (error) {
+      console.error('خطا در ذخیره تم:', error);
+      return false;
+    }
+  }
+
+  // بارگذاری تم (پیش‌فرض 'light')
+  async loadTheme() {
+    try {
+      const theme = await AsyncStorage.getItem(STORAGE_KEYS.THEME);
+      return theme || 'light';
+    } catch (error) {
+      console.error('خطا در بارگذاری تم:', error);
+      return 'light';
+    }
   }
 
   // حذف تمام داده‌ها
@@ -305,7 +349,8 @@ class StorageService {
         STORAGE_KEYS.GAME_SETTINGS,
         STORAGE_KEYS.STATISTICS,
         STORAGE_KEYS.LEARNING_PROGRESS,
-        STORAGE_KEYS.ACTIVE_GAMES
+        STORAGE_KEYS.ACTIVE_GAMES,
+        STORAGE_KEYS.THEME  // 👈 اضافه کردن تم
       ]);
       return true;
     } catch (error) {

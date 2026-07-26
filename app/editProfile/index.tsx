@@ -1,3 +1,4 @@
+import useThemeStore from '@/stores/useThemeStore';
 import useUserStore from '@/stores/useUserStore';
 import { Picker } from '@react-native-picker/picker';
 import { router } from 'expo-router';
@@ -15,15 +16,15 @@ const EditProfile = () => {
     username,
     age,
     gender,
-    city,
-    province,
-    phoneNumber,
-    email,
     isLoading,
+    avatarKey,
     setUsername,
     setAge,
     setGender,
   } = useUserStore();
+  const { colors } = useThemeStore();
+
+
 
   // State محلی برای ویرایش موقت
   const [localUsername, setLocalUsername] = useState(username);
@@ -77,11 +78,21 @@ const EditProfile = () => {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
+      {/* Profile Section */}
+      <View style={styles.profileSection}>
+        <View style={styles.avatarSection}>
+          <View style={styles.avatar}>
+            {/* <Image style={styles.avatarImg} source={avatarKey ? getAvatarByKey(avatarKey) : require('@/assets/avatar/default.jpeg')}  /> */}
+          </View>
+        </View>
+      </View>
+
+
       {/* Username Input */}
       <View style={styles.inputContainer}>
-        <Text style={styles.title}>نام کاربری</Text>
+        <Text style={[styles.title, { color: colors.text }]}>نام کاربری</Text>
         <TextInput
-          style={styles.input}
+          style={[styles.input, { backgroundColor: colors.card, color: colors.text }]}
           placeholder="نام خود را وارد کنید"
           placeholderTextColor="#999"
           value={localUsername}
@@ -91,9 +102,9 @@ const EditProfile = () => {
 
       {/* Age Input */}
       <View style={styles.inputContainer}>
-        <Text style={styles.title}>سن</Text>
+        <Text style={[styles.title, { color: colors.text }]}>سن</Text>
         <TextInput
-          style={styles.input}
+          style={[styles.input, { backgroundColor: colors.card, color: colors.text }]}
           placeholder="سن خود را وارد کنید"
           placeholderTextColor="#999"
           keyboardType="numeric"
@@ -104,12 +115,12 @@ const EditProfile = () => {
 
       {/* Gender Picker */}
       <View style={styles.inputContainer}>
-        <Text style={styles.title}>جنسیت</Text>
+        <Text style={[styles.title, { color: colors.text }]}>جنسیت</Text>
         <View style={styles.pickerWrapper}>
           <Picker
             selectedValue={localGender}
             onValueChange={(itemValue) => setLocalGender(itemValue)}
-            style={styles.picker}
+            style={[styles.picker, { backgroundColor: colors.card, color: colors.text }]}
             dropdownIconColor="#666"
           >
             <Picker.Item label="انتخاب کنید" value="" />
@@ -149,7 +160,6 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     padding: 16,
     justifyContent: 'center',
-    backgroundColor: '#fff',
   },
   centered: {
     justifyContent: 'center',
@@ -170,7 +180,6 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     fontSize: 20,
     paddingHorizontal: 5,
-    color: '#000',
     marginBottom: 4,
   },
   input: {
@@ -178,7 +187,6 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     borderWidth: 1,
     borderColor: 'gray',
-    backgroundColor: '#f9f9f9',
     padding: 12,
     textAlign: 'right',
     fontSize: 17,
@@ -189,13 +197,11 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     borderWidth: 1,
     borderColor: 'gray',
-    backgroundColor: '#f9f9f9',
     overflow: 'hidden',
   },
   picker: {
     width: '100%',
     height: 50,
-    color: '#333',
   },
   btnText: {
     color: 'white',
@@ -215,7 +221,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   cancel: {
-    backgroundColor: '#fff',
     borderWidth: 2,
     borderColor: '#6495ed',
     marginRight: 8,
@@ -235,7 +240,7 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 20,
     fontFamily: 'Kaghaz',
-},
+  },
 });
 
 export default EditProfile;
