@@ -148,7 +148,7 @@ const EditProfile = () => {
           onPress={handleSave}
           activeOpacity={0.7}
         >
-          <Text style={styles.confirmText}>ذخیره</Text>
+          <Text style={[styles.confirmText,{color: colors.background}]}>ذخیره</Text>
         </TouchableOpacity>
       </View>
     </ScrollView>

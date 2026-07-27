@@ -15,6 +15,7 @@ const GameCard = ({ game, cardWidth, cardHeight, imageWidth, imageHeight }) => {
   const handleStartGame = async () => {
     setIsLoading(true);
     try {
+
       // بررسی وجود بازی ذخیره شده برای این gameMode
       const hasActiveGame = await storageService.hasActiveGame(game.mode);
 

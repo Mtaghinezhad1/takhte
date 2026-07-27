@@ -1,7 +1,10 @@
+import useThemeStore from '@/stores/useThemeStore';
 import useUserStore from '@/stores/useUserStore';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, Dimensions, ScrollView, Text, View } from 'react-native';
 import { LineChart } from 'react-native-chart-kit';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -9,6 +12,8 @@ const CustomChart = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [eloData, setEloData] = useState([]);
     const { getEloHistory } = useUserStore();
+    const { colors } = useThemeStore();
+
 
     useEffect(() => {
         const loadEloData = async () => {
@@ -39,11 +44,14 @@ const CustomChart = () => {
     // اگر داده‌ای وجود نداشت، پیام نمایش داده شود
     if (eloData.length === 0) {
         return (
-            <View style={{ padding: 20, alignItems: 'center' }}>
-                <Text style={{ color: 'white', fontSize: 16 }}>
-                    هنوز هیچ بازی انجام نداده‌اید
-                </Text>
-            </View>
+            <SafeAreaView>
+                <View style={{ padding: 20, alignItems: 'center' }}>
+                    <Text style={{ color: colors.text, fontSize: 16 }}>
+                        هنوز هیچ بازی انجام نداده‌اید
+                    </Text>
+                </View>
+            </SafeAreaView>
+
         );
     }
 

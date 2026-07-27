@@ -1,8 +1,9 @@
 import Slider from '@react-native-community/slider';
 import { router, useLocalSearchParams } from 'expo-router';
 import React, { useState } from 'react';
-import { SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+
 
 
 export default function PreGameScreen() {

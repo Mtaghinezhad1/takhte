@@ -23,8 +23,7 @@ export default function RootLayout() {
   
   const initializeFromStorage = useUserStore(state => state.initializeFromStorage);
   const isLoading = useUserStore(state => state.isLoading);
-  const { initialize: initializeTheme, isDark, getColors, isLoading: themeLoading } = useThemeStore();
-  const colors = getColors();
+  const { initialize: initializeTheme, isDark, colors, isLoading: themeLoading } = useThemeStore();
 
   // مقداردهی اولیه تم
   useEffect(() => {

@@ -6,7 +6,8 @@ import useThemeStore from '@/stores/useThemeStore';
 import useUserStore from '@/stores/useUserStore';
 import { router } from 'expo-router';
 import React from 'react';
-import { Image, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
+import { Image, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 
 export default function MoreScreen() {
@@ -58,7 +59,7 @@ export default function MoreScreen() {
             </TouchableOpacity>
           </View>
 
-          <Text style={[styles.profileName, { color: colors.text}]}>{username}</Text>
+          <Text style={[styles.profileName, { color: colors.text }]}>{username}</Text>
           {/* <Text style={styles.profileBio}>ID: 737848826</Text> */}
 
           <View style={[styles.btnContainer, { gap: width * 0.015 }]}>
@@ -83,7 +84,7 @@ export default function MoreScreen() {
           </View>
         </View>
 
-        
+
         <View style={styles.itemContainer}>
           <ItemRow icon='person' text="ویرایش پروفایل" onPress={() => router.push(`/editProfile`)} />
           <ItemRow icon='timeline' text="آمار" onPress={() => router.push(`/charts`)} />

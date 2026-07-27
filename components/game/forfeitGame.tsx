@@ -1,6 +1,8 @@
 import useGameStore from '@/stores/useGameStore';
 import React from 'react';
-import { SafeAreaView, StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
 
 const ForfeitGame = () => {
   const forfeitHand = useGameStore(state => state.forfeitHand);

@@ -40,29 +40,20 @@ const useThemeStore = create((set, get) => ({
   theme: 'light',
   isDark: false,
   isLoading: true,
-  colors: {
-    background: '#ffffff',
-    card: '#f8f9fa',
-    text: '#1a1a1a',
-    border: '#e0e0e0',
-    primary: '#1d5cdd',
-    secondary: '#7c3aed',
-    tertiary: '#ea580c',
-    danger: '#dc2626',
-    tabBar: '#ffffff',
-    tabBarActive: '#1d5cdd',
-    tabBarInactive: '#888888',
-    shadow: '#000000',
-    profileBg: '#f0f2f5',
-    inputBg: '#f0f2f5',
-  },
+  colors: lightColors,
 
   // مقداردهی اولیه از storage
   initialize: async () => {
     try {
       const savedTheme = await StorageService.loadTheme();
       const isDark = savedTheme === 'dark';
-      set({ theme: savedTheme, isDark, isLoading: false });
+      const newColors = isDark ? darkColors : lightColors;
+      set({
+        theme: savedTheme,
+        isDark,
+        isLoading: false,
+        colors: newColors
+      });
     } catch (error) {
       console.error('خطا در مقداردهی تم:', error);
       set({ isLoading: false });
@@ -79,7 +70,7 @@ const useThemeStore = create((set, get) => ({
     await StorageService.saveTheme(newTheme);
     set({ theme: newTheme, isDark, colors: newColors });
   },
-  
+
   // تنظیم دستی تم
   setTheme: async (theme) => {
     const isDark = theme === 'dark';

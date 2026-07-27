@@ -138,7 +138,7 @@ const SelectAvatar = () => {
                         activeOpacity={0.7}
                         disabled={isAvatarLocked(avatars[activeIndex])}
                     >
-                        <Text style={styles.confirmText}>تایید</Text>
+                        <Text style={[styles.confirmText,{color: colors.background}]}>تایید</Text>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -254,7 +254,6 @@ const styles = StyleSheet.create({
         borderColor: '#ccc',
     },
     confirmText: {
-        color: '#fff',
         fontSize: 20,
         fontFamily: 'Kaghaz',
     },
