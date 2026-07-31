@@ -22,7 +22,6 @@ export const strategyEngine = {
         const winningStrategy = Object.entries(scores)
             .sort(([, a], [, b]) => b - a)[0];
 
-        console.log(winningStrategy[0], scores);
         return {
             strategy: winningStrategy[0],
             confidence: winningStrategy[1],
@@ -132,7 +131,7 @@ export const strategyEngine = {
             scores.BLITZ += 0.20;
             scores.HOLDING -= 0.10;
         }
-        else if (features.myHomeClosedPoints <= 1) {
+        else if (features.myHomeClosedPoints <= 1 && features.oppHomeClosedPoints >= 4) {
             scores.RACE += 0.10;
             scores.HOLDING += 0.15;
         }
@@ -145,7 +144,7 @@ export const strategyEngine = {
         else if (features.myPrimeLength >= 4) {
             scores.PRIME += 0.05;
         }
-        
+
         if (features.oppPrimeLength >= 4 && features.pipDiff < 0) {
             scores.BACKGAME += 0.10;
             scores.RACE -= 0.15;
@@ -183,7 +182,7 @@ export const strategyEngine = {
         // لایه ۵: فاز بازی (وزن ۵٪)
         if (phase === PHASES.OPENING) {
             scores.RACE += 0.02;
-            scores.PRIME += 0.02;
+            scores.PRIME += 0.03;
         } else if (phase === PHASES.ENDGAME) {
             scores.RACE += 0.03;
             scores.BLITZ -= 0.02;

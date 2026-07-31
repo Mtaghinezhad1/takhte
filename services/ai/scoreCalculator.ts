@@ -1,268 +1,106 @@
-import { AI_LEVELS_MULTIPLIER, STRATEGY_PHASE_WEIGHTS } from '@/constants/aiWeights';
+import { AI_LEVELS, STRATEGY_PHASE_WEIGHTS } from '@/constants/aiWeights';
 
 export const scoreCalculator = {
     calculateScore(features, strategy, phase, difficulty = '5', showDetails = false) {
-        // ۱. دریافت وزن‌های پایه استراتژی
-        const baseWeights = this.getBaseWeights(strategy, phase);
-        if (!baseWeights) {
-            console.warn(`No weights found for ${strategy}/${phase}, using default`);
+        // 1. دریافت وزن‌های استراتژی
+        const weights = this.getWeights(strategy, phase);
+        if (!weights) {
             return this.calculateDefaultScore(features);
         }
 
-        // ۲. اعمال ضریب سطح دشواری
-        const adjustedWeights = this.applyDifficultyMultiplier(baseWeights, difficulty);
+        // 2. محاسبه امتیاز خام
+        const rawScore = this.calculateRawScore(features, weights);
 
-        // ۳. محاسبه امتیاز خام با جزئیات
-        const { score: rawScore, details } = this.calculateRawScoreWithDetails(features, adjustedWeights);
+        // 3. اعمال نویز بر اساس سطح دشواری
+        const noiseLevel = this.getNoiseLevel(difficulty);
+        const finalScore = rawScore * (1 + (Math.random() - 0.5) * noiseLevel);
 
-        // ۴. اعمال نویز برای سطوح پایین‌تر (اختیاری)
-        const finalScore = rawScore;
-
-        // نمایش جزئیات در صورت درخواست
-        // if (showDetails) {
-        //     console.log('===== جزئیات محاسبه امتیاز =====');
-        //     console.log(`استراتژی: ${strategy}`);
-        //     console.log(`فاز: ${phase}`);
-        //     console.log(`سطح دشواری: ${difficulty}`);
-        //     console.log('\nوزن‌های تعدیل شده:');
-        //     console.table(adjustedWeights);
-        //     console.log('\nامتیاز هر بخش:');
-        //     console.table(details);
-        //     console.log(`امتیاز نهایی): ${finalScore}`);
-        //     console.log('================================\n');
-        // }
+        if (showDetails) {
+            this.printDetails(features, weights, rawScore, finalScore, strategy, phase, difficulty);
+        }
 
         return finalScore;
     },
 
-    /**
-     * محاسبه امتیاز خام به همراه جزئیات هر بخش
-     */
-    calculateRawScoreWithDetails(features, weights) {
-        let score = 0;
-        const details = {};
-
-        // وزن‌های پایه
-        const pipScore = (features.pipCount?.pipDiff || 0) * (weights.pipCount || 0);
-        score += pipScore;
-        details.pipCount = pipScore;
-
-        const blotScore = (features.blot?.blotDiff || 0) * (weights.blots || 0);
-        score += blotScore;
-        details.blots = blotScore;
-
-        const closedScore = (features.closedPoints?.closedDiff || 0) * (weights.closedPoints || 0);
-        score += closedScore;
-        details.closedPoints = closedScore;
-
-        const riskScore = (features.blot?.totalRisk || 0) * (weights.risk || 0);
-        score += riskScore;
-        details.risk = riskScore;
-
-        const primeScore = (features.prime?.primeDiff || 0) * (weights.primes || 0);
-        score += primeScore;
-        details.primes = primeScore;
-
-        const hitScore = (features.attack?.totalHitValue || 0) * (weights.hits || 0);
-        score += hitScore;
-        details.hits = hitScore;
-
-        const stackingScore = (features.structure?.stackingPenalty || 0) * (weights.stackingPenalty || 0);
-        score += stackingScore;
-        details.stackingPenalty = stackingScore;
-
-        // وزن‌های اختصاصی استراتژی‌ها
-        if (weights.homeBoardStrength) {
-            const homeScore = (features.closedPoints?.myClosedCount || 0) * weights.homeBoardStrength;
-            score += homeScore;
-            details.homeBoardStrength = homeScore;
-        }
-
-        if (weights.opponentOnBar) {
-            const oppBarScore = (features.attack?.opponentOnBar || 0) * weights.opponentOnBar;
-            score += oppBarScore;
-            details.opponentOnBar = oppBarScore;
-        }
-
-        if (weights.anchorStrength) {
-            const anchorScore = (features.defense?.anchors?.length || 0) * weights.anchorStrength;
-            score += anchorScore;
-            details.anchorStrength = anchorScore;
-        }
-
-        if (weights.primeExtensionValue) {
-            const primeExtScore = (features.prime?.myMaxPrimeLength || 0) * weights.primeExtensionValue;
-            score += primeExtScore;
-            details.primeExtensionValue = primeExtScore;
-        }
-
-        if (weights.blockingValue) {
-            const blockingScore = (features.prime?.oppMaxPrimeLength || 0) * -weights.blockingValue;
-            score += blockingScore;
-            details.blockingValue = blockingScore;
-        }
-
-        if (weights.wastage) {
-            const myWastage = (features.pipCount?.effectivePips || 0) - (features.pipCount?.myPips || 0);
-            const wastageScore = myWastage * weights.wastage;
-            score += wastageScore;
-            details.wastage = wastageScore;
-        }
-
-        if (weights.contactAvoidance) {
-            const inContact = (features.blot?.myBlots || 0) > 0 || (features.blot?.oppBlots || 0) > 0;
-            const contactScore = (inContact ? -1 : 1) * weights.contactAvoidance;
-            score += contactScore;
-            details.contactAvoidance = contactScore;
-        }
-
-        if (weights.bearoffEfficiency) {
-            const effScore = (features.bearoff?.diceUtilization || 0) * weights.bearoffEfficiency;
-            const distScore = (features.bearoff?.averageDistance || 0) * -weights.bearoffEfficiency;
-            score += effScore + distScore;
-            details.bearoffEfficiency = effScore;
-            details.averageDistance = distScore;
-        }
-
-        if (weights.flexibility) {
-            const flexScore = (features.structure?.flexibility || 0) * weights.flexibility;
-            score += flexScore;
-            details.flexibility = flexScore;
-        }
-
-        if (weights.connectivity) {
-            const connScore = (features.structure?.connectivity || 0) * weights.connectivity;
-            score += connScore;
-            details.connectivity = connScore;
-        }
-
-        if (weights.timingValue) {
-            const timingScore = (features.metadata?.timing || 0) * weights.timingValue;
-            score += timingScore;
-            details.timingValue = timingScore;
-        }
-
-        if (weights.anchorCount) {
-            const anchorCountScore = (features.defense?.anchors?.length || 0) * weights.anchorCount;
-            score += anchorCountScore;
-            details.anchorCount = anchorCountScore;
-        }
-
-        if (weights.hittingNumbers) {
-            const hitNumScore = (features.attack?.directHits || 0) * weights.hittingNumbers;
-            score += hitNumScore;
-            details.hittingNumbers = hitNumScore;
-        }
-
-        if (weights.hitAndContain) {
-            const hitContainScore = (features.attack?.directHits || 0) * weights.hitAndContain;
-            const containScore = (features.attack?.opponentOnBar || 0) * weights.hitAndContain * 0.5;
-            score += hitContainScore + containScore;
-            details.hitAndContain = hitContainScore;
-            details.containment = containScore;
-        }
-
-        if (weights.containmentValue) {
-            const containScore = (features.defense?.anchors?.length || 0) * weights.containmentValue * 0.3;
-            score += containScore;
-            details.containmentValue = containScore;
-        }
-
-        if (weights.safety) {
-            const safetyScore = -(features.blot?.myBlots || 0) * weights.safety * 0.5;
-            score += safetyScore;
-            details.safety = safetyScore;
-        }
-
-        if (weights.diceUtilization) {
-            const diceScore = (features.bearoff?.diceUtilization || 0) * weights.diceUtilization;
-            score += diceScore;
-            details.diceUtilization = diceScore;
-        }
-
-        if (weights.averageDistance) {
-            const avgDistScore = (features.bearoff?.averageDistance || 0) * (weights.averageDistance || 0);
-            score += avgDistScore;
-            details.averageDistanceWeighted = avgDistScore;
-        }
-
-        if (weights.desperateEscape) {
-            const escapeScore = (features.defense?.backCheckers || 0) * weights.desperateEscape * 0.5;
-            score += escapeScore;
-            details.desperateEscape = escapeScore;
-        }
-
-        if (weights.savingGammon) {
-            const gammonScore = (features.blot?.oppBlots || 0) * weights.savingGammon * 0.3;
-            score += gammonScore;
-            details.savingGammon = gammonScore;
-        }
-
-        if (weights.counterPlay) {
-            const counterScore = ((features.blot?.oppBlots || 0) * 0.3 + (features.closedPoints?.myClosedCount || 0) * 0.1) * weights.counterPlay;
-            score += counterScore;
-            details.counterPlay = counterScore;
-        }
-
-        if (weights.escapePotential) {
-            const escapePotScore = (features.defense?.escapeRoutes || 0) * weights.escapePotential * 0.2;
-            score += escapePotScore;
-            details.escapePotential = escapePotScore;
-        }
-
-        if (weights.bearoffPrep) {
-            const remaining = features.bearoff?.remainingCheckers || 0;
-            const avgDist = features.bearoff?.averageDistance || 0;
-            const prepScore = (15 - remaining) * weights.bearoffPrep * 0.3 - avgDist * weights.bearoffPrep * 0.1;
-            score += prepScore;
-            details.bearoffPrep = prepScore;
-        }
-
-        if (weights.safetyInHome) {
-            const safetyHomeScore = -(features.blot?.myBlots || 0) * weights.safetyInHome * 0.4;
-            score += safetyHomeScore;
-            details.safetyInHome = safetyHomeScore;
-        }
-
-        if (weights.gapControl) {
-            const myClosed = features.closedPoints?.myClosedCount || 0;
-            const oppClosed = features.closedPoints?.oppClosedCount || 0;
-            const gapScore = (myClosed - oppClosed) * weights.gapControl * 0.2;
-            score += gapScore;
-            details.gapControl = gapScore;
-        }
-
-        return { score, details };
-    },
-
-    /**
-     * دریافت وزن‌های پایه استراتژی
-     */
-    getBaseWeights(strategy, phase) {
+    getWeights(strategy, phase) {
         return STRATEGY_PHASE_WEIGHTS[strategy]?.[phase] || null;
     },
 
-    /**
-     * اعمال ضریب سطح دشواری روی وزن‌ها
-     */
-    applyDifficultyMultiplier(weights, difficulty) {
-        const multiplier = AI_LEVELS_MULTIPLIER[difficulty];
-        if (!multiplier) return weights;
-
-        const result = {};
-        for (const key in weights) {
-            const weightValue = weights[key];
-            const multiplierValue = multiplier[key] || 1;
-
-            result[key] = weightValue * multiplierValue;
-        }
-        return result;
+    getNoiseLevel(difficulty) {
+        const level = AI_LEVELS[difficulty];
+        return level?.noise ?? 0.3; // پیش‌فرض: 0.3
     },
 
+    calculateRawScore(features, weights) {
+        let score = 0;
 
-    /**
-     * محاسبه امتیاز پیش‌فرض (زمانی که استراتژی پیدا نشود)
-     */
+        // وزن‌های پایه
+        if (weights.pipCount !== undefined) {
+            score += (features.pipCount?.pipDiff || 0) * weights.pipCount;
+        }
+        if (weights.blots !== undefined) {
+            score += (features.blot?.blotDiff || 0) * weights.blots;
+        }
+        if (weights.closedPoints !== undefined) {
+            score += (features.closedPoints?.closedDiff || 0) * weights.closedPoints;
+        }
+        if (weights.risk !== undefined) {
+            score += (features.blot?.totalRisk || 0) * weights.risk;
+        }
+        if (weights.primes !== undefined) {
+            score += (features.prime?.primeDiff || 0) * weights.primes;
+        }
+        if (weights.hits !== undefined) {
+            score += (features.attack?.totalHitValue || 0) * weights.hits;
+        }
+
+        // وزن‌های اختصاصی استراتژی‌ها
+        const specialKeys = [
+            'homeBoardStrength', 'opponentOnBar', 'anchorStrength', 'primeExtensionValue',
+            'blockingValue', 'wastage', 'contactAvoidance', 'bearoffEfficiency',
+            'flexibility', 'connectivity', 'timingValue', 'anchorCount',
+            'hittingNumbers', 'hitAndContain', 'containmentValue', 'safety',
+            'diceUtilization', 'averageDistance', 'desperateEscape', 'savingGammon',
+            'counterPlay', 'escapePotential', 'bearoffPrep', 'safetyInHome', 'gapControl'
+        ];
+
+        const specialFeatures = {
+            homeBoardStrength: features.closedPoints?.myClosedCount || 0,
+            opponentOnBar: features.attack?.opponentOnBar || 0,
+            anchorStrength: features.defense?.anchors?.length || 0,
+            primeExtensionValue: features.prime?.myMaxPrimeLength || 0,
+            blockingValue: -(features.prime?.oppMaxPrimeLength || 0),
+            wastage: (features.pipCount?.effectivePips || 0) - (features.pipCount?.myPips || 0),
+            contactAvoidance: (features.blot?.myBlots || 0) > 0 || (features.blot?.oppBlots || 0) > 0 ? -1 : 1,
+            bearoffEfficiency: (features.bearoff?.diceUtilization || 0) - (features.bearoff?.averageDistance || 0) * 0.1,
+            flexibility: features.structure?.flexibility || 0,
+            connectivity: features.structure?.connectivity || 0,
+            timingValue: features.metadata?.timing || 0,
+            anchorCount: features.defense?.anchors?.length || 0,
+            hittingNumbers: features.attack?.directHits || 0,
+            hitAndContain: (features.attack?.directHits || 0) + (features.attack?.opponentOnBar || 0) * 0.5,
+            containmentValue: (features.defense?.anchors?.length || 0) * 0.3,
+            safety: -(features.blot?.myBlots || 0) * 0.5,
+            diceUtilization: features.bearoff?.diceUtilization || 0,
+            averageDistance: -(features.bearoff?.averageDistance || 0),
+            desperateEscape: (features.defense?.backCheckers || 0) * 0.5,
+            savingGammon: (features.blot?.oppBlots || 0) * 0.3,
+            counterPlay: (features.blot?.oppBlots || 0) * 0.3 + (features.closedPoints?.myClosedCount || 0) * 0.1,
+            escapePotential: (features.defense?.escapeRoutes || 0) * 0.2,
+            bearoffPrep: (15 - (features.bearoff?.remainingCheckers || 15)) * 0.3 - (features.bearoff?.averageDistance || 0) * 0.1,
+            safetyInHome: -(features.blot?.myBlots || 0) * 0.4,
+            gapControl: ((features.closedPoints?.myClosedCount || 0) - (features.closedPoints?.oppClosedCount || 0)) * 0.2
+        };
+
+        for (const key of specialKeys) {
+            if (weights[key] !== undefined && specialFeatures[key] !== undefined) {
+                score += specialFeatures[key] * weights[key];
+            }
+        }
+
+        return score;
+    },
+
     calculateDefaultScore(features) {
         return (
             (features.pipCount?.pipDiff || 0) * 0.5 +
@@ -270,8 +108,18 @@ export const scoreCalculator = {
             (features.closedPoints?.closedDiff || 0) * 0.4 +
             (features.blot?.totalRisk || 0) * -0.2 +
             (features.prime?.primeDiff || 0) * 0.3 +
-            (features.attack?.totalHitValue || 0) * 0.1 +
-            (features.structure?.stackingPenalty || 0)
+            (features.attack?.totalHitValue || 0) * 0.1
         );
+    },
+
+    printDetails(features, weights, rawScore, finalScore, strategy, phase, difficulty) {
+        console.log('===== جزئیات محاسبه امتیاز =====');
+        console.log(`استراتژی: ${strategy}`);
+        console.log(`فاز: ${phase}`);
+        console.log(`سطح دشواری: ${difficulty}`);
+        console.log(`نویز: ${this.getNoiseLevel(difficulty)}`);
+        console.log(`امتیاز خام: ${rawScore.toFixed(2)}`);
+        console.log(`امتیاز نهایی: ${finalScore.toFixed(2)}`);
+        console.log('================================\n');
     }
 };
