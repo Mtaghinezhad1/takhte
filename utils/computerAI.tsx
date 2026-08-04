@@ -300,57 +300,6 @@ export const getClosedPointsValue = (board, color) => {
     return totalValue;
 }
 
-// نسخه بهینه با آستانه‌های پویا بر اساس فاز بازی!
-export const calculateStackingPenalty = (board, color) => {
-    const phase = detectGamePhase(board, color);
-    
-    // تعیین آستانه بر اساس فاز بازی
-    let threshold;
-    let penaltyMultiplier;
-    let exponent;
-    
-    switch(phase) {
-        case 'OPENING':
-            threshold = 5;      // در شروع بازی بیش از 5 مهره جریمه
-            penaltyMultiplier = 15;
-            exponent = 1.8;
-            break;
-        case 'MIDDLEGAME':
-            threshold = 4;      // در میانه بازی بیش از 4 مهره جریمه
-            penaltyMultiplier = 12;
-            exponent = 1.6;
-            break;
-        case 'ENDGAME':
-            threshold = 4;      // در آخر بازی بیش از 4 مهره جریمه
-            penaltyMultiplier = 8;
-            exponent = 1.4;
-            break;
-        default:
-            threshold = 5;
-            penaltyMultiplier = 12;
-            exponent = 1.7;
-    }
-
-    let penalty = 0;
-
-    for (let i = 1; i <= 24; i++) {
-        const count = board[i];
-        const absoluteCount = Math.abs(count);
-
-        // بررسی وجود مهره‌های ما در نقطه
-        if (((color === 'white' && count > 0) || (color === 'black' && count < 0)) &&
-            absoluteCount > threshold) {
-
-            const excess = absoluteCount - threshold;
-            // جریمه با توان غیرخطی و ضریب متناسب با فاز
-            penalty += Math.pow(excess, exponent) * penaltyMultiplier;
-            
-        }
-    }
-
-    return -penalty; // برگرداندن مقدار منفی برای جریمه
-}
-
 
 
 

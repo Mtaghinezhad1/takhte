@@ -1,10 +1,12 @@
 // ==================== services/ai/featureExtractor.js ====================
+import { ENTRANCE_PROB } from '@/constants/tables';
 import {
     calculateAverageDistance,
     calculateDiceUtilization,
-    calculateStackingPenalty, checkerValueByPosition, countBlots,
+    checkerValueByPosition, countBlots,
     countPrimes,
     countRemainingCheckers,
+    detectGamePhase,
     getBlotHitProbability,
     getClosedPointsValue,
     getHitValue
@@ -14,32 +16,32 @@ import { boardService } from '../boardService';
 export const featureExtractor = {
     extractFeatures(board, color) {
         const opponent = color === 'white' ? 'black' : 'white';
-        
+
         return {
             // ویژگی‌های پیپ کانت
             pipCount: this.extractPipFeatures(board, color, opponent),
-            
+
             // ویژگی‌های بلات و ریسک
             blot: this.extractBlotFeatures(board, color, opponent),
-            
+
             // ویژگی‌های نقاط بسته
             closedPoints: this.extractClosedPointFeatures(board, color, opponent),
-            
+
             // ویژگی‌های پرایم
             prime: this.extractPrimeFeatures(board, color, opponent),
-            
+
             // ویژگی‌های حمله
             attack: this.extractAttackFeatures(board, color),
-            
+
             // ویژگی‌های دفاعی
             defense: this.extractDefenseFeatures(board, color, opponent),
-            
+
             // ویژگی‌های ساختاری
             structure: this.extractStructureFeatures(board, color),
-            
+
             // ویژگی‌های بیرون آوردن
             bearoff: this.extractBearoffFeatures(board, color),
-            
+
             // متادیتا
             metadata: {
                 color,
@@ -52,7 +54,7 @@ export const featureExtractor = {
     extractPipFeatures(board, color, opponent) {
         const myPips = boardService.pipCount(board, color);
         const oppPips = boardService.pipCount(board, opponent);
-        
+
         return {
             myPips,
             oppPips,
@@ -65,11 +67,11 @@ export const featureExtractor = {
     extractBlotFeatures(board, color, opponent) {
         const myBlots = countBlots(board, color);
         const oppBlots = countBlots(board, opponent);
-        
+
         // محاسبه ریسک تجمعی
         let totalRisk = 0;
         let riskyBlots = 0;
-        
+
         for (let i = 1; i <= 24; i++) {
             const count = board[i];
             if ((color === 'white' && count === 1) || (color === 'black' && count === -1)) {
@@ -79,7 +81,7 @@ export const featureExtractor = {
                 riskyBlots++;
             }
         }
-        
+
         return {
             myBlots,
             oppBlots,
@@ -93,20 +95,26 @@ export const featureExtractor = {
     extractClosedPointFeatures(board, color, opponent) {
         const myValue = getClosedPointsValue(board, color);
         const oppValue = getClosedPointsValue(board, opponent);
-        
+
         return {
             myClosedValue: myValue,
             oppClosedValue: oppValue,
             closedDiff: myValue - oppValue,
             myClosedCount: this.countTotalClosedPoints(board, color),
             oppClosedCount: this.countTotalClosedPoints(board, opponent),
+            myHomeClosedCount: this.countHomeClosedPoints(board, color),
+            oppHomeClosedCount: this.countHomeClosedPoints(board, opponent),
+            homeClosedDiff: this.countHomeClosedPoints(board, color) - this.countHomeClosedPoints(board, opponent),
+            myHomeClosedvalue: this.calculateHomeClosedPointValue(board, color),
+            oppHomeClosedvalue: this.calculateHomeClosedPointValue(board, opponent),
+            homeClosedvalueDiff: this.calculateHomeClosedPointValue(board, color) - this.calculateHomeClosedPointValue(board, opponent),
         };
     },
 
     extractPrimeFeatures(board, color, opponent) {
         const myPrimes = countPrimes(board, color);
         const oppPrimes = countPrimes(board, opponent);
-        
+
         return {
             myPrimes,
             oppPrimes,
@@ -118,23 +126,23 @@ export const featureExtractor = {
 
     extractAttackFeatures(board, color) {
         const opponent = color === 'white' ? 'black' : 'white';
-        
+
         // محاسبه قدرت حمله
         let directHits = 0;
         let potentialHits = 0;
-        
+
         for (let i = 1; i <= 24; i++) {
             if ((color === 'white' && board[i] === -1) || (color === 'black' && board[i] === 1)) {
                 const hitValue = getHitValue(i, color);
                 directHits += hitValue;
             }
         }
-        
+
         // مهره‌های حریف روی bar
-        const opponentOnBar = opponent === 'white' ? 
-            (board[0] < 0 ? Math.abs(board[0]) : 0) : 
+        const opponentOnBar = opponent === 'white' ?
+            (board[0] < 0 ? Math.abs(board[0]) : 0) :
             (board[25] > 0 ? board[25] : 0);
-        
+
         return {
             directHits,
             potentialHits,
@@ -144,8 +152,12 @@ export const featureExtractor = {
     },
 
     extractDefenseFeatures(board, color, opponent) {
+        const anchors = this.findAnchors(board, color);
+        const anchorStrength = this.calculateAnchorStrength(anchors, color);
+
         return {
-            anchors: this.findAnchors(board, color),
+            anchors: anchors, // برای anchorCount
+            anchorStrength: anchorStrength, // برای anchorStrength
             hasAdvancedAnchor: this.hasAdvancedAnchor(board, color),
             escapeRoutes: this.countEscapeRoutes(board, color),
             backCheckers: this.countBackCheckers(board, color)
@@ -154,7 +166,7 @@ export const featureExtractor = {
 
     extractStructureFeatures(board, color) {
         return {
-            stackingPenalty: calculateStackingPenalty(board, color),
+            stackingPenalty: this.calculateStackingPenalty(board, color),
             flexibility: this.calculateFlexibility(board, color),
             connectivity: this.calculateConnectivity(board, color),
             distribution: this.calculateDistribution(board, color)
@@ -171,18 +183,18 @@ export const featureExtractor = {
     },
 
     // ===== توابع کمکی =====
-    
+
     calculateEffectivePips(board, color) {
         // محاسبه پیپ مؤثر با در نظر گرفتن اتلاف
         const rawPips = boardService.pipCount(board, color);
-        const wastage = calculateStackingPenalty(board, color);
+        const wastage = this.calculateStackingPenalty(board, color);
         return rawPips + Math.abs(wastage);
     },
 
     countTotalClosedPoints(board, color) {
         let count = 0;
         for (let i = 1; i <= 24; i++) {
-            if ((color === 'white' && board[i] >= 2) || 
+            if ((color === 'white' && board[i] >= 2) ||
                 (color === 'black' && board[i] <= -2)) {
                 count++;
             }
@@ -195,24 +207,29 @@ export const featureExtractor = {
         if (color === 'white') {
             for (let i = 1; i <= 6; i++) {
                 if (board[i] >= 2) count++
-            } 
+            }
         } else {
             for (let i = 19; i <= 24; i++) {
                 if (board[i] <= -2) count++
-            }  
+            }
         }
 
         return count;
     },
 
+    calculateHomeClosedPointValue(board, color) {
+        const count = this.countHomeClosedPoints(board, color);
+        return 1 - ENTRANCE_PROB[count];
+    },
+
     calculateMaxPrimeLength(board, color) {
         let maxLength = 0;
         let currentLength = 0;
-        
+
         for (let i = 1; i <= 24; i++) {
-            const isMyPoint = (color === 'white' && board[i] >= 2) || 
-                             (color === 'black' && board[i] <= -2);
-            
+            const isMyPoint = (color === 'white' && board[i] >= 2) ||
+                (color === 'black' && board[i] <= -2);
+
             if (isMyPoint) {
                 currentLength++;
                 maxLength = Math.max(maxLength, currentLength);
@@ -220,18 +237,48 @@ export const featureExtractor = {
                 currentLength = 0;
             }
         }
-        
+
         return maxLength;
+    },
+
+    calculateAnchorStrength(anchors, color) {
+        let strength = 0;
+
+        for (const pos of anchors) {
+            // لنگرهای پیشرفته وزن بیشتری دارند
+            if (color === 'white') {
+                if (pos >= 20) strength += 2;  // لنگر پیشرفته (20,21)
+                else if (pos >= 18) strength += 1.5; // لنگر متوسط
+                else strength += 1; // لنگر عقب
+            } else { // black
+                if (pos <= 5) strength += 2;  // لنگر پیشرفته (4,5)
+                else if (pos <= 7) strength += 1.5; // لنگر متوسط
+                else strength += 1; // لنگر عقب
+            }
+        }
+
+        return strength;
     },
 
     findAnchors(board, color) {
         const anchors = [];
-        for (let i = 1; i <= 24; i++) {
-            if ((color === 'white' && board[i] >= 2) || 
-                (color === 'black' && board[i] <= -2)) {
-                anchors.push(i);
+
+        if (color === 'white') {
+            // لنگرهای سفید: خانه‌های 19 تا 24 (نیمه حریف)
+            for (let i = 19; i <= 24; i++) {
+                if (board[i] >= 2) {
+                    anchors.push(i);
+                }
+            }
+        } else { // color === 'black'
+            // لنگرهای سیاه: خانه‌های 1 تا 6 (نیمه حریف)
+            for (let i = 1; i <= 6; i++) {
+                if (board[i] <= -2) {
+                    anchors.push(i);
+                }
             }
         }
+
         return anchors;
     },
 
@@ -261,11 +308,11 @@ export const featureExtractor = {
     countBackCheckers(board, color) {
         let count = 0;
         if (color === 'white') {
-            for (let i = 1; i <= 6; i++) {
+            for (let i = 19; i <= 24; i++) {
                 if (board[i] > 0) count += board[i];
             }
         } else {
-            for (let i = 19; i <= 24; i++) {
+            for (let i = 1; i <= 6; i++) {
                 if (board[i] < 0) count += Math.abs(board[i]);
             }
         }
@@ -276,7 +323,7 @@ export const featureExtractor = {
         // تعداد نقاطی که فقط ۲ مهره دارن (قابل استفاده مجدد)
         let flexible = 0;
         for (let i = 1; i <= 24; i++) {
-            if ((color === 'white' && board[i] === 2) || 
+            if ((color === 'white' && board[i] === 2) ||
                 (color === 'black' && board[i] === -2)) {
                 flexible++;
             }
@@ -290,11 +337,11 @@ export const featureExtractor = {
         for (let i = 1; i <= 24; i++) {
             const count = board[i];
             const isMy = (color === 'white' && count > 0) || (color === 'black' && count < 0);
-            
+
             if (isMy && i < 24) {
                 const nextCount = board[i + 1];
-                const nextIsMy = (color === 'white' && nextCount > 0) || 
-                                (color === 'black' && nextCount < 0);
+                const nextIsMy = (color === 'white' && nextCount > 0) ||
+                    (color === 'black' && nextCount < 0);
                 if (nextIsMy) {
                     connectivity += Math.min(Math.abs(count), Math.abs(nextCount));
                 }
@@ -313,12 +360,62 @@ export const featureExtractor = {
                 positions.push(i);
             }
         }
-        
+
         if (positions.length === 0) return 0;
-        
+
         const mean = positions.reduce((a, b) => a + b, 0) / positions.length;
         const variance = positions.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / positions.length;
-        
+
         return Math.sqrt(variance);
+    },
+
+    calculateStackingPenalty(board, color) {
+        const phase = detectGamePhase(board, color);
+
+        // تعیین آستانه بر اساس فاز بازی
+        let threshold;
+        let penaltyMultiplier;
+        let exponent;
+
+        switch (phase) {
+            case 'OPENING':
+                threshold = 5;      // در شروع بازی بیش از 5 مهره جریمه
+                penaltyMultiplier = 15;
+                exponent = 1.8;
+                break;
+            case 'MIDDLEGAME':
+                threshold = 3;      // در میانه بازی بیش از 3 مهره جریمه
+                penaltyMultiplier = 12;
+                exponent = 1.6;
+                break;
+            case 'ENDGAME':
+                threshold = 4;      // در آخر بازی بیش از 4 مهره جریمه
+                penaltyMultiplier = 8;
+                exponent = 1.4;
+                break;
+            default:
+                threshold = 5;
+                penaltyMultiplier = 12;
+                exponent = 1.7;
+        }
+
+        let penalty = 0;
+
+        for (let i = 1; i <= 24; i++) {
+            const count = board[i];
+            const absoluteCount = Math.abs(count);
+
+            // بررسی وجود مهره‌های ما در نقطه
+            if (((color === 'white' && count > 0) || (color === 'black' && count < 0)) &&
+                absoluteCount > threshold) {
+
+                const excess = absoluteCount - threshold;
+                // جریمه با توان غیرخطی و ضریب متناسب با فاز
+                penalty += Math.pow(excess, exponent) * penaltyMultiplier;
+
+            }
+        }
+
+        return -penalty; // برگرداندن مقدار منفی برای جریمه
     }
 };

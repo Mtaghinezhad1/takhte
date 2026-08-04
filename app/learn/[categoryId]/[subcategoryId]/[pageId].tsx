@@ -2,7 +2,7 @@ import { learnData } from '@/constants/learnData';
 import useLearningStore from '@/stores/useLearningStore';
 import * as Localization from 'expo-localization';
 import { router, useLocalSearchParams } from 'expo-router';
-import { useSafeAreaInsets } from 'react-native-safe-area-context'; // ← اضافه کن
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'; // ← اضافه کن
 
 
 import useThemeStore from '@/stores/useThemeStore';
@@ -116,13 +116,13 @@ export default function PageContent() {
     };
 
     return (
-        <View style={[styles.container, { paddingBottom: insets.bottom }]}>
+        <SafeAreaView style={[styles.container, { paddingBottom: insets.bottom }]}>
             {/* هدر */}
             <View style={styles.header}>
                 <TouchableOpacity onPress={() => router.back()} style={styles.closeButton}>
-                    <Text style={styles.closeText}>✕</Text>
+                    <Text style={[styles.closeText, { color: colors.text }]}>✕</Text>
                 </TouchableOpacity>
-                <Text style={styles.pageCounter}>
+                <Text style={[styles.pageCounter, { color: colors.text }]}>
                     {currentIndex + 1} از {subcategory.pages.length}
                 </Text>
             </View>
@@ -143,7 +143,7 @@ export default function PageContent() {
 
                 {/* رندر تصویر */}
                 {imageComponent && imageComponent.src && (
-                    <View style={[styles.imageContainer,{backgroundColor: colors.card}]}>
+                    <View style={[styles.imageContainer, { backgroundColor: colors.card }]}>
                         <Image
                             source={imageComponent.src}
                             style={styles.image}
@@ -168,8 +168,8 @@ export default function PageContent() {
 
                 {/* رندر سوال (quiz) */}
                 {hasQuiz && (
-                    <View style={[styles.quizContainer,{backgroundColor: colors.card}]}>
-                        <Text style={[styles.quizQuestion, { textAlign: isRTL ? 'left' : 'right', color: colors.text  }]}>
+                    <View style={[styles.quizContainer, { backgroundColor: colors.card }]}>
+                        <Text style={[styles.quizQuestion, { textAlign: isRTL ? 'left' : 'right', color: colors.text }]}>
                             {quizComponent.question}
                         </Text>
 
@@ -251,7 +251,9 @@ export default function PageContent() {
                     <Text style={styles.buttonText}>→ قبلی</Text>
                 </TouchableOpacity>
             </View>
-        </View>
+        </SafeAreaView>
+
+
     );
 }
 
@@ -280,12 +282,10 @@ const styles = StyleSheet.create({
     },
     closeText: {
         fontSize: 20,
-        color: '#070024',
     },
     pageCounter: {
         fontSize: 16,
         fontFamily: 'Kaghaz',
-        color: '#666',
     },
     scrollView: {
         flex: 1,

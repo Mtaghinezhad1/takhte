@@ -97,7 +97,7 @@ export default function MoreScreen() {
 
         <View style={styles.itemContainer}>
           {/* <ItemRow text="درباره ما"  /> */}
-          <ItemRow icon='info-outline' onPress={() => console.log('ss')} text="نسخه اپلیکیشن              1.3.0" />
+          <ItemRow icon='info-outline' onPress={() => console.log('ss')} text="نسخه اپلیکیشن              1.4.0" />
         </View>
       </ScrollView>
     </SafeAreaView>

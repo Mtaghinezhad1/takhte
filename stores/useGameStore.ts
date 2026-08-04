@@ -33,6 +33,7 @@ const useGameStore = create((set, get) => ({
   availableMoves: [],
   turnPhase: 'rolling',
   gameWinner: null,
+  isMars: false,
   aiLevel: '3',
   aiLevelForWhite: '3',
   isRolling: false,
@@ -79,6 +80,7 @@ const useGameStore = create((set, get) => ({
       finalBlackElo: null,
       oldUserElo: null,
       oldAIElo: null,
+      isMars: false,
       isLoadedFromSave: false,
     });
   },
@@ -154,7 +156,10 @@ const useGameStore = create((set, get) => ({
 
   endCurrentGame: (winner) => {
     const state = get();
-    const newScore = gameService.calculateNewScore(state.gameScore, winner);
+
+    // بررسی مارس
+    const isMars = gameService.checkMars(winner, state.whiteBornOff, state.blackBornOff);
+    const newScore = gameService.calculateNewScore(state.gameScore, winner, isMars);
 
     if (gameService.isMatchCompleted(newScore, state.targetScore)) {
       get().endMatch(winner, newScore);
@@ -164,6 +169,7 @@ const useGameStore = create((set, get) => ({
         gameWinner: winner,
         gameScore: newScore,
         showContinue: false,
+        isMars: isMars, // اضافه کردن به state
       });
     }
   },
@@ -421,6 +427,7 @@ const useGameStore = create((set, get) => ({
       gameWinner: null,
       availableMoves: [],
       turnPhase: 'rolling',
+      isMars: false,
     });
   },
 

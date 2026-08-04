@@ -1,4 +1,3 @@
-
 import { sampleTrainingData } from '@/constants/trainData';
 import { trainer } from '@/services/ai/trainer';
 import React, { useState } from 'react';
@@ -28,9 +27,9 @@ const TrainingButton = () => {
             console.log('🔄 در حال آموزش... (این کار چند لحظه طول می‌کشد)');
             console.log('----------------------------------------');
 
-            const trainedWeights = trainer.train(200, 15);
+            // ✅ بدون استراتژی و فاز - خودش تشخیص می‌دهد
+            const trainedWeights = trainer.train(100, 5);
 
-            // ذخیره وزن‌ها
             setWeights(trainedWeights);
             setTrainingComplete(true);
 
@@ -38,12 +37,7 @@ const TrainingButton = () => {
             console.log('✅ آموزش با موفقیت کامل شد!');
             console.log('========================================');
 
-            // نمایش خلاصه
             trainer.printSummary();
-
-            console.log('----------------------------------------');
-            console.log('----------------------------------------');
-            console.log('💡 برای کپی کردن وزن‌ها، روی دکمه کپی کلیک کنید');
 
         } catch (error) {
             console.error('❌ خطا در آموزش:', error);

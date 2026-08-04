@@ -9,17 +9,24 @@ export const gameService = {
     return null;
   },
 
+  checkMars(winner, whiteBornOff, blackBornOff) {
+    if (winner === 'white' && blackBornOff === 0) return true;
+    if (winner === 'black' && whiteBornOff === 0) return true;
+    return false;
+  },
+
   isMatchCompleted: (newGameScore, targetScore) => {
     const [whiteScore, blackScore] = newGameScore;
     return whiteScore >= targetScore || blackScore >= targetScore;
   },
 
-  calculateNewScore(gameScore, winner) {
+  calculateNewScore(gameScore, winner, isMars = false) {
     const newScore = [...gameScore];
+    const points = isMars ? 2 : 1; // مارس = ۲ امتیاز
     if (winner === 'white') {
-      newScore[0] += 1;
+      newScore[0] += points;
     } else if (winner === 'black') {
-      newScore[1] += 1;
+      newScore[1] += points;
     }
     return newScore;
   },

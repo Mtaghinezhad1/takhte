@@ -58,16 +58,24 @@ export const aiService = {
         currentTurn,
         difficulty = '5',
         strategyInfo = null,
-        customWeights = null  // پارامتر جدید
+        customWeights = null  // وزن‌های سفارشی (شامل همه استراتژی‌ها)
     ) {
         const config = LEVEL_CONFIG[difficulty] || LEVEL_CONFIG['3'];
         const depth = config.depth;
         const difficultyLevel = config.difficulty || '5';
 
+        // ✅ اگر strategyInfo نداده شده، خودش تشخیص بده
         if (!strategyInfo) {
             strategyInfo = strategyEngine.determineStrategy(board, currentTurn);
         }
         const { strategy, phase } = strategyInfo;
+
+        // ✅ اگر customWeights داریم، وزن‌های مربوط به استراتژی تشخیص‌داده‌شده را استخراج کن
+        let effectiveWeights = null;
+        if (customWeights) {
+            // وزن‌های مربوط به استراتژی و فاز فعلی
+            effectiveWeights = customWeights[strategy]?.[phase];
+        }
 
         let bestScore = -Infinity;
         let bestMove = null;
@@ -85,7 +93,7 @@ export const aiService = {
                     strategy,
                     phase,
                     false,
-                    customWeights  // ارسال به تابع
+                    effectiveWeights  // ✅ فقط وزن‌های مربوط به استراتژی فعلی
                 );
             } else if (depth >= 1) {
                 score = this.evaluateMoveWithDepth(
@@ -93,7 +101,7 @@ export const aiService = {
                     difficultyLevel,
                     phase,
                     strategy,
-                    customWeights  // ارسال به تابع
+                    effectiveWeights  // ✅ فقط وزن‌های مربوط به استراتژی فعلی
                 );
             }
 

@@ -56,18 +56,20 @@ export const scoreCalculator = {
 
         // وزن‌های اختصاصی استراتژی‌ها
         const specialKeys = [
-            'homeBoardStrength', 'opponentOnBar', 'anchorStrength', 'primeExtensionValue',
+            'homeBoardStrength', 'opponentOnBar', 'anchorStrength', 'primeExtensionValue', 'oppClosedPoint',
             'blockingValue', 'wastage', 'contactAvoidance', 'bearoffEfficiency',
-            'flexibility', 'connectivity', 'timingValue', 'anchorCount',
+            'flexibility', 'connectivity', 'timingValue', 'anchorCount', 'homeClosedDifference',
             'hittingNumbers', 'hitAndContain', 'containmentValue', 'safety',
             'diceUtilization', 'averageDistance', 'desperateEscape', 'savingGammon',
             'counterPlay', 'escapePotential', 'bearoffPrep', 'safetyInHome', 'gapControl'
         ];
 
         const specialFeatures = {
+            oppClosedPoint: features.closedPoints?.oppHomeClosedvalue || 0,
+            homeClosedDifference: features.closedPoints?.homeClosedvalueDiff || 0,
             homeBoardStrength: features.closedPoints?.myClosedCount || 0,
             opponentOnBar: features.attack?.opponentOnBar || 0,
-            anchorStrength: features.defense?.anchors?.length || 0,
+            anchorStrength: features.defense?.anchorStrength || 0,
             primeExtensionValue: features.prime?.myMaxPrimeLength || 0,
             blockingValue: -(features.prime?.oppMaxPrimeLength || 0),
             wastage: (features.pipCount?.effectivePips || 0) - (features.pipCount?.myPips || 0),

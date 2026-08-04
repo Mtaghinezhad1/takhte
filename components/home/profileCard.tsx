@@ -4,7 +4,6 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import React from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import TrainingButton from '../trainerPanel';
 
 // 1rem ≈ 16px (converted from your CSS)
 const rem = 16;
@@ -21,7 +20,7 @@ const ProfileCard = () => {
                 end={{ x: 1, y: 1 }}
                 style={styles.container}
             >
-                <TrainingButton/>
+                {/* <TrainingButton/> */}
                 {/* Text section on the left (aligned to the right inside) */}
                 <View style={styles.textSection}>
                     <Text style={styles.name}>{username}</Text>

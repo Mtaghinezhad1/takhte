@@ -119,7 +119,7 @@ const styles = StyleSheet.create({
   diceContainer: {
     height: '100%',
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     alignItems: 'center',
   },
   dice: {

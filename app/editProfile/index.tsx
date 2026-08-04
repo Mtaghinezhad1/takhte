@@ -1,3 +1,4 @@
+import { getAvatarByKey } from '@/constants/avatars';
 import useThemeStore from '@/stores/useThemeStore';
 import useUserStore from '@/stores/useUserStore';
 import { Picker } from '@react-native-picker/picker';
@@ -5,7 +6,9 @@ import { router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
-  Alert, ScrollView, StyleSheet, Text,
+  Alert,
+  Image,
+  ScrollView, StyleSheet, Text,
   TextInput,
   TouchableOpacity, View
 } from 'react-native';
@@ -82,7 +85,7 @@ const EditProfile = () => {
       <View style={styles.profileSection}>
         <View style={styles.avatarSection}>
           <View style={styles.avatar}>
-            {/* <Image style={styles.avatarImg} source={avatarKey ? getAvatarByKey(avatarKey) : require('@/assets/avatar/default.jpeg')}  /> */}
+            <Image style={styles.avatarImg} source={avatarKey ? getAvatarByKey(avatarKey) : require('@/assets/avatar/default.jpeg')}  />
           </View>
         </View>
       </View>
@@ -123,9 +126,9 @@ const EditProfile = () => {
             style={[styles.picker, { backgroundColor: colors.card, color: colors.text }]}
             dropdownIconColor="#666"
           >
-            <Picker.Item label="انتخاب کنید" value="" />
-            <Picker.Item label="مرد" value="male" />
-            <Picker.Item label="زن" value="female" />
+            <Picker.Item label="انتخاب کنید" value="" style={{ backgroundColor: colors.card, color: colors.text }} />
+            <Picker.Item label="مرد" value="male" style={{ backgroundColor: colors.card, color: colors.text }} />
+            <Picker.Item label="زن" value="female" style={{ backgroundColor: colors.card, color: colors.text }} />
           </Picker>
         </View>
       </View>
@@ -148,7 +151,7 @@ const EditProfile = () => {
           onPress={handleSave}
           activeOpacity={0.7}
         >
-          <Text style={[styles.confirmText,{color: colors.background}]}>ذخیره</Text>
+          <Text style={[styles.confirmText, { color: colors.background }]}>ذخیره</Text>
         </TouchableOpacity>
       </View>
     </ScrollView>
@@ -160,6 +163,27 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     padding: 16,
     justifyContent: 'center',
+  },
+  profileSection: {
+    padding: 32,
+    alignItems: 'center',
+  },
+  avatarSection: {
+    alignItems: 'center',
+  },
+  avatar: {
+    width: '35%',
+    aspectRatio: 1,
+    backgroundColor: 'grey',
+    borderRadius: '50%',
+    borderWidth: 0,
+    marginVertical: 10,
+    overflow: 'hidden',
+    position: 'relative',
+  },
+  avatarImg: {
+    width: '100%',
+    height: '100%',
   },
   centered: {
     justifyContent: 'center',
