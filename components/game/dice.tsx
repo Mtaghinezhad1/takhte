@@ -1,6 +1,57 @@
+// Dice.tsx
 import useGameStore from '@/stores/useGameStore';
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+
+// کامپوننت تاس با شکل اصلی (نقطه‌ها)
+const DiceFace = ({ value, isActive = false, isUsed = false, isWhiteTurn = true }) => {
+  // موقعیت نقاط بر اساس عدد تاس
+  const getDotPositions = (num) => {
+    const positions = {
+      1: [[0.5, 0.5]],
+      2: [[0.2, 0.2], [0.8, 0.8]],
+      3: [[0.2, 0.2], [0.5, 0.5], [0.8, 0.8]],
+      4: [[0.2, 0.2], [0.2, 0.8], [0.8, 0.2], [0.8, 0.8]],
+      5: [[0.2, 0.2], [0.2, 0.8], [0.5, 0.5], [0.8, 0.2], [0.8, 0.8]],
+      6: [[0.2, 0.2], [0.2, 0.5], [0.2, 0.8], [0.8, 0.2], [0.8, 0.5], [0.8, 0.8]],
+    };
+    return positions[num] || [];
+  };
+
+  // تعیین رنگ‌ها بر اساس نوبت
+  const backgroundColor = isWhiteTurn ? 'white' : '#2e2bac';
+  const dotColor = isWhiteTurn ? '#2e2bac' : 'white';
+  const borderColor = isWhiteTurn ? 'white' : '#2e2bac';
+
+  return (
+    <View
+      style={[
+        styles.dice,
+        {
+          backgroundColor: backgroundColor,
+          borderColor: borderColor,
+        },
+        isActive && styles.active,
+        isUsed && styles.usedDice
+      ]}
+    >
+      {getDotPositions(value).map((pos, index) => (
+        <View
+          key={index}
+          style={[
+            styles.dot,
+            {
+              left: `${pos[0] * 100}%`,
+              top: `${pos[1] * 100}%`,
+              transform: [{ translateX: '-50%' }, { translateY: '-50%' }],
+              backgroundColor: dotColor,
+            }
+          ]}
+        />
+      ))}
+    </View>
+  );
+};
 
 const Dice = () => {
   const dice = useGameStore(state => state.dice);
@@ -9,6 +60,7 @@ const Dice = () => {
   const switchActiveDice = useGameStore(state => state.switchActiveDice);
   const showContinue = useGameStore(state => state.showContinue);
   const handleContinue = useGameStore(state => state.handleContinue);
+  const currentTurn = useGameStore(state => state.currentTurn); // فرض میکنیم این state وجود داره
 
   const [isRolling, setIsRolling] = useState(false);
   const [randomDiceValues, setRandomDiceValues] = useState([]);
@@ -35,7 +87,7 @@ const Dice = () => {
   const seen = {};
 
   const generateRandomDice = () => {
-    return Array(2).fill().map(() => Math.floor(Math.random() * 6) + 1); //generate 2 random dice 
+    return Array(2).fill().map(() => Math.floor(Math.random() * 6) + 1);
   };
 
   useEffect(() => {
@@ -52,10 +104,12 @@ const Dice = () => {
     }, 200);
 
     return () => clearInterval(interval);
-
   }, [allDice]);
 
   const displayDice = isRolling ? randomDiceValues : allDice;
+
+  // تشخیص نوبت سفید یا سیاه (فرض میکنیم currentTurn برابر 'white' یا 'black' است)
+  const isWhiteTurn = currentTurn === 'white';
 
   return (
     <View style={styles.container}>
@@ -75,16 +129,13 @@ const Dice = () => {
               const isUsed = currentSeen <= usedCounts[dieNumber];
 
               return (
-                <View
+                <DiceFace
                   key={index}
-                  style={[
-                    styles.dice,
-                    (activeDice == dieNumber) && styles.active,
-                    isUsed && styles.usedDice
-                  ]}
-                >
-                  <Text style={styles.diceText}>{dieNumber}</Text>
-                </View>
+                  value={dieNumber}
+                  isActive={activeDice == dieNumber}
+                  isUsed={isUsed}
+                  isWhiteTurn={isWhiteTurn}
+                />
               );
             })
           }
@@ -103,9 +154,6 @@ const Dice = () => {
         </TouchableOpacity>
       }
     </View>
-
-
-
   );
 };
 
@@ -128,17 +176,17 @@ const styles = StyleSheet.create({
     aspectRatio: 1,
     borderRadius: '10%',
     borderWidth: 1,
-    backgroundColor: 'white',
-    borderColor: '#333',
     justifyContent: 'center',
     alignItems: 'center',
     elevation: 5,
     transform: [{ scale: 0.9 }],
+    position: 'relative',
   },
-  diceText: {
-    fontSize: 13,
-    fontFamily: 'Kaghaz',
-    color: '#333',
+  dot: {
+    position: 'absolute',
+    width: '18%',
+    height: '18%',
+    borderRadius: '50%',
   },
   active: {
     transform: [{ scale: 1 }],
@@ -156,7 +204,6 @@ const styles = StyleSheet.create({
     color: 'white',
     fontFamily: 'Kaghaz',
   },
-
 });
 
 export default Dice;

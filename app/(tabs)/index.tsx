@@ -1,6 +1,7 @@
 import GameCard from '@/components/home/gameCard';
 import ProfileCard from '@/components/home/profileCard';
 import { StyleSheet, useWindowDimensions, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 
 const games = [
@@ -19,7 +20,7 @@ export default function HomeScreen() {
   const imageHeight = imageWidth * 0.8;
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <ProfileCard />
       <View style={styles.cardsContainer}>
         {games.map((game) => (
@@ -33,7 +34,8 @@ export default function HomeScreen() {
           />
         ))}
       </View>
-    </View>
+    </SafeAreaView>
+
   );
 }
 

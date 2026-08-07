@@ -73,7 +73,7 @@ export default function PreGameScreen() {
                         <Slider
                             style={styles.slider}
                             minimumValue={1}
-                            maximumValue={15}
+                            maximumValue={7}
                             step={2}
                             value={gamePoints}
                             onValueChange={handleGameLengthChange}
