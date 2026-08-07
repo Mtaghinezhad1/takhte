@@ -5,6 +5,10 @@ import board4 from '@/assets/images/learn/board-learn-4.png';
 import board5 from '@/assets/images/learn/board-learn-5.png';
 import board6 from '@/assets/images/learn/board-learn-6.png';
 import opening31 from '@/assets/images/learn/board-opening-31.png';
+import opening42 from '@/assets/images/learn/board-opening-42.png';
+import opening53 from '@/assets/images/learn/board-opening-53.png';
+import opening61 from '@/assets/images/learn/board-opening-61.png';
+import opening65 from '@/assets/images/learn/board-opening-65.png';
 
 export const learnData = [
   {
@@ -215,8 +219,104 @@ export const learnData = [
               {
                 type: 'quiz',
                 question: 'بهترین حرکت کدام است؟',
-                options: ['13/9 (یعنی از خانه 13 به 9)', '13/10          6/5', '13/10          24/23', '8/5          6/5'],
+                options: ['از خانه 13 به 9', '13 به 10          6 به 5', '13 به 10          24 به 23', '8 به 5          6 به 5'],
                 correctAnswer: 3,
+              },
+            ],
+          },
+          {
+            id: 2,
+            title: 'تاس 4-2',
+            components: [
+              {
+                type: 'hero',
+                title: 'تاس 4-2',
+              },
+              {
+                type: 'content',
+                value: `دومین تاس خوب برای شروع بازی، تاس ۴۲ است، با این تاس باید خانه شماره چهار را ببندید.`,
+              },
+              {
+                type: 'image',
+                src: opening42,
+              },
+              {
+                type: 'quiz',
+                question: 'بهترین حرکت کدام است؟',
+                options: ['13 به 7', '8 به 4          6 به 4', '13 به 9          24 به 22', '13 به 11          24 به 20'],
+                correctAnswer: 1,
+              },
+            ],
+          },
+          {
+            id: 3,
+            title: 'تاس 6-5',
+            components: [
+              {
+                type: 'hero',
+                title: 'تاس 6-5',
+              },
+              {
+                type: 'content',
+                value: `۶۵ یا (شش و بش) یک تاس خوب برای شروع بازی هست، با این تاس میتوانید با یکی از مهره های عقب تان فرار کنید.`,
+              },
+              {
+                type: 'image',
+                src: opening65,
+              },
+              {
+                type: 'quiz',
+                question: 'بهترین حرکت کدام است؟',
+                options: ['24 به 18          13 به 8', '13 به 7          13 به 8', '24 به 13', '13 به 2'],
+                correctAnswer: 2,
+              },
+            ],
+          },
+          {
+            id: 4,
+            title: 'تاس 6-1',
+            components: [
+              {
+                type: 'hero',
+                title: 'تاس 6-1',
+              },
+              {
+                type: 'content',
+                value: `۶۱ تاس مقابله با فرار کردن حریفتان است. با بسته خانه شماره ۷ حریفتان نمیتواند به راحتی با تاس ۶۵ فرار کند.`,
+              },
+              {
+                type: 'image',
+                src: opening61,
+              },
+              {
+                type: 'quiz',
+                question: 'بهترین حرکت کدام است؟',
+                options: ['13 به 7          24 به 23', '13 به 6', '13 به 7          8 به 7', '24 به 18          24 به 23'],
+                correctAnswer: 2,
+              },
+            ],
+          },
+          {
+            id: 5,
+            title: 'تاس 5-3',
+            components: [
+              {
+                type: 'hero',
+                title: 'تاس 5-3',
+              },
+              {
+                type: 'content',
+                value: `۵۳ هم یکی از تاس خوب برای شروع بازی است. باید خانه شماره ۳ را ببندید.`,
+              },
+              {
+                type: 'image',
+                src: opening53,
+              },
+              {
+                type: 'quiz',
+                question: 'بهترین حرکت کدام است؟',
+                options: ['24 به 16', '8 به 3          6 به 3', '13 به 8          13 به 10', '13 به 8          24 به 21'],
+                correctAnswer: 1,
               },
             ],
           },

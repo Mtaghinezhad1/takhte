@@ -351,7 +351,7 @@ const styles = StyleSheet.create({
         borderColor: '#ddd',
     },
     quizOptionText: {
-        fontFamily: 'Kaghaz',
+        fontWeight: '800',
         fontSize: 16,
         textAlign: 'right',
         color: '#333',

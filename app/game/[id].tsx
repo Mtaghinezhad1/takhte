@@ -1,9 +1,9 @@
 import * as Localization from 'expo-localization';
 import * as NavigationBar from 'expo-navigation-bar'; // اضافه شده
-import { router, useFocusEffect, useLocalSearchParams, useNavigation } from "expo-router";
+import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
 import * as ScreenOrientation from 'expo-screen-orientation';
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { ActivityIndicator, AppState, BackHandler, I18nManager, StyleSheet, useWindowDimensions, View } from "react-native";
+import { ActivityIndicator, AppState, BackHandler, I18nManager, StyleSheet, Text, useWindowDimensions, View } from "react-native";
 
 
 
@@ -26,10 +26,11 @@ export default function Index() {
   const store = useGameStore();
   const { height: screenHeight } = useWindowDimensions(); // واکنش‌گرا
 
-  const navigation = useNavigation();
+  const [isReady, setIsReady] = useState(false);
+  const [loadingMessage, setLoadingMessage] = useState('در حال آماده‌سازی...');
+
   const appState = useRef(AppState.currentState);
   const isSavedRef = useRef(false);
-  const [isLoading, setIsLoading] = useState(false);
   // تشخیص درست RTL
   const [isRTL, setIsRTL] = useState(false);
 
@@ -60,55 +61,79 @@ export default function Index() {
     store.saveCurrentGameState();
   };
 
+  // ============================================
+  // 3. مقداردهی اولیه (مهمترین بخش)
+  // ============================================
   useEffect(() => {
-    let isMounted = true;
+    let mounted = true;
 
-    async function loadOrInitialize() {
-      // اول چک کن بازی ذخیره شده وجود دارد یا نه
-      const savedGame = await storageService.loadGameState(gameMode);
+    async function initializeGame() {
+      try {
+        // مرحله 1: نمایش لودینگ
+        setLoadingMessage('در حال تنظیم صفحه...');
 
-      if (savedGame && isMounted) {
-        // بازی ذخیره شده وجود دارد - لود کن
-        store.loadSavedGame(savedGame);
-      } else if (gameMode && isMounted) {
-        // بازی جدید شروع کن
-        if (gameMode === 'AIvsAI') {
-          store.initializeGame(gameMode, targetScore, aiLevel || '3', aiLevelForWhite || '3');
-        } else {
-          store.initializeGame(gameMode, targetScore, aiLevel || '3');
+        // مرحله 2: قفل صفحه به حالت افقی
+        await ScreenOrientation.lockAsync(
+          ScreenOrientation.OrientationLock.LANDSCAPE
+        );
+
+        // مرحله 3: مخفی کردن نوار ناوبری اندروید
+        await NavigationBar.setVisibilityAsync('hidden');
+        await NavigationBar.setBehaviorAsync('overlay-swipe');
+
+        // مرحله 4: بررسی RTL
+        checkRTL();
+
+        // مرحله 5: بارگذاری داده‌های بازی
+        setLoadingMessage('در حال بارگذاری بازی...');
+
+        const savedGame = await storageService.loadGameState(gameMode);
+
+        if (savedGame && mounted) {
+          // بازی ذخیره شده وجود دارد
+          store.loadSavedGame(savedGame);
+        } else if (gameMode && mounted) {
+          // بازی جدید
+          if (gameMode === 'AIvsAI') {
+            store.initializeGame(
+              gameMode,
+              targetScore,
+              aiLevel || '3',
+              aiLevelForWhite || '3'
+            );
+          } else {
+            store.initializeGame(gameMode, targetScore, aiLevel || '3');
+          }
+        }
+
+        // مرحله 6: آماده‌سازی کامل
+        if (mounted) {
+          setLoadingMessage('آماده!');
+          setIsReady(true);
+        }
+
+      } catch (error) {
+        console.error('Initialization error:', error);
+        // حتی با خطا هم بازی را نمایش بده
+        if (mounted) {
+          setLoadingMessage('خطا در بارگذاری، اما بازی ادامه دارد...');
+          setIsReady(true);
         }
       }
-
-      if (isMounted) {
-        setIsLoading(false);
-      }
     }
 
-    setIsLoading(true);
-    loadOrInitialize();
-
-    // قفل صفحه به حالت افقی
-    ScreenOrientation.lockAsync(
-      ScreenOrientation.OrientationLock.LANDSCAPE
-    );
-
-    // مخفی کردن نوار ناوبری اندروید (نوار سفید ژستی)
-    async function hideNavigationBar() {
-      await NavigationBar.setVisibilityAsync('hidden');
-      // (اختیاری) رفتار: با اولین سوایپ از لبه، نوار موقت ظاهر شود
-      await NavigationBar.setBehaviorAsync('overlay-swipe');
-    }
-    hideNavigationBar();
+    initializeGame();
 
     return () => {
-      isMounted = false;
+      mounted = false;
       ScreenOrientation.unlockAsync();
-      // برگرداندن نوار ناوبری به حالت عادی هنگام خارج شدن از صفحه
       NavigationBar.setVisibilityAsync('visible');
     };
-  }, []);
+  }, []); // فقط یکبار اجرا شود
 
-  // مدیریت AppState (خروج از کل اپ یا سواپ کردن)
+  // ============================================
+  // 4. مدیریت AppState (خروج از اپ)
+  // ============================================
   useEffect(() => {
     const subscription = AppState.addEventListener('change', (nextAppState) => {
       if (
@@ -123,9 +148,11 @@ export default function Index() {
     return () => {
       subscription.remove();
     };
-  }, []);
+  }, [saveGame]);
 
-  // مدیریت دکمه برگشت (BackHandler)
+  // ============================================
+  // 5. مدیریت دکمه برگشت
+  // ============================================
   useEffect(() => {
     const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
       saveGame();
@@ -136,19 +163,19 @@ export default function Index() {
     return () => {
       backHandler.remove();
     };
-  }, []);
+  }, [saveGame]);
 
-  // مدیریت فوکوس صفحه
+  // ============================================
+  // 6. مدیریت فوکوس صفحه
+  // ============================================
   useFocusEffect(
     useCallback(() => {
-      // ریست فلگ وقتی صفحه دوباره فوکوس می‌شود
       isSavedRef.current = false;
 
       return () => {
-        // ذخیره هنگام ترک صفحه
         saveGame();
       };
-    }, [])
+    }, [saveGame])
   );
 
   // ذخیره‌سازی هنگام unmount
@@ -159,34 +186,39 @@ export default function Index() {
     };
   }, []);
 
-  // ریختن تاس در شروع هر نوبت
+  // ============================================
+  // 8. ریختن تاس در شروع هر نوبت
+  // ============================================
   useEffect(() => {
-    if (!isLoading) {
-      if (!store.showNoMoveModal) {
-        store.rollDice();
-      }
+    if (isReady && !store.showNoMoveModal) {
+      store.rollDice();
     }
-  }, [store.currentTurn, isLoading]);
+  }, [store.currentTurn, isReady]);
 
-  // اجرای حرکت هوش مصنوعی
+  // ============================================
+  // 9. اجرای حرکت هوش مصنوعی
+  // ============================================
   useEffect(() => {
-    if (!isLoading) {
+    if (isReady) {
       const timer = setTimeout(() => {
         store.executeAIMove();
       }, 10);
 
       return () => clearTimeout(timer);
     }
-  }, [store.allDice, isLoading]);
+  }, [store.allDice, isReady]);
 
-  // نمایش لودینگ هنگام بررسی بازی ذخیره شده
-  if (isLoading) {
+  // ============================================
+  // 10. نمایش لودینگ اگر آماده نیست
+  // ============================================
+  if (!isReady) {
     return (
       <View style={[styles.container, styles.loadingContainer]}>
         <ActivityIndicator size="large" color="#ffffff" />
+        <Text style={styles.loadingText}>{loadingMessage}</Text>
       </View>
     );
-  }
+  };
 
   return (
     <>
@@ -208,6 +240,9 @@ export default function Index() {
   );
 }
 
+// ============================================
+// 12. استایل‌ها
+// ============================================
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -216,7 +251,21 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#070024',
   },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#070024',
+    gap: 20,
+  },
+  loadingText: {
+    color: '#ffffff',
+    fontSize: 16,
+    fontFamily: 'Vazir',
+    textAlign: 'center',
+  },
   board: {
+    flex: 1,
     aspectRatio: 16 / 9,
     flexDirection: 'row',
     justifyContent: 'space-between',

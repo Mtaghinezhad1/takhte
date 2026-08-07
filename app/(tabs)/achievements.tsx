@@ -1,9 +1,12 @@
+import useLearningStore from '@/stores/useLearningStore';
 import useThemeStore from '@/stores/useThemeStore';
 import useUserStore from '@/stores/useUserStore';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useEffect, useState } from 'react';
 import {
-  Dimensions, StyleSheet, Text, TouchableOpacity, View
+  Dimensions,
+  ScrollView,
+  StyleSheet, Text, TouchableOpacity, View
 } from 'react-native';
 
 const { width } = Dimensions.get('window');
@@ -93,6 +96,7 @@ const AchievementCard = ({
 
 const AchievementsScreen = () => {
   const { statistics } = useUserStore();
+  const { completedLessons } = useLearningStore();
   const [achievements, setAchievements] = useState([]);
   const { colors } = useThemeStore();
 
@@ -105,6 +109,9 @@ const AchievementsScreen = () => {
       winStreak = 0,
       maxWinStreak = 0
     } = statistics;
+
+    // محاسبه تعداد کل درس‌های گذرانده شده
+    const totalCompletedLessons = Object.keys(completedLessons || {}).length;
 
     // تعریف دستاوردها بر اساس آمار واقعی
     const achievementsData = [
@@ -203,10 +210,42 @@ const AchievementsScreen = () => {
         locked: winStreak < 10,
         completed: winStreak >= 10,
       },
+
+      // دستاوردهای جدید: تعداد درس‌های گذرانده شده
+      {
+        id: 10,
+        icon: '📚',
+        title: 'شروع یادگیری',
+        description: '۵ درس را کامل کن',
+        current: Math.min(totalCompletedLessons, 5),
+        total: 5,
+        locked: totalCompletedLessons < 5,
+        completed: totalCompletedLessons >= 5,
+      },
+      {
+        id: 11,
+        icon: '🧠',
+        title: 'دانش‌آموز حرفه‌ای',
+        description: '۲۵ درس را کامل کن',
+        current: Math.min(totalCompletedLessons, 25),
+        total: 25,
+        locked: totalCompletedLessons < 25,
+        completed: totalCompletedLessons >= 25,
+      },
+      {
+        id: 12,
+        icon: '🎓',
+        title: 'استاد بازی',
+        description: '۵۰ درس را کامل کن',
+        current: Math.min(totalCompletedLessons, 50),
+        total: 50,
+        locked: totalCompletedLessons < 50,
+        completed: totalCompletedLessons >= 50,
+      },
     ];
 
     setAchievements(achievementsData);
-  }, [statistics]);
+  }, [statistics, completedLessons]);
 
   // تقسیم به ردیف‌های ۳ تایی
   const rows = [];
@@ -215,7 +254,11 @@ const AchievementsScreen = () => {
   }
 
   return (
-    <View style={styles.container}>
+    <ScrollView 
+      style={[styles.container, { backgroundColor: colors.background }]}
+      showsVerticalScrollIndicator={true}
+      contentContainerStyle={styles.scrollContent}
+    >
       <View style={styles.header}>
         <Text style={[styles.headerTitle,{color: colors.text}]}>🏅 دستاوردها</Text>
         <Text style={styles.headerSubtitle}>
@@ -240,14 +283,20 @@ const AchievementsScreen = () => {
           ))}
         </View>
       ))}
-    </View>
+      
+      {/* فضای خالی در انتها برای اسکرول بهتر */}
+      <View style={styles.bottomSpacer} />
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  scrollContent: {
     padding: 16,
+    paddingBottom: 20,
   },
   header: {
     width: '100%',
@@ -380,6 +429,9 @@ const styles = StyleSheet.create({
     textAlign: 'left',
     fontVariant: ['tabular-nums'],
     letterSpacing: 0.5,
+  },
+  bottomSpacer: {
+    height: 20,
   },
 });
 

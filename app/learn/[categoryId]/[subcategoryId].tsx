@@ -2,7 +2,8 @@ import { learnData } from '@/constants/learnData';
 import { learnService } from '@/services/learnService';
 import useLearningStore from '@/stores/useLearningStore';
 import { router, useLocalSearchParams } from 'expo-router';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function SubcategoryPage() {
     const { categoryId, subcategoryId } = useLocalSearchParams();
@@ -17,7 +18,7 @@ export default function SubcategoryPage() {
     }
 
     return (
-        <View style={{ flex: 1, padding: 16 }}>
+        <SafeAreaView style={{ flex: 1, padding: 16 }}>
             <TouchableOpacity onPress={() => router.back()} style={{ marginBottom: 16 }}>
                 <Text style={{ fontSize: 18, fontFamily: 'Kaghaz' }}>← بازگشت</Text>
             </TouchableOpacity>
@@ -44,7 +45,8 @@ export default function SubcategoryPage() {
                 }
                 )}
             </ScrollView>
-        </View>
+        </SafeAreaView>
+
     );
 }
 
