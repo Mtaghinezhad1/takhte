@@ -2,7 +2,7 @@ import { getAvatarByKey } from '@/constants/avatars';
 import useGameStore from '@/stores/useGameStore';
 import useUserStore from '@/stores/useUserStore';
 import React from 'react';
-import { Image, StyleSheet, Text, View } from 'react-native';
+import { Image, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 
 const GameStatusBar = () => {
   const aiProfile = useGameStore(state => state.aiProfile);
@@ -10,8 +10,10 @@ const GameStatusBar = () => {
   const elo = useUserStore.getState().getCurrentElo();
   const currentTurn = useGameStore(state => state.currentTurn);
   const targetScore = useGameStore(state => state.targetScore);
+  const { height: screenHeight } = useWindowDimensions();
+
   return (
-    <View style={styles.leftStatusBar}>
+    <View style={[styles.leftStatusBar, { height: screenHeight }]}>
       <View style={styles.topContainer}>
         <Text style={styles.playerName}>{aiProfile ? aiProfile.name : 'کاربر مهمان'}</Text>
         {currentTurn == 'black' ? (
@@ -32,12 +34,6 @@ const GameStatusBar = () => {
         <Text style={styles.midText}>
           طول بازی<Text style={styles.span}>{targetScore}</Text>
         </Text>
-        {/* <Text style={styles.midText}>
-          stake<Text style={styles.span}>300</Text>
-        </Text> */}
-        <View style={styles.hintBtn}>
-          <Text style={styles.hintBtnText}>راهنمایی</Text>
-        </View>
       </View>
 
       <View style={styles.bottomContainer}>
@@ -61,9 +57,6 @@ const GameStatusBar = () => {
 
 const styles = StyleSheet.create({
   leftStatusBar: {
-    height: '100%',
-    width: '14%',
-    backgroundColor: '#070024',
     flexDirection: 'column',
     justifyContent: 'space-around',
     alignItems: 'center',

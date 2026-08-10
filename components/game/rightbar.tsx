@@ -1,4 +1,6 @@
+// rightbar.tsx
 import useGameStore from '@/stores/useGameStore';
+import { CoachmarkAnchor } from '@edwardloopez/react-native-coachmark';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { IconSymbol } from '../ui/icon-symbol';
 
@@ -22,15 +24,19 @@ const Rightbar = () => {
                     <Checker isWhite={false} key={index} />
                 ))}
             </View>
-            <TouchableOpacity
-                style={styles.mainButton}
-                onPress={handleShowForfeit}
-                activeOpacity={0.8}
-            >
-                {showForfeit && <IconSymbol size={24} name="close" color='white' />}
-                {!showForfeit && <IconSymbol size={24} name="menu.fill" color='white' />}
-                
-            </TouchableOpacity>
+
+            {/* ✅ دکمه منو با CoachmarkAnchor */}
+            <CoachmarkAnchor id="rightBarButton" shape="circle" style={styles.mainButton} padding={16}>
+                <TouchableOpacity
+
+                    onPress={handleShowForfeit}
+                    activeOpacity={0.8}
+                >
+                    {showForfeit && <IconSymbol size={24} name="close" color='white' />}
+                    {!showForfeit && <IconSymbol size={24} name="menu.fill" color='white' />}
+                </TouchableOpacity>
+            </CoachmarkAnchor>
+
             <View style={styles.checkersContainer}>
                 {[...Array(whiteBornOff)].map((_, index) => (
                     <Checker isWhite={true} key={index} />
@@ -59,7 +65,7 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.25,
         shadowRadius: 3.84,
-      },
+    },
     checkersContainer: {
         padding: '1%',
         width: '70%',

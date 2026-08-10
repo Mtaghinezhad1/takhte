@@ -1,4 +1,5 @@
 import useThemeStore from '@/stores/useThemeStore';
+import useTourStore from '@/stores/useTourStore';
 import useUserStore from '@/stores/useUserStore';
 import { DarkTheme, DefaultTheme, ThemeProvider as NavigationThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
@@ -7,8 +8,9 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import { StatusBar, View } from "react-native";
 
+// ✅ Import صحیح از پکیج
+import { CoachmarkOverlay, CoachmarkProvider } from '@edwardloopez/react-native-coachmark';
 
-// جلوگیری از بسته شدن خودکار SplashScreen
 SplashScreen.preventAutoHideAsync();
 
 export const unstable_settings = {
@@ -25,11 +27,13 @@ export default function RootLayout() {
   const isLoading = useUserStore(state => state.isLoading);
   const { initialize: initializeTheme, isDark, colors, isLoading: themeLoading } = useThemeStore();
 
-  // مقداردهی اولیه تم
+  useEffect(() => {
+    useTourStore.getState().initialize();
+  }, []);
+
   useEffect(() => {
     initializeTheme();
   }, []);
-
 
   useEffect(() => {
     initializeFromStorage();
@@ -46,25 +50,28 @@ export default function RootLayout() {
     StatusBar.setBackgroundColor(colors.background);
   }, [isDark, colors.background]);
 
-  // تا زمانی که فونت بارگذاری نشده، چیزی نمایش نده
   if (!fontsLoaded && !fontError) return null;
   if (isLoading || themeLoading) return null;
 
   const navigationTheme = isDark ? DarkTheme : DefaultTheme;
 
-
   return (
     <NavigationThemeProvider value={navigationTheme}>
-      <View style={{ flex: 1, backgroundColor: colors.background }}>
-        <Stack screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="(tabs)" />
-          <Stack.Screen
-            name="game/[id]"
-            options={{ animation: 'slide_from_left' }}
-          />
-        </Stack>
-        <StatusBar style={isDark ? 'light' : 'dark'} />
-      </View>
+      {/* ✅ اضافه کردن CoachmarkProvider */}
+      <CoachmarkProvider>
+        <View style={{ flex: 1, backgroundColor: colors.background }}>
+          <Stack screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="(tabs)" />
+            <Stack.Screen
+              name="game/[id]"
+              options={{ animation: 'slide_from_left' }}
+            />
+          </Stack>
+          <StatusBar style={isDark ? 'light' : 'dark'} />
+        </View>
+        {/* ✅ اضافه کردن CoachmarkOverlay */}
+        <CoachmarkOverlay />
+      </CoachmarkProvider>
     </NavigationThemeProvider>
   );
 }

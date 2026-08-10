@@ -1,11 +1,10 @@
+// [id].tsx
 import * as Localization from 'expo-localization';
-import * as NavigationBar from 'expo-navigation-bar'; // اضافه شده
+import * as NavigationBar from 'expo-navigation-bar';
 import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
 import * as ScreenOrientation from 'expo-screen-orientation';
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { ActivityIndicator, AppState, BackHandler, I18nManager, StyleSheet, Text, useWindowDimensions, View } from "react-native";
-
-
 
 import HalfBoard from "@/components/game/halfBoard";
 import InformModal from '@/components/game/informModal';
@@ -16,41 +15,41 @@ import NoMoveModal from '@/components/game/noMoveModal';
 import ResultModal from '@/components/game/resultModal';
 import Rightbar from "@/components/game/rightbar";
 import StaticsBar from "@/components/game/staticsBar";
+import TourCoachmark from '@/components/TourCoachmark';
+import { gameTourSteps } from '@/constants/tourSteps';
+import { useTour } from '@/hooks/useTour';
 import storageService from '@/services/storageService';
 import useGameStore from '@/stores/useGameStore';
-
-
 
 export default function Index() {
   const { gameMode, targetScore, aiLevel, aiLevelForWhite } = useLocalSearchParams();
   const store = useGameStore();
-  const { height: screenHeight } = useWindowDimensions(); // واکنش‌گرا
+  const { height: screenHeight } = useWindowDimensions();
 
   const [isReady, setIsReady] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState('در حال آماده‌سازی...');
+  const [isMeasuring, setIsMeasuring] = useState(true);
 
   const appState = useRef(AppState.currentState);
   const isSavedRef = useRef(false);
-  // تشخیص درست RTL
   const [isRTL, setIsRTL] = useState(false);
+
+  // ========== تور ==========
+  const tour = useTour('game', gameTourSteps, {
+    autoStart: true,
+    delay: 1500, // تاخیر بیشتر چون صفحه بازی سنگین‌تره
+    onComplete: () => console.log('Game tour completed'),
+  });
 
   const checkRTL = () => {
     try {
-      // روش اول: از Localization
       const locales = Localization.getLocales();
       const isRTLSystem = locales[0]?.textDirection === 'rtl';
-
-      // روش دوم: از I18nManager (برای پشتیبانی از نسخه‌های قدیمی)
       const isRTLManager = I18nManager.isRTL;
-
-      // ترکیب هر دو روش
       const finalRTL = isRTLSystem || isRTLManager;
-
       setIsRTL(finalRTL);
-
     } catch (error) {
       console.error('Error checking RTL:', error);
-      // Fallback به I18nManager
       setIsRTL(I18nManager.isRTL);
     }
   };
@@ -61,39 +60,36 @@ export default function Index() {
     store.saveCurrentGameState();
   };
 
-  // ============================================
-  // 3. مقداردهی اولیه (مهمترین بخش)
-  // ============================================
+  // ========== اندازه‌گیری موقعیت‌ها ==========
+  const measurePositions = () => {
+    setIsMeasuring(true);
+    // موقعیت‌ها توسط CoachmarkAnchor خودکار اندازه‌گیری می‌شوند
+    // فقط کافی است بعد از آماده شدن صفحه، اندازه‌گیری را غیرفعال کنیم
+    setTimeout(() => {
+      setIsMeasuring(false);
+    }, 500);
+  };
+
+  // ========== مقداردهی اولیه ==========
   useEffect(() => {
     let mounted = true;
 
     async function initializeGame() {
       try {
-        // مرحله 1: نمایش لودینگ
         setLoadingMessage('در حال تنظیم صفحه...');
-
-        // مرحله 2: قفل صفحه به حالت افقی
         await ScreenOrientation.lockAsync(
           ScreenOrientation.OrientationLock.LANDSCAPE
         );
-
-        // مرحله 3: مخفی کردن نوار ناوبری اندروید
         await NavigationBar.setVisibilityAsync('hidden');
         await NavigationBar.setBehaviorAsync('overlay-swipe');
-
-        // مرحله 4: بررسی RTL
         checkRTL();
 
-        // مرحله 5: بارگذاری داده‌های بازی
         setLoadingMessage('در حال بارگذاری بازی...');
-
         const savedGame = await storageService.loadGameState(gameMode);
 
         if (savedGame && mounted) {
-          // بازی ذخیره شده وجود دارد
           store.loadSavedGame(savedGame);
         } else if (gameMode && mounted) {
-          // بازی جدید
           if (gameMode === 'AIvsAI') {
             store.initializeGame(
               gameMode,
@@ -106,18 +102,19 @@ export default function Index() {
           }
         }
 
-        // مرحله 6: آماده‌سازی کامل
         if (mounted) {
           setLoadingMessage('آماده!');
           setIsReady(true);
+          // بعد از آماده شدن صفحه، موقعیت‌ها را اندازه‌گیری کن
+          setTimeout(measurePositions, 800);
         }
 
       } catch (error) {
         console.error('Initialization error:', error);
-        // حتی با خطا هم بازی را نمایش بده
         if (mounted) {
           setLoadingMessage('خطا در بارگذاری، اما بازی ادامه دارد...');
           setIsReady(true);
+          setTimeout(measurePositions, 800);
         }
       }
     }
@@ -129,11 +126,9 @@ export default function Index() {
       ScreenOrientation.unlockAsync();
       NavigationBar.setVisibilityAsync('visible');
     };
-  }, []); // فقط یکبار اجرا شود
+  }, []);
 
-  // ============================================
-  // 4. مدیریت AppState (خروج از اپ)
-  // ============================================
+  // ========== مدیریت AppState ==========
   useEffect(() => {
     const subscription = AppState.addEventListener('change', (nextAppState) => {
       if (
@@ -150,9 +145,7 @@ export default function Index() {
     };
   }, [saveGame]);
 
-  // ============================================
-  // 5. مدیریت دکمه برگشت
-  // ============================================
+  // ========== مدیریت دکمه برگشت ==========
   useEffect(() => {
     const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
       saveGame();
@@ -165,20 +158,17 @@ export default function Index() {
     };
   }, [saveGame]);
 
-  // ============================================
-  // 6. مدیریت فوکوس صفحه
-  // ============================================
+  // ========== مدیریت فوکوس صفحه ==========
   useFocusEffect(
     useCallback(() => {
       isSavedRef.current = false;
-
       return () => {
         saveGame();
       };
     }, [saveGame])
   );
 
-  // ذخیره‌سازی هنگام unmount
+  // ========== ذخیره‌سازی هنگام unmount ==========
   useEffect(() => {
     checkRTL();
     return () => {
@@ -186,31 +176,24 @@ export default function Index() {
     };
   }, []);
 
-  // ============================================
-  // 8. ریختن تاس در شروع هر نوبت
-  // ============================================
+  // ========== ریختن تاس در شروع هر نوبت ==========
   useEffect(() => {
     if (isReady && !store.showNoMoveModal) {
       store.rollDice();
     }
   }, [store.currentTurn, isReady]);
 
-  // ============================================
-  // 9. اجرای حرکت هوش مصنوعی
-  // ============================================
+  // ========== اجرای حرکت هوش مصنوعی ==========
   useEffect(() => {
     if (isReady) {
       const timer = setTimeout(() => {
         store.executeAIMove();
       }, 10);
-
       return () => clearTimeout(timer);
     }
   }, [store.allDice, isReady]);
 
-  // ============================================
-  // 10. نمایش لودینگ اگر آماده نیست
-  // ============================================
+  // ========== نمایش لودینگ ==========
   if (!isReady) {
     return (
       <View style={[styles.container, styles.loadingContainer]}>
@@ -218,38 +201,76 @@ export default function Index() {
         <Text style={styles.loadingText}>{loadingMessage}</Text>
       </View>
     );
-  };
+  }
 
+  if (isMeasuring && !tour.isVisible) {
+    return (
+      <View style={[styles.container, styles.loadingContainer]}>
+        <ActivityIndicator size="large" color="#ffffff" />
+        <Text style={styles.loadingText}>در حال آماده‌سازی تور...</Text>
+      </View>
+    );
+  }
+
+  // ========== رندر اصلی ==========
   return (
     <>
       <View style={styles.container}>
+        <GameStatusBar />
+
         <View style={[styles.board, { height: screenHeight, flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-          <GameStatusBar />
+
           <Leftbar />
+
           <HalfBoard side="left" />
           <StaticsBar />
           <HalfBoard side="right" />
+
           <Rightbar />
+
+          {/* مودال‌ها */}
           <ResultModal />
           <InformModal />
           <NoMoveModal />
           <MatchEndModal />
         </View>
       </View>
+
+      {/* تور Coachmark */}
+      <TourCoachmark
+        visible={tour.isVisible && tour.isReady}
+        title={tour.currentStepData?.title}
+        content={tour.currentStepData?.content}
+        targetPosition={tour.targetPosition}
+        currentStep={tour.currentStep}
+        totalSteps={tour.totalSteps}
+        onNext={tour.nextStep}
+        onPrevious={tour.previousStep}
+        onComplete={tour.completeTour}
+        onSkip={tour.skipTour}
+        isFirstStep={tour.isFirstStep}
+        isLastStep={tour.isLastStep}
+        tooltipBackgroundColor={tour.currentStepData?.tooltipBackgroundColor}
+        enableSkip={tour.canSkip}
+        steps={gameTourSteps.map(step => ({
+          ...step,
+          target: step.target,
+          description: step.content,
+        }))}
+      />
     </>
   );
 }
 
-// ============================================
-// 12. استایل‌ها
-// ============================================
+// ========== استایل‌ها ==========
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     display: 'flex',
+    flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#070024',
+    backgroundColor: '#6746ec',
   },
   loadingContainer: {
     flex: 1,
@@ -271,5 +292,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     backgroundColor: '#070024',
     position: 'relative',
+    borderRadius: 16,
   },
 });
