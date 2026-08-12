@@ -20,26 +20,26 @@ export default function PreGameScreen() {
   const { id, gameMode } = useLocalSearchParams();
   const insets = useSafeAreaInsets();
 
+  // State
   const [gamePoints, setGamePoints] = useState(5);
   const [difficultyLevel, setDifficultyLevel] = useState(3);
   const [difficultyLevelForWhite, setDifficultyLevelForWhite] = useState(3);
-  const [firstPlayer, setFirstPlayer] = useState('player');
   const [isMeasuring, setIsMeasuring] = useState(true);
 
   const isTwoPlayer = gameMode === 'twoPlayer';
-  
-  // refs برای موقعیت‌یابی
-  const titleRef = useRef(null);
+  const isAIvsAI = gameMode === 'AIvsAI';
+
+  // Refs برای اندازه‌گیری موقعیت
   const sliderRef = useRef(null);
   const difficultySliderRef = useRef(null);
   const startButtonRef = useRef(null);
-  
-  // فیلتر کردن استپ‌ها
-  const filteredSteps = isTwoPlayer 
+
+  // فیلتر کردن استپ‌ها بر اساس حالت بازی
+  const filteredSteps = isTwoPlayer
     ? preGameTourSteps.filter(step => step.target !== 'difficultySlider')
     : preGameTourSteps;
 
-  // استفاده از hook تور
+  // Hook تور
   const tour = useTour('pregame', filteredSteps, {
     autoStart: true,
     delay: 600,
@@ -49,60 +49,51 @@ export default function PreGameScreen() {
   // اندازه‌گیری موقعیت‌ها
   const measurePositions = () => {
     setIsMeasuring(true);
-    
     const measures = [];
-    
-    if (titleRef.current) {
-      measures.push(new Promise((resolve) => {
-        titleRef.current.measure((x, y, width, height, pageX, pageY) => {
-          tour.setTargetPosition('title', {
-            x: pageX + width / 2,
-            y: pageY + height / 2,
-          });
-          resolve();
-        });
-      }));
-    }
-    
+
     if (sliderRef.current) {
-      measures.push(new Promise((resolve) => {
-        sliderRef.current.measure((x, y, width, height, pageX, pageY) => {
-          tour.setTargetPosition('slider', {
-            x: pageX + width / 2,
-            y: pageY + height / 2,
+      measures.push(
+        new Promise((resolve) => {
+          sliderRef.current.measure((x, y, width, height, pageX, pageY) => {
+            tour.setTargetPosition('slider', {
+              x: pageX + width / 2,
+              y: pageY + height / 2,
+            });
+            resolve();
           });
-          resolve();
-        });
-      }));
+        })
+      );
     }
-    
+
     if (difficultySliderRef.current && !isTwoPlayer) {
-      measures.push(new Promise((resolve) => {
-        difficultySliderRef.current.measure((x, y, width, height, pageX, pageY) => {
-          tour.setTargetPosition('difficultySlider', {
-            x: pageX + width / 2,
-            y: pageY + height / 2,
+      measures.push(
+        new Promise((resolve) => {
+          difficultySliderRef.current.measure((x, y, width, height, pageX, pageY) => {
+            tour.setTargetPosition('difficultySlider', {
+              x: pageX + width / 2,
+              y: pageY + height / 2,
+            });
+            resolve();
           });
-          resolve();
-        });
-      }));
+        })
+      );
     }
-    
+
     if (startButtonRef.current) {
-      measures.push(new Promise((resolve) => {
-        startButtonRef.current.measure((x, y, width, height, pageX, pageY) => {
-          tour.setTargetPosition('startButton', {
-            x: pageX + width / 2,
-            y: pageY + height / 2,
+      measures.push(
+        new Promise((resolve) => {
+          startButtonRef.current.measure((x, y, width, height, pageX, pageY) => {
+            tour.setTargetPosition('startButton', {
+              x: pageX + width / 2,
+              y: pageY + height / 2,
+            });
+            resolve();
           });
-          resolve();
-        });
-      }));
+        })
+      );
     }
-    
-    Promise.all(measures).then(() => {
-      setIsMeasuring(false);
-    });
+
+    Promise.all(measures).then(() => setIsMeasuring(false));
   };
 
   useEffect(() => {
@@ -110,13 +101,10 @@ export default function PreGameScreen() {
     return () => clearTimeout(timer);
   }, []);
 
+  // تنظیم امتیاز (فرد)
   const enforceOdd = (value) => {
     let clamped = Math.min(15, Math.max(1, Math.round(value)));
-    if (clamped % 2 === 0) {
-      clamped = clamped + 1;
-      if (clamped > 15) clamped = 15;
-    }
-    return clamped;
+    return clamped % 2 === 0 ? Math.min(15, clamped + 1) : clamped;
   };
 
   const handleGameLengthChange = (value) => {
@@ -127,15 +115,16 @@ export default function PreGameScreen() {
     router.push({
       pathname: `/game/${id}`,
       params: {
-        gameMode: gameMode,
+        gameMode,
         targetScore: gamePoints,
         aiLevel: difficultyLevel,
         aiLevelForWhite: difficultyLevelForWhite,
-        firstPlayer: firstPlayer,
+        firstPlayer: 'player',
       },
     });
   };
 
+  // لودینگ
   if (isMeasuring && !tour.isVisible) {
     return (
       <View style={[styles.safeArea, styles.loadingContainer]}>
@@ -150,24 +139,12 @@ export default function PreGameScreen() {
         contentContainerStyle={styles.scrollContainer}
         showsVerticalScrollIndicator={false}
       >
-        {/* استفاده از CoachmarkAnchor برای title */}
-        <CoachmarkAnchor id="title" shape="rect" padding={12} radius={8}>
-          <Text 
-            ref={titleRef} 
-            style={styles.sectionTitle}
-            onLayout={measurePositions}
-          >
-            طول بازی
-          </Text>
-        </CoachmarkAnchor>
-        
-        {/* استفاده از CoachmarkAnchor برای slider */}
+        {/* عنوان */}
+        <Text style={styles.sectionTitle}>طول بازی</Text>
+
+        {/* اسلایدر امتیاز */}
         <CoachmarkAnchor id="slider" shape="rect" padding={12} radius={12}>
-          <View 
-            ref={sliderRef} 
-            style={styles.cardRow}
-            onLayout={measurePositions}
-          >
+          <View ref={sliderRef} style={styles.cardRow} onLayout={measurePositions}>
             <View style={styles.valueBox}>
               <Text style={styles.valueLabel}>امتیاز</Text>
               <Text style={styles.valueNumber}>{gamePoints}</Text>
@@ -176,7 +153,7 @@ export default function PreGameScreen() {
               <Slider
                 style={styles.slider}
                 minimumValue={1}
-                maximumValue={15}
+                maximumValue={7}
                 step={2}
                 value={gamePoints}
                 onValueChange={handleGameLengthChange}
@@ -188,9 +165,11 @@ export default function PreGameScreen() {
           </View>
         </CoachmarkAnchor>
 
+        {/* تنظیمات سختی - فقط برای حالت‌های تک‌نفره */}
         {!isTwoPlayer && (
           <>
-            {gameMode === 'AIvsAI' && (
+            {/* سختی سفید - فقط برای AIvsAI */}
+            {isAIvsAI && (
               <>
                 <Text style={styles.sectionTitle}>سختی سفید</Text>
                 <View style={styles.cardRow}>
@@ -215,55 +194,49 @@ export default function PreGameScreen() {
               </>
             )}
 
-            {/* استفاده از CoachmarkAnchor برای difficultySlider */}
+            {/* سختی سیاه */}
+            <Text style={styles.sectionTitle}>
+              {isAIvsAI ? 'سختی سیاه' : 'سختی'}
+            </Text>
+
             <CoachmarkAnchor id="difficultySlider" shape="rect" padding={12} radius={8}>
-              <Text 
-                ref={difficultySliderRef} 
-                style={styles.sectionTitle}
-                onLayout={measurePositions}
-              >
-                {gameMode === 'AIvsAI' ? 'سختی سیاه' : 'سختی'}
-              </Text>
+              <View ref={difficultySliderRef} style={styles.cardRow} onLayout={measurePositions}>
+                <View style={styles.valueBox}>
+                  <Text style={styles.valueNumber}>{difficultyLevel}</Text>
+                  <Text style={styles.valueLabel}>(سطح)</Text>
+                </View>
+                <View style={styles.sliderWrapper}>
+                  <Slider
+                    style={styles.slider}
+                    minimumValue={1}
+                    maximumValue={10}
+                    step={1}
+                    value={difficultyLevel}
+                    onValueChange={setDifficultyLevel}
+                    minimumTrackTintColor="#1a4b6e"
+                    maximumTrackTintColor="#cfdfed"
+                    thumbTintColor="#1a4b6e"
+                  />
+                </View>
+              </View>
             </CoachmarkAnchor>
-            
-            <View style={styles.cardRow}>
-              <View style={styles.valueBox}>
-                <Text style={styles.valueNumber}>{difficultyLevel}</Text>
-                <Text style={styles.valueLabel}>(سطح)</Text>
-              </View>
-              <View style={styles.sliderWrapper}>
-                <Slider
-                  style={styles.slider}
-                  minimumValue={1}
-                  maximumValue={10}
-                  step={1}
-                  value={difficultyLevel}
-                  onValueChange={setDifficultyLevel}
-                  minimumTrackTintColor="#1a4b6e"
-                  maximumTrackTintColor="#cfdfed"
-                  thumbTintColor="#1a4b6e"
-                />
-              </View>
-            </View>
           </>
         )}
 
-        <View style={styles.bottomPadding} />
+        {/* دکمه شروع */}
+        <CoachmarkAnchor id="startButton" shape="rect" padding={12} radius={28}>
+          <TouchableOpacity
+            ref={startButtonRef}
+            style={styles.startButton}
+            onPress={startGame}
+            onLayout={measurePositions}
+          >
+            <Text style={styles.startButtonText}>شروع بازی</Text>
+          </TouchableOpacity>
+        </CoachmarkAnchor>
       </ScrollView>
 
-      {/* استفاده از CoachmarkAnchor برای startButton */}
-      <CoachmarkAnchor id="startButton" shape="rect" padding={12} radius={28}>
-        <TouchableOpacity 
-          ref={startButtonRef}
-          style={[styles.startButton, { bottom: 24 + insets.bottom }]} 
-          onPress={startGame}
-          onLayout={measurePositions}
-        >
-          <Text style={styles.startButtonText}>شروع بازی</Text>
-        </TouchableOpacity>
-      </CoachmarkAnchor>
-
-      {/* رندر تور با ارسال تمام استپ‌ها */}
+      {/* تور Coachmark */}
       <TourCoachmark
         visible={tour.isVisible && tour.isReady}
         title={tour.currentStepData?.title}
@@ -297,12 +270,11 @@ const styles = StyleSheet.create({
   loadingContainer: {
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#e9f0fc',
   },
   scrollContainer: {
     paddingHorizontal: 24,
     paddingTop: 24,
-    paddingBottom: 100,
+    paddingBottom: 120,
   },
   sectionTitle: {
     fontSize: 24,
@@ -358,13 +330,7 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 40,
   },
-  bottomPadding: {
-    height: 20,
-  },
   startButton: {
-    position: 'absolute',
-    left: 24,
-    right: 24,
     backgroundColor: '#1a4b6e',
     borderRadius: 28,
     paddingVertical: 16,

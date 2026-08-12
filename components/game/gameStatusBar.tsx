@@ -6,14 +6,16 @@ import { Image, StyleSheet, Text, useWindowDimensions, View } from 'react-native
 
 const GameStatusBar = () => {
   const aiProfile = useGameStore(state => state.aiProfile);
-  const { username, avatarKey } = useUserStore();
+  const username = useUserStore(state => state.username);
+  const avatarKey = useUserStore(state => state.avatarKey);
+
   const elo = useUserStore.getState().getCurrentElo();
   const currentTurn = useGameStore(state => state.currentTurn);
   const targetScore = useGameStore(state => state.targetScore);
   const { height: screenHeight } = useWindowDimensions();
 
   return (
-    <View style={[styles.leftStatusBar, { height: screenHeight }]}>
+    <View style={styles.leftStatusBar}>
       <View style={styles.topContainer}>
         <Text style={styles.playerName}>{aiProfile ? aiProfile.name : 'کاربر مهمان'}</Text>
         {currentTurn == 'black' ? (
@@ -57,6 +59,8 @@ const GameStatusBar = () => {
 
 const styles = StyleSheet.create({
   leftStatusBar: {
+    height: '100%',
+    aspectRatio: 2 / 9,
     flexDirection: 'column',
     justifyContent: 'space-around',
     alignItems: 'center',

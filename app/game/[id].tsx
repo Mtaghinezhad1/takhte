@@ -6,10 +6,10 @@ import * as ScreenOrientation from 'expo-screen-orientation';
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { ActivityIndicator, AppState, BackHandler, I18nManager, StyleSheet, Text, useWindowDimensions, View } from "react-native";
 
+import GameStatusBar from "@/components/game/gameStatusBar";
 import HalfBoard from "@/components/game/halfBoard";
 import InformModal from '@/components/game/informModal';
 import Leftbar from "@/components/game/Leftbar";
-import GameStatusBar from "@/components/game/leftStatusBar";
 import MatchEndModal from "@/components/game/matchEndModal";
 import NoMoveModal from '@/components/game/noMoveModal';
 import ResultModal from '@/components/game/resultModal';
@@ -215,10 +215,10 @@ export default function Index() {
   // ========== رندر اصلی ==========
   return (
     <>
-      <View style={styles.container}>
+      <View style={[styles.container, { height: screenHeight }]}>
         <GameStatusBar />
 
-        <View style={[styles.board, { height: screenHeight, flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+        <View style={[styles.board, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
 
           <Leftbar />
 
@@ -286,7 +286,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   board: {
-    flex: 1,
+    height: '100%',
     aspectRatio: 16 / 9,
     flexDirection: 'row',
     justifyContent: 'space-between',

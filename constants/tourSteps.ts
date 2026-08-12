@@ -1,35 +1,21 @@
 export const homeTourSteps = [
-  {
-    id: 'welcome',
-    title: '👋 خوش آمدید!',
-    content: 'به بازی تخته نرد خوش آمدید. بیایید با بخش‌های مختلف آشنا شویم.',
-    target: 'profile',
-    tooltipBackgroundColor: '#1a4b6e',
-  },
-  {
-    id: 'gameCards',
-    title: '🎯 کارت‌های بازی',
-    content: 'برای شروع بازی، روی یکی از کارت‌های بازی کلیک کنید.',
-    target: 'gameCard',
-    tooltipBackgroundColor: '#7c3aed',
-  },
-  {
-    id: 'profile',
-    title: '📊 پروفایل شما',
-    content: 'در این بخش آمار و اطلاعات کاربری شما نمایش داده می‌شود.',
-    target: 'profileStats',
-    tooltipBackgroundColor: '#1d5cdd',
-  },
+  // {
+  //   id: 'welcome',
+  //   title: '👋 خوش آمدید!',
+  //   content: 'به نرد لند خوش آمدید. بیایید با بخش‌های مختلف آشنا شویم.',
+  //   target: 'profile',
+  //   tooltipBackgroundColor: '#1a4b6e',
+  // },
+  // {
+  //   id: 'gameCards',
+  //   title: '🎯 کارت‌های بازی',
+  //   content: 'برای شروع بازی، روی یکی از کارت‌های بازی کلیک کنید.',
+  //   target: 'gameCard',
+  //   tooltipBackgroundColor: '#7c3aed',
+  // },
 ];
 
 export const preGameTourSteps = [
-  {
-    id: 'settings',
-    title: '⚙️ تنظیمات بازی',
-    content: 'در این صفحه می‌توانید تنظیمات بازی را انجام دهید.',
-    target: 'title',
-    tooltipBackgroundColor: '#1a4b6e',
-  },
   {
     id: 'score',
     title: '🎯 امتیاز مورد نیاز',

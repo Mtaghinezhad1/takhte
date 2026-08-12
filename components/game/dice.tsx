@@ -179,7 +179,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     elevation: 5,
-    transform: [{ scale: 0.9 }],
+    transform: [{ scale: 0.8 }],
     position: 'relative',
   },
   dot: {
