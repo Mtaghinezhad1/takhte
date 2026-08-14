@@ -96,7 +96,7 @@ const HalfBoard = ({ side }) => {
 
 const styles = StyleSheet.create({
   halfBoard: {
-    width: '33%',
+    width: '38%',
     height: '100%',
     position: 'relative',
   },

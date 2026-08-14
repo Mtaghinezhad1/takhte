@@ -23,7 +23,7 @@ const Checker = ({ isWhite, children }) => {
                         end={{ x: 0, y: 0 }}
                         style={styles.insideCircle}
                     >
-                        <Text style={styles.text}>
+                        <Text style={[styles.text, !isWhite && styles.textBlack]}>
                             {children}
                         </Text>
                     </LinearGradient>
@@ -55,6 +55,9 @@ const styles = StyleSheet.create({
     },
     text: {
         fontFamily: 'Kaghaz',
+    },
+    textBlack: {
+        color: 'white'
     },
     white: {
         backgroundColor: 'white',

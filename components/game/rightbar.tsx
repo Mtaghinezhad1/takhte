@@ -48,7 +48,7 @@ const Rightbar = () => {
 
 const styles = StyleSheet.create({
     rightBar: {
-        width: '6%',
+        width: '8%',
         flexDirection: 'column',
         justifyContent: 'space-around',
         alignItems: 'center',

@@ -59,7 +59,7 @@ const StaticsBar = () => {
 
 const styles = StyleSheet.create({
   staticsBar: {
-    width: '6%',
+    width: '8%',
     height: '100%',
     flexDirection: 'column',
     justifyContent: 'space-evenly',

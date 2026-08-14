@@ -29,13 +29,13 @@ export const InitialBoard_standard = [
 
 export const InitialBoard_fun = [
   0,    //black captured 
-  -3,    
-  -3, 
-  -3, 
+  -2,    
+  -2, 
+  -2, 
   -2, 
   -2, 
   -2,     
-  0, 
+  -3, 
   0, 
   0, 
   0, 
@@ -46,13 +46,13 @@ export const InitialBoard_fun = [
   0, 
   0, 
   0, 
-  0, 
+  3, 
   2, 
   2, 
   2, 
-  3, 
-  3, 
-  3, 
+  2, 
+  2, 
+  2, 
   0,    //whiteCaptured
 ];
 

@@ -2,7 +2,7 @@ import { getAvatarByKey } from '@/constants/avatars';
 import useGameStore from '@/stores/useGameStore';
 import useUserStore from '@/stores/useUserStore';
 import React from 'react';
-import { Image, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import { Image, StyleSheet, Text, View } from 'react-native';
 
 const GameStatusBar = () => {
   const aiProfile = useGameStore(state => state.aiProfile);
@@ -12,7 +12,6 @@ const GameStatusBar = () => {
   const elo = useUserStore.getState().getCurrentElo();
   const currentTurn = useGameStore(state => state.currentTurn);
   const targetScore = useGameStore(state => state.targetScore);
-  const { height: screenHeight } = useWindowDimensions();
 
   return (
     <View style={styles.leftStatusBar}>
@@ -74,7 +73,7 @@ const styles = StyleSheet.create({
     width: '80%',
     borderTopWidth: 1,
     borderBottomWidth: 1,
-    borderColor: 'grey',
+    borderColor: 'white',
     paddingVertical: '10%',
     alignItems: 'center',
   },
@@ -96,7 +95,6 @@ const styles = StyleSheet.create({
   showTurn: {
     width: '100%',
     aspectRatio: 1,
-    display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: '50%',
@@ -105,7 +103,7 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   avatar: {
-    width: '80%',
+    width: '100%',
     aspectRatio: 1,
     backgroundColor: 'grey',
     borderRadius: '50%',
@@ -119,7 +117,7 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   midText: {
-    color: 'grey',
+    color: 'white',
     fontFamily: 'Kaghaz',
     fontSize: 13,
     lineHeight: 19.5, // 13 * 1.5

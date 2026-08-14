@@ -42,8 +42,8 @@ export const preGameTourSteps = [
 export const gameTourSteps = [
   {
     id: 'dice', // تاس‌ها
-    title: '🎲 تاس‌ها',
-    content: 'برای حرکت، روی تاس مورد نظر کلیک کنید. تاس‌های روشن قابل استفاده هستند.',
+    title: 'حرکت دادن مهره ها',
+    content: 'برای حرکت، روی مهره مورد نظر کلیک کنید تا مهره ا حرکت دهید.',
     target: 'dice',
     tooltipBackgroundColor: '#e74c3c',
   },
