@@ -1,4 +1,5 @@
 import useGameStore from '@/stores/useGameStore';
+import { CoachmarkAnchor } from '@edwardloopez/react-native-coachmark';
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
@@ -8,18 +9,20 @@ const UndoButton = () => {
 
     return (
         <View style={styles.container}>
-            <TouchableOpacity
-                onPress={handleUndo}
-                disabled={movesCount === 0}
-                style={[
-                    styles.undoButton,
-                    movesCount === 0 && styles.undoButtonDisabled
-                ]}
-            >
-                <Text style={styles.undoButtonText}>
-                    بازگشت
-                </Text>
-            </TouchableOpacity>
+            <CoachmarkAnchor id="undoButton" shape="circle" padding={16}>
+                <TouchableOpacity
+                    onPress={handleUndo}
+                    disabled={movesCount === 0}
+                    style={[
+                        styles.undoButton,
+                        movesCount === 0 && styles.undoButtonDisabled
+                    ]}
+                >
+                    <Text style={styles.undoButtonText}>
+                        بازگشت
+                    </Text>
+                </TouchableOpacity>
+            </CoachmarkAnchor>
         </View>
 
 

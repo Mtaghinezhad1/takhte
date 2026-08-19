@@ -55,15 +55,15 @@ const HalfBoard = ({ side }) => {
       {showForfeit && side != 'left' && <ForfeitGame />}
       {!showForfeit && side != 'left' &&
         <View style={styles.container}>
-          <View style={[styles.quarterBoardTop, {flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+          <View style={[styles.quarterBoardTop, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
             <QuarterBoard
               pointIds={topQuarter}
             />
           </View>
-          {isLeft && <UndoButton />}
+
           {!isLeft && <Dice />}
 
-          <View style={[styles.quarterBoardBottom,{flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+          <View style={[styles.quarterBoardBottom, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
             <QuarterBoard
               pointIds={bottomQuarter}
             />
@@ -73,15 +73,15 @@ const HalfBoard = ({ side }) => {
       {
         side == 'left' &&
         <View style={styles.container}>
-          <View style={[styles.quarterBoardTop, {flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+          <View style={[styles.quarterBoardTop, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
             <QuarterBoard
               pointIds={topQuarter}
             />
           </View>
-          {isLeft && <UndoButton />}
-          {!isLeft && <Dice />}
 
-          <View style={[styles.quarterBoardBottom,{flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+          {isLeft && <UndoButton />}
+
+          <View style={[styles.quarterBoardBottom, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
             <QuarterBoard
               pointIds={bottomQuarter}
             />
@@ -120,10 +120,12 @@ const styles = StyleSheet.create({
   quarterBoardTop: {
     alignItems: 'flex-start',
     height: '45%',
+    gap: 1,
   },
   quarterBoardBottom: {
     alignItems: 'flex-end',
     height: '45%',
+    gap: 1,
   },
 });
 

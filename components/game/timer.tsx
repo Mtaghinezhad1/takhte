@@ -1,23 +1,24 @@
 import useGameStore from '@/stores/useGameStore';
+import { CoachmarkAnchor } from '@edwardloopez/react-native-coachmark';
 import React, { useEffect, useRef, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text } from 'react-native';
 
 export default function Timer({ initialTotalTime = 180 }) {
     const currentTurn = useGameStore(state => state.currentTurn);
     const gameWinner = useGameStore(state => state.gameWinner);
     const isModalVisible = useGameStore(state => state.isModalVisible);
     const isMatchEndModalVisible = useGameStore(state => state.isMatchEndModalVisible);
-    
+
     const handleTimeEnd = useGameStore(state => state.handleTimeEnd);
     const gameScore = useGameStore(state => state.gameScore);
 
     const TURN_TIME = 15;
-    
+
     const [turnTime, setTurnTime] = useState(TURN_TIME);
     const [blackTotalTime, setBlackTotalTime] = useState(initialTotalTime);
     const [whiteTotalTime, setWhiteTotalTime] = useState(initialTotalTime);
     const [isTurnTimeActive, setIsTurnTimeActive] = useState(true);
-    
+
     const intervalRef = useRef(null);
     const timeEndedRef = useRef(false);
 
@@ -97,7 +98,7 @@ export default function Timer({ initialTotalTime = 180 }) {
     };
 
     return (
-        <View style={styles.timeContainer}>
+        <CoachmarkAnchor style={styles.timeContainer} id="timer" shape="circle" padding={16}>
             <Text style={styles.totalTime}>
                 {formatTime(blackTotalTime)}
             </Text>
@@ -107,7 +108,8 @@ export default function Timer({ initialTotalTime = 180 }) {
             <Text style={styles.totalTime}>
                 {formatTime(whiteTotalTime)}
             </Text>
-        </View>
+        </CoachmarkAnchor>
+
     );
 }
 

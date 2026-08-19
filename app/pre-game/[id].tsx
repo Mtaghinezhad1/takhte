@@ -1,14 +1,12 @@
 // [id].tsx
-import TourCoachmark from '@/components/TourCoachmark';
 import { preGameTourSteps } from '@/constants/tourSteps';
-import { useTour } from '@/hooks/useTour';
-import { CoachmarkAnchor } from '@edwardloopez/react-native-coachmark';
+import storageService from '@/services/storageService'; // اضافه کنید
+import { CoachmarkAnchor, createTour, useCoachmark } from '@edwardloopez/react-native-coachmark';
 import Slider from '@react-native-community/slider';
 import { router, useLocalSearchParams } from 'expo-router';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
-  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -20,86 +18,21 @@ export default function PreGameScreen() {
   const { id, gameMode } = useLocalSearchParams();
   const insets = useSafeAreaInsets();
 
+  const { start, isActive } = useCoachmark();
+
   // State
   const [gamePoints, setGamePoints] = useState(5);
   const [difficultyLevel, setDifficultyLevel] = useState(3);
   const [difficultyLevelForWhite, setDifficultyLevelForWhite] = useState(3);
-  const [isMeasuring, setIsMeasuring] = useState(true);
+  const [isReady, setIsReady] = useState(false);
 
   const isTwoPlayer = gameMode === 'twoPlayer';
   const isAIvsAI = gameMode === 'AIvsAI';
 
-  // Refs برای اندازه‌گیری موقعیت
-  const sliderRef = useRef(null);
-  const difficultySliderRef = useRef(null);
-  const startButtonRef = useRef(null);
-
   // فیلتر کردن استپ‌ها بر اساس حالت بازی
   const filteredSteps = isTwoPlayer
-    ? preGameTourSteps.filter(step => step.target !== 'difficultySlider')
+    ? preGameTourSteps.filter(step => step.id !== 'difficultySlider')
     : preGameTourSteps;
-
-  // Hook تور
-  const tour = useTour('pregame', filteredSteps, {
-    autoStart: true,
-    delay: 600,
-    onComplete: () => console.log('PreGame tour completed'),
-  });
-
-  // اندازه‌گیری موقعیت‌ها
-  const measurePositions = () => {
-    setIsMeasuring(true);
-    const measures = [];
-
-    if (sliderRef.current) {
-      measures.push(
-        new Promise((resolve) => {
-          sliderRef.current.measure((x, y, width, height, pageX, pageY) => {
-            tour.setTargetPosition('slider', {
-              x: pageX + width / 2,
-              y: pageY + height / 2,
-            });
-            resolve();
-          });
-        })
-      );
-    }
-
-    if (difficultySliderRef.current && !isTwoPlayer) {
-      measures.push(
-        new Promise((resolve) => {
-          difficultySliderRef.current.measure((x, y, width, height, pageX, pageY) => {
-            tour.setTargetPosition('difficultySlider', {
-              x: pageX + width / 2,
-              y: pageY + height / 2,
-            });
-            resolve();
-          });
-        })
-      );
-    }
-
-    if (startButtonRef.current) {
-      measures.push(
-        new Promise((resolve) => {
-          startButtonRef.current.measure((x, y, width, height, pageX, pageY) => {
-            tour.setTargetPosition('startButton', {
-              x: pageX + width / 2,
-              y: pageY + height / 2,
-            });
-            resolve();
-          });
-        })
-      );
-    }
-
-    Promise.all(measures).then(() => setIsMeasuring(false));
-  };
-
-  useEffect(() => {
-    const timer = setTimeout(measurePositions, 500);
-    return () => clearTimeout(timer);
-  }, []);
 
   // تنظیم امتیاز (فرد)
   const enforceOdd = (value) => {
@@ -124,27 +57,60 @@ export default function PreGameScreen() {
     });
   };
 
-  // لودینگ
-  if (isMeasuring && !tour.isVisible) {
+  // تابع نمایش تور با مدیریت دستی
+  const showTourIfNeeded = async () => {
+    try {
+      const tourId = 'pregame-tour';
+      const hasCompleted = await storageService.hasTourCompleted(tourId);
+      
+      if (!hasCompleted) {
+        // تور را شروع کن
+        start(
+          createTour(
+            tourId,
+            filteredSteps,
+            { showOnce: true, delay: 800 }
+          )
+        );
+        // بعد از نمایش تور، وضعیت را ذخیره کن
+        // توجه: چون تور ممکن است طول بکشد، بعد از شروع تور ذخیره میکنیم
+        await storageService.saveTourCompleted(tourId);
+      }
+    } catch (error) {
+      console.error('خطا در نمایش تور:', error);
+    }
+  };
+
+  useEffect(() => {
+    const initialize = async () => {
+      setIsReady(false);
+      await showTourIfNeeded();
+      setIsReady(true);
+    };
+    
+    initialize();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // نمایش لودینگ
+  if (!isReady) {
     return (
       <View style={[styles.safeArea, styles.loadingContainer]}>
         <ActivityIndicator size="large" color="#1a4b6e" />
+        <Text style={styles.loadingText}>در حال آماده‌سازی...</Text>
       </View>
     );
   }
 
   return (
     <SafeAreaView style={[styles.safeArea, { paddingBottom: insets.bottom }]}>
-      <ScrollView
-        contentContainerStyle={styles.scrollContainer}
-        showsVerticalScrollIndicator={false}
-      >
+      <View>
         {/* عنوان */}
         <Text style={styles.sectionTitle}>طول بازی</Text>
 
         {/* اسلایدر امتیاز */}
         <CoachmarkAnchor id="slider" shape="rect" padding={12} radius={12}>
-          <View ref={sliderRef} style={styles.cardRow} onLayout={measurePositions}>
+          <View style={styles.cardRow}>
             <View style={styles.valueBox}>
               <Text style={styles.valueLabel}>امتیاز</Text>
               <Text style={styles.valueNumber}>{gamePoints}</Text>
@@ -200,7 +166,7 @@ export default function PreGameScreen() {
             </Text>
 
             <CoachmarkAnchor id="difficultySlider" shape="rect" padding={12} radius={8}>
-              <View ref={difficultySliderRef} style={styles.cardRow} onLayout={measurePositions}>
+              <View style={styles.cardRow}>
                 <View style={styles.valueBox}>
                   <Text style={styles.valueNumber}>{difficultyLevel}</Text>
                   <Text style={styles.valueLabel}>(سطح)</Text>
@@ -222,42 +188,18 @@ export default function PreGameScreen() {
             </CoachmarkAnchor>
           </>
         )}
+      </View>
 
-        {/* دکمه شروع */}
-        <CoachmarkAnchor id="startButton" shape="rect" padding={12} radius={28}>
-          <TouchableOpacity
-            ref={startButtonRef}
-            style={styles.startButton}
-            onPress={startGame}
-            onLayout={measurePositions}
-          >
-            <Text style={styles.startButtonText}>شروع بازی</Text>
-          </TouchableOpacity>
-        </CoachmarkAnchor>
-      </ScrollView>
+      {/* دکمه شروع */}
+      <CoachmarkAnchor id="startButton" shape="rect" padding={12} radius={28}>
+        <TouchableOpacity
+          style={styles.startButton}
+          onPress={startGame}
+        >
+          <Text style={styles.startButtonText}>شروع بازی</Text>
+        </TouchableOpacity>
+      </CoachmarkAnchor>
 
-      {/* تور Coachmark */}
-      <TourCoachmark
-        visible={tour.isVisible && tour.isReady}
-        title={tour.currentStepData?.title}
-        content={tour.currentStepData?.content}
-        targetPosition={tour.targetPosition}
-        currentStep={tour.currentStep}
-        totalSteps={tour.totalSteps}
-        onNext={tour.nextStep}
-        onPrevious={tour.previousStep}
-        onComplete={tour.completeTour}
-        onSkip={tour.skipTour}
-        isFirstStep={tour.isFirstStep}
-        isLastStep={tour.isLastStep}
-        tooltipBackgroundColor={tour.currentStepData?.tooltipBackgroundColor}
-        enableSkip={tour.canSkip}
-        steps={filteredSteps.map(step => ({
-          ...step,
-          target: step.target,
-          description: step.content,
-        }))}
-      />
     </SafeAreaView>
   );
 }
@@ -265,16 +207,21 @@ export default function PreGameScreen() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
+    justifyContent: 'space-between',
     backgroundColor: '#e9f0fc',
+    paddingHorizontal: 24
   },
   loadingContainer: {
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: '#e9f0fc',
   },
-  scrollContainer: {
-    paddingHorizontal: 24,
-    paddingTop: 24,
-    paddingBottom: 120,
+  loadingText: {
+    marginTop: 16,
+    fontSize: 16,
+    fontFamily: 'Kaghaz',
+    color: '#1a4b6e',
   },
   sectionTitle: {
     fontSize: 24,
@@ -282,7 +229,7 @@ const styles = StyleSheet.create({
     color: '#1a4b6e',
     textAlign: 'center',
     marginBottom: 12,
-    marginTop: 8,
+    marginTop: 28,
   },
   cardRow: {
     flexDirection: 'row',
@@ -291,8 +238,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffffff',
     borderRadius: 24,
     paddingVertical: 16,
-    paddingHorizontal: 16,
-    marginBottom: 28,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
@@ -346,6 +291,23 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     fontFamily: 'Kaghaz',
     fontSize: 18,
+    textAlign: 'center',
+  },
+  resetButton: {
+    backgroundColor: '#e74c3c',
+    borderRadius: 20,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 20,
+    alignSelf: 'center',
+    opacity: 0.7,
+  },
+  resetButtonText: {
+    color: '#ffffff',
+    fontFamily: 'Kaghaz',
+    fontSize: 14,
     textAlign: 'center',
   },
 });

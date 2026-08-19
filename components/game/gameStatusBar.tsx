@@ -58,7 +58,7 @@ const GameStatusBar = () => {
 
 const styles = StyleSheet.create({
   leftStatusBar: {
-    height: '100%',
+    height: '95%',
     aspectRatio: 2 / 9,
     flexDirection: 'column',
     justifyContent: 'space-around',

@@ -1,5 +1,4 @@
 import useThemeStore from '@/stores/useThemeStore';
-import useTourStore from '@/stores/useTourStore';
 import useUserStore from '@/stores/useUserStore';
 import { DarkTheme, DefaultTheme, ThemeProvider as NavigationThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
@@ -8,7 +7,6 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import { StatusBar, View } from "react-native";
 
-// ✅ Import صحیح از پکیج
 import { CoachmarkOverlay, CoachmarkProvider } from '@edwardloopez/react-native-coachmark';
 
 SplashScreen.preventAutoHideAsync();
@@ -26,10 +24,6 @@ export default function RootLayout() {
   const initializeFromStorage = useUserStore(state => state.initializeFromStorage);
   const isLoading = useUserStore(state => state.isLoading);
   const { initialize: initializeTheme, isDark, colors, isLoading: themeLoading } = useThemeStore();
-
-  useEffect(() => {
-    useTourStore.getState().initialize();
-  }, []);
 
   useEffect(() => {
     initializeTheme();
@@ -57,7 +51,6 @@ export default function RootLayout() {
 
   return (
     <NavigationThemeProvider value={navigationTheme}>
-      {/* ✅ اضافه کردن CoachmarkProvider */}
       <CoachmarkProvider>
         <View style={{ flex: 1, backgroundColor: colors.background }}>
           <Stack screenOptions={{ headerShown: false }}>
@@ -69,7 +62,6 @@ export default function RootLayout() {
           </Stack>
           <StatusBar style={isDark ? 'light' : 'dark'} />
         </View>
-        {/* ✅ اضافه کردن CoachmarkOverlay */}
         <CoachmarkOverlay />
       </CoachmarkProvider>
     </NavigationThemeProvider>

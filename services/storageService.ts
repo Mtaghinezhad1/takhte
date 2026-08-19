@@ -8,9 +8,8 @@ const STORAGE_KEYS = {
   ACTIVE_GAMES: '@backgammon_active_games',
   ELO_HISTORY: '@backgammon_elo_history',
   THEME: '@backgammon_theme',
-  // ========== کلیدهای جدید تور ==========
-  TOUR_DATA: '@backgammon_tour_data',
-  TOUR_ALL_STATUS: '@backgammon_tour_all_status',
+  TOUR_COMPLETED: '@backgammon_tour_completed',
+
 };
 
 class StorageService {
@@ -344,75 +343,23 @@ class StorageService {
     }
   }
 
-  // ========== متدهای جدید تور (اضافه شده به کلاس) ==========
-
-  // ذخیره داده‌های تور
-  async saveTourData(key, value) {
+  async hasTourCompleted(tourId) {
     try {
-      const jsonValue = JSON.stringify(value);
-      await AsyncStorage.setItem(`${STORAGE_KEYS.TOUR_DATA}_${key}`, jsonValue);
-      return true;
+      const completed = await AsyncStorage.getItem(`${STORAGE_KEYS.TOUR_COMPLETED}_${tourId}`);
+      return completed === 'true';
     } catch (error) {
-      console.error('خطا در ذخیره داده‌های تور:', error);
+      console.error('خطا در بررسی وضعیت تور:', error);
       return false;
     }
   }
 
-  // بارگذاری داده‌های تور
-  async loadTourData(key) {
+  // ذخیره وضعیت تکمیل تور
+  async saveTourCompleted(tourId) {
     try {
-      const jsonValue = await AsyncStorage.getItem(`${STORAGE_KEYS.TOUR_DATA}_${key}`);
-      return jsonValue != null ? JSON.parse(jsonValue) : null;
-    } catch (error) {
-      console.error('خطا در بارگذاری داده‌های تور:', error);
-      return null;
-    }
-  }
-
-  // حذف داده‌های تور
-  async removeTourData(key) {
-    try {
-      await AsyncStorage.removeItem(`${STORAGE_KEYS.TOUR_DATA}_${key}`);
+      await AsyncStorage.setItem(`${STORAGE_KEYS.TOUR_COMPLETED}_${tourId}`, 'true');
       return true;
     } catch (error) {
-      console.error('خطا در حذف داده‌های تور:', error);
-      return false;
-    }
-  }
-
-  // ذخیره وضعیت کامل تورها
-  async saveToursStatus(toursStatus) {
-    try {
-      const jsonValue = JSON.stringify(toursStatus);
-      await AsyncStorage.setItem(STORAGE_KEYS.TOUR_ALL_STATUS, jsonValue);
-      return true;
-    } catch (error) {
-      console.error('خطا در ذخیره وضعیت تورها:', error);
-      return false;
-    }
-  }
-
-  // بارگذاری وضعیت کامل تورها
-  async loadToursStatus() {
-    try {
-      const jsonValue = await AsyncStorage.getItem(STORAGE_KEYS.TOUR_ALL_STATUS);
-      return jsonValue != null ? JSON.parse(jsonValue) : null;
-    } catch (error) {
-      console.error('خطا در بارگذاری وضعیت تورها:', error);
-      return null;
-    }
-  }
-
-  // ریست همه داده‌های تور
-  async resetAllTourData() {
-    try {
-      const keys = await AsyncStorage.getAllKeys();
-      const tourKeys = keys.filter(key => key.startsWith(STORAGE_KEYS.TOUR_DATA));
-      await AsyncStorage.multiRemove(tourKeys);
-      await AsyncStorage.removeItem(STORAGE_KEYS.TOUR_ALL_STATUS);
-      return true;
-    } catch (error) {
-      console.error('خطا در ریست داده‌های تور:', error);
+      console.error('خطا در ذخیره وضعیت تور:', error);
       return false;
     }
   }
@@ -428,11 +375,8 @@ class StorageService {
         STORAGE_KEYS.ACTIVE_GAMES,
         STORAGE_KEYS.THEME,
         STORAGE_KEYS.ELO_HISTORY,
-        STORAGE_KEYS.TOUR_ALL_STATUS, // اضافه شده
       ]);
 
-      // حذف همه کلیدهای تور
-      await this.resetAllTourData();
       return true;
     } catch (error) {
       console.error('خطا در پاک کردن داده‌ها:', error);

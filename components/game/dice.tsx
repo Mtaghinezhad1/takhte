@@ -1,5 +1,6 @@
 // Dice.tsx
 import useGameStore from '@/stores/useGameStore';
+import { CoachmarkAnchor } from '@edwardloopez/react-native-coachmark';
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
@@ -115,31 +116,34 @@ const Dice = () => {
     <View style={styles.container}>
       {
         !showContinue &&
-        <TouchableOpacity
-          style={styles.diceContainer}
-          onPress={switchActiveDice}
-          activeOpacity={0.7}
-        >
-          {
-            displayDice.map((dieNumber, index) => {
-              // شمارش تعداد تکرار هر عدد تا ایندکس جاری
-              const currentSeen = (seen[dieNumber] || 0) + 1;
-              seen[dieNumber] = currentSeen;
-              // اگر تعداد مشاهده شده تا الان <= تعداد استفاده شده باشد، یعنی این تاس مصرف شده
-              const isUsed = currentSeen <= usedCounts[dieNumber];
+        <CoachmarkAnchor id="dice" shape="rect" padding={12}>
+          <TouchableOpacity
+            style={styles.diceContainer}
+            onPress={switchActiveDice}
+            activeOpacity={0.7}
+          >
+            {
+              displayDice.map((dieNumber, index) => {
+                // شمارش تعداد تکرار هر عدد تا ایندکس جاری
+                const currentSeen = (seen[dieNumber] || 0) + 1;
+                seen[dieNumber] = currentSeen;
+                // اگر تعداد مشاهده شده تا الان <= تعداد استفاده شده باشد، یعنی این تاس مصرف شده
+                const isUsed = currentSeen <= usedCounts[dieNumber];
 
-              return (
-                <DiceFace
-                  key={index}
-                  value={dieNumber}
-                  isActive={activeDice == dieNumber}
-                  isUsed={isUsed}
-                  isWhiteTurn={isWhiteTurn}
-                />
-              );
-            })
-          }
-        </TouchableOpacity>
+                return (
+                  <DiceFace
+                    key={index}
+                    value={dieNumber}
+                    isActive={activeDice == dieNumber}
+                    isUsed={isUsed}
+                    isWhiteTurn={isWhiteTurn}
+                  />
+                );
+              })
+            }
+          </TouchableOpacity>
+        </CoachmarkAnchor>
+
       }
       {
         showContinue &&

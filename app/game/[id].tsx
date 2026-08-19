@@ -1,4 +1,5 @@
 // [id].tsx
+import { createTour, useCoachmark } from '@edwardloopez/react-native-coachmark';
 import * as Localization from 'expo-localization';
 import * as NavigationBar from 'expo-navigation-bar';
 import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
@@ -15,15 +16,15 @@ import NoMoveModal from '@/components/game/noMoveModal';
 import ResultModal from '@/components/game/resultModal';
 import Rightbar from "@/components/game/rightbar";
 import StaticsBar from "@/components/game/staticsBar";
-import TourCoachmark from '@/components/TourCoachmark';
 import { gameTourSteps } from '@/constants/tourSteps';
-import { useTour } from '@/hooks/useTour';
 import storageService from '@/services/storageService';
 import useGameStore from '@/stores/useGameStore';
 
 export default function Index() {
   const { gameMode, targetScore, aiLevel, aiLevelForWhite } = useLocalSearchParams();
   const store = useGameStore();
+  const { start, isActive } = useCoachmark();
+
   const { height: screenHeight } = useWindowDimensions();
 
   const [isReady, setIsReady] = useState(false);
@@ -33,13 +34,6 @@ export default function Index() {
   const appState = useRef(AppState.currentState);
   const isSavedRef = useRef(false);
   const [isRTL, setIsRTL] = useState(false);
-
-  // ========== تور ==========
-  const tour = useTour('game', gameTourSteps, {
-    autoStart: true,
-    delay: 1500, // تاخیر بیشتر چون صفحه بازی سنگین‌تره
-    onComplete: () => console.log('Game tour completed'),
-  });
 
   const checkRTL = () => {
     try {
@@ -58,16 +52,6 @@ export default function Index() {
     if (isSavedRef.current) return;
     isSavedRef.current = true;
     store.saveCurrentGameState();
-  };
-
-  // ========== اندازه‌گیری موقعیت‌ها ==========
-  const measurePositions = () => {
-    setIsMeasuring(true);
-    // موقعیت‌ها توسط CoachmarkAnchor خودکار اندازه‌گیری می‌شوند
-    // فقط کافی است بعد از آماده شدن صفحه، اندازه‌گیری را غیرفعال کنیم
-    setTimeout(() => {
-      setIsMeasuring(false);
-    }, 500);
   };
 
   // ========== مقداردهی اولیه ==========
@@ -94,11 +78,11 @@ export default function Index() {
             store.initializeGame(
               gameMode,
               targetScore,
-              aiLevel || '3',
-              aiLevelForWhite || '3'
+              aiLevel || '5',
+              aiLevelForWhite || '5'
             );
           } else {
-            store.initializeGame(gameMode, targetScore, aiLevel || '3');
+            store.initializeGame(gameMode, targetScore, aiLevel || '5');
           }
         }
 
@@ -106,7 +90,21 @@ export default function Index() {
           setLoadingMessage('آماده!');
           setIsReady(true);
           // بعد از آماده شدن صفحه، موقعیت‌ها را اندازه‌گیری کن
-          setTimeout(measurePositions, 800);
+        }
+
+        //----------------game tour---------------------
+        const tourId = 'game-tour';
+        const hasCompleted = await storageService.hasTourCompleted(tourId);
+
+        if (!hasCompleted) {
+          start(
+            createTour(
+              tourId,
+              gameTourSteps,
+              { showOnce: true, delay: 800 }
+            )
+          );
+          await storageService.saveTourCompleted(tourId);
         }
 
       } catch (error) {
@@ -114,7 +112,6 @@ export default function Index() {
         if (mounted) {
           setLoadingMessage('خطا در بارگذاری، اما بازی ادامه دارد...');
           setIsReady(true);
-          setTimeout(measurePositions, 800);
         }
       }
     }
@@ -203,15 +200,6 @@ export default function Index() {
     );
   }
 
-  if (isMeasuring && !tour.isVisible) {
-    return (
-      <View style={[styles.container, styles.loadingContainer]}>
-        <ActivityIndicator size="large" color="#ffffff" />
-        <Text style={styles.loadingText}>در حال آماده‌سازی تور...</Text>
-      </View>
-    );
-  }
-
   // ========== رندر اصلی ==========
   return (
     <>
@@ -236,28 +224,6 @@ export default function Index() {
         </View>
       </View>
 
-      {/* تور Coachmark */}
-      <TourCoachmark
-        visible={tour.isVisible && tour.isReady}
-        title={tour.currentStepData?.title}
-        content={tour.currentStepData?.content}
-        targetPosition={tour.targetPosition}
-        currentStep={tour.currentStep}
-        totalSteps={tour.totalSteps}
-        onNext={tour.nextStep}
-        onPrevious={tour.previousStep}
-        onComplete={tour.completeTour}
-        onSkip={tour.skipTour}
-        isFirstStep={tour.isFirstStep}
-        isLastStep={tour.isLastStep}
-        tooltipBackgroundColor={tour.currentStepData?.tooltipBackgroundColor}
-        enableSkip={tour.canSkip}
-        steps={gameTourSteps.map(step => ({
-          ...step,
-          target: step.target,
-          description: step.content,
-        }))}
-      />
     </>
   );
 }
@@ -270,7 +236,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#6746ec',
+    backgroundColor: '#10308e',
   },
   loadingContainer: {
     flex: 1,
@@ -286,12 +252,12 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   board: {
-    height: '100%',
-    aspectRatio: 16 / 9,
+    height: '95%',
+    aspectRatio: 13 / 9,
     flexDirection: 'row',
     justifyContent: 'space-between',
     backgroundColor: '#070024',
     position: 'relative',
-    borderRadius: 16,
+    borderRadius: 10,
   },
 });

@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
     container: {
         backgroundColor: '#dee4e0',
         borderRadius: 1 * rem, // 16px
-        width: '90%',
+        width: '100%',
         overflow: 'hidden',
         flexDirection: 'row',     // horizontal layout
         justifyContent: 'flex-end', // push children to the right

@@ -8,6 +8,9 @@ import opening31 from '@/assets/images/learn/board-opening-31.png';
 import opening42 from '@/assets/images/learn/board-opening-42.png';
 import opening53 from '@/assets/images/learn/board-opening-53.png';
 import opening61 from '@/assets/images/learn/board-opening-61.png';
+import opening62 from '@/assets/images/learn/board-opening-62.png';
+import opening63 from '@/assets/images/learn/board-opening-63.png';
+import opening64 from '@/assets/images/learn/board-opening-64.png';
 import opening65 from '@/assets/images/learn/board-opening-65.png';
 
 export const learnData = [
@@ -210,7 +213,7 @@ export const learnData = [
               {
                 type: 'content',
                 value: `    ۳۱ بهترین تاس برای شروع بازی است. 
-                خانه شماره ۵ معروف به خانه طلایی هست پس بهترین حرکت این است که این خانه را ببندید. `,
+                خانه شماره ۵ یا افشار معروف به خانه طلایی هست پس بهترین حرکت این است که این خانه را ببندید. `,
               },
               {
                 type: 'image',
@@ -316,6 +319,80 @@ export const learnData = [
                 type: 'quiz',
                 question: 'بهترین حرکت کدام است؟',
                 options: ['24 به 16', '8 به 3          6 به 3', '13 به 8          13 به 10', '13 به 8          24 به 21'],
+                correctAnswer: 1,
+              },
+            ],
+          },
+          {
+            id: 6,
+            title: 'تاس 6-2',
+            components: [
+              {
+                type: 'hero',
+                title: 'تاس 6-2',
+              },
+              {
+                type: 'content',
+                value: `برای تاس 62 تخته‌باز‌های قدیمی مهره را از خانه 24 به 16 حرکت می‌دهند، اما حرکت بهتری نیز وجود دارد. نرم‌افزار‌ های آنالیز بازی حرکت از 24 به 18 و 13 به 11 را پیشنهاد می‌دهند و تخته‌باز های مدرن هم این حرکت را انجام می‌دهند.`,
+              },
+              {
+                type: 'image',
+                src: opening62,
+              },
+              {
+                type: 'quiz',
+                question: 'بهترین حرکت کدام است؟',
+                options: ['از 13 به 5', '24 به 16', '24 به 18          13 به 11', '24 به 22          13 به 7'],
+                correctAnswer: 2,
+              },
+            ],
+          },
+          {
+            id: 7,
+            title: 'تاس 6-3',
+            components: [
+              {
+                type: 'hero',
+                title: 'تاس 6-3',
+              },
+              {
+                type: 'content',
+                value: `حرکت های تاس 63 بسیار شبیه به حرکات تاس 62 هستند،
+برای تاس 63 تخته‌باز‌های قدیمی مهره را از خانه 24 به 15 حرکت می‌دهند، اما حرکت بهتری نیز وجود دارد. نرم‌افزار‌ های آنالیز بازی حرکت از 24 به 18 و 13 به 10 را پیشنهاد می‌دهند و تخته‌باز های مدرن هم این حرکت را انجام می‌دهند.`,
+              },
+              {
+                type: 'image',
+                src: opening63,
+              },
+              {
+                type: 'quiz',
+                question: 'بهترین حرکت کدام است؟',
+                options: ['13 به 4', '24 به 15', '24 به 18          13 به 10', '24 به 21          13 به 7'],
+                correctAnswer: 2,
+              },
+            ],
+          },
+          {
+            id: 8,
+            title: 'تاس 6-4',
+            components: [
+              {
+                type: 'hero',
+                title: 'تاس 6-4',
+              },
+              {
+                type: 'content',
+                value: `و اما تاس 64 که یکی از تاس های پر بحث است،
+برای تاس 64 تخته‌باز‌های قدیمی خانه شماره 2 را می‌بندند. براساس نرم‌افزار‌ های آنالیز بازی حرکت از 24 به 18 و 13 به 9، حرکت درست است و بستن خانه شماره 2 اشتباه است.`,
+              },
+              {
+                type: 'image',
+                src: opening64,
+              },
+              {
+                type: 'quiz',
+                question: 'بهترین حرکت کدام است؟',
+                options: ['24 به 14', '24 به 18          13 به 9', '24 به 20          13 به 7', '8 به 2          6 به 2'],
                 correctAnswer: 1,
               },
             ],
