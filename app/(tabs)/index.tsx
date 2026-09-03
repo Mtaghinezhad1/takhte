@@ -1,54 +1,55 @@
 // index.tsx
 import GameCard from '@/components/home/gameCard';
 import ProfileCard from '@/components/home/profileCard';
+import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
-import { StyleSheet, useWindowDimensions, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 const games = [
-  //{ id: 1, title: 'تخته نرد ایرانی', bgColor: '#1d5cdd', textColor: '#1d5cdd', mode: 'aiVsAi' },
-  { id: 2, title: 'تخته نرد استاندارد', bgColor: '#7c3aed', textColor: '#7c3aed', mode: 'standard' },
-  { id: 3, title: 'تفننی', bgColor: '#ea580c', textColor: '#ea580c', mode: 'fun' },
-  //{ id: 4, title: 'دو نفره', bgColor: '#dc2626', textColor: '#dc2626', mode: 'twoPlayer' },
-  // { id: 4, title: 'هوش مصنوعی', bgColor: '#dc2626', textColor: '#dc2626', mode: 'AIvsAI' },
+  //{ id: 1, title: 'تخته نرد ایرانی', subtitle:'رقابت با قوانین اساندارد جهانی',features: [], mode: 'aiVsAi', variant: 'standard' },
+  { id: 2, title: 'تخته نرد استاندارد', subtitle: 'رقابت با قوانین اساندارد جهانی', features: ['با تاثیر بر توانایی'], mode: 'standard',variant: 'standard' },
+  { id: 3, title: 'تفننی', subtitle: 'رقابت با چیدمان های تصادفی', features: ['بدون تاثیر بر توانایی'], mode: 'fun',variant: 'fun' },
+  //{ id: 4, title: 'دو نفره', subtitle:'رقابت با قوانین اساندارد جهانی', features: [], mode: 'twoPlayer',variant: 'standard' },
+  // { id: 4, title: 'هوش مصنوعی', subtitle:'رقابت با قوانین اساندارد جهانی', features: [],  mode: 'AIvsAI',variant: 'standard' },
 ];
 
 export default function HomeScreen() {
-  const { width, height } = useWindowDimensions();
-  const cardWidth = width * 0.9;
-  const cardHeight = height * 0.18;
+
 
   return (
-    <View style={styles.container}>
-      <View style={styles.profileContainer}>
-        <ProfileCard />
-      </View>
+    <View style={{ flex: 1 }}>
+      <LinearGradient
+        colors={['#102b63', '#061636', '#02091c']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={{ flex: 1 }}
+      >
+        <View style={styles.profileContainer}>
+          <ProfileCard />
+        </View>
 
-      <View style={styles.cardsContainer}>
-        {games.map((game) => (
-          <View key={game.id}>
-            <GameCard
-              game={game}
-              cardWidth={cardWidth}
-              cardHeight={cardHeight}
-              imageWidth={cardWidth * 0.4}
-              imageHeight={cardWidth * 0.4 * 0.8}
-            />
-          </View>
-        ))}
-      </View>
+        <View style={styles.cardsContainer}>
+          {games.map((game) => (
+            <View key={game.id}>
+              <GameCard
+                game={game}
+              />
+            </View>
+          ))}
+        </View>
+      </LinearGradient>
+
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
   profileContainer: {
     paddingHorizontal: '5%',
     paddingTop: '5%',
   },
   cardsContainer: {
+    width: '100%',
     flex: 1,
     alignItems: 'center',
     justifyContent: 'flex-start',

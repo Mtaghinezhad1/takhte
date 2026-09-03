@@ -28,17 +28,18 @@ export const darkColors = {
   secondary: '#a78bfa',
   tertiary: '#fb923c',
   danger: '#ef4444',
-  tabBar: '#1e1e1e',
   tabBarActive: '#4a8aff',
   tabBarInactive: '#888888',
   shadow: '#000000',
   profileBg: '#2a2a2a',
   inputBg: '#2a2a2a',
+
+  tabBar: '#071c39',
 };
 
 const useThemeStore = create((set, get) => ({
-  theme: 'light',
-  isDark: false,
+  theme: 'dark',
+  isDark: true,
   isLoading: true,
   colors: lightColors,
 
