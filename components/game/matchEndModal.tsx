@@ -15,7 +15,7 @@ export default function MatchEndModal() {
     const gameScore = useGameStore(state => state.gameScore);
     const gameWinner = useGameStore(state => state.gameWinner);
     const aiProfile = useGameStore(state => state.aiProfile);
-    const { username, avatarKey } = useUserStore();
+    const { user } = useUserStore();
 
     const {
         isMatchEndModalVisible,
@@ -101,10 +101,10 @@ export default function MatchEndModal() {
                         {/* White Player */}
                         <View style={styles.playerSection}>
                             <Image
-                                source={avatarKey ? getAvatarByKey(avatarKey) : require('@/assets/avatar/default.jpeg')}
+                                source={user.avatarKey ? getAvatarByKey(user.avatarKey) : require('@/assets/avatar/default.jpeg')}
                                 style={[styles.playerImage, styles.whitePlayerBorder]}
                             />
-                            <Text style={styles.playerName}>{username}</Text>
+                            <Text style={styles.playerName}>{user.username}</Text>
                             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                 <Text style={styles.playerName}>{finalWhiteElo}</Text>
                                 <Text style={[styles.changeText, { color: getChangeColor(userEloChange), marginLeft: 5 }]}>

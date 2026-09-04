@@ -8,7 +8,7 @@ import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, useWindowDimensi
 
 
 const SelectAvatar = () => {
-    const { username, coins, avatarKey, setAvatar } = useUserStore();
+    const { user, setAvatar } = useUserStore();
     const elo = useUserStore.getState().getCurrentElo();
     const { colors } = useThemeStore();
 
@@ -18,7 +18,7 @@ const SelectAvatar = () => {
 
     // پیدا کردن ایندکس اولیه بر اساس avatarKey فعلی کاربر
     const getInitialIndex = () => {
-        const index = avatars.findIndex(avatar => avatar.key === avatarKey);
+        const index = avatars.findIndex(avatar => avatar.key === user.avatarKey);
         return index !== -1 ? index : 0;
     };
 
@@ -36,15 +36,15 @@ const SelectAvatar = () => {
 
     // اگر avatarKey در store تغییر کرد، ایندکس فعال را به‌روز کنیم
     useEffect(() => {
-        const newIndex = avatars.findIndex(avatar => avatar.key === avatarKey);
+        const newIndex = avatars.findIndex(avatar => avatar.key === user.avatarKey);
         if (newIndex !== -1 && newIndex !== activeIndex) {
             setActiveIndex(newIndex);
         }
-    }, [avatarKey]);
+    }, [user.avatarKey]);
 
     const handleImagePress = (index) => {
         const selectedAvatar = avatars[index];
-        const isUnlocked = isAvatarUnlocked(selectedAvatar.key, elo, coins);
+        const isUnlocked = isAvatarUnlocked(selectedAvatar.key, elo, user.coins);
 
         if (isUnlocked) {
             setActiveIndex(index);
@@ -56,7 +56,7 @@ const SelectAvatar = () => {
 
     const handleConfirm = async () => {
         const selectedAvatar = avatars[activeIndex];
-        const isUnlocked = isAvatarUnlocked(selectedAvatar.key, elo, coins);
+        const isUnlocked = isAvatarUnlocked(selectedAvatar.key, elo, user.coins);
 
         if (isUnlocked) {
             await setAvatar(selectedAvatar.key);
@@ -66,7 +66,7 @@ const SelectAvatar = () => {
 
     // بررسی قفل بودن آواتار برای نمایش
     const isAvatarLocked = (avatar) => {
-        return !isAvatarUnlocked(avatar.key, elo, coins);
+        return !isAvatarUnlocked(avatar.key, elo, user.coins);
     };
 
     return (
@@ -78,7 +78,7 @@ const SelectAvatar = () => {
                         <Image style={styles.avatarImg} source={avatars[activeIndex].source} />
                     </View>
                     {/* نمایش اطلاعات نیازمندی آواتار فعال اگر قفل باشد */}
-                    {avatars[activeIndex].requirements && !isAvatarUnlocked(avatars[activeIndex].key, elo, coins) && (
+                    {avatars[activeIndex].requirements && !isAvatarUnlocked(avatars[activeIndex].key, elo, user.coins) && (
                         <View style={styles.lockOverlay}>
                             <Text style={styles.lockText}>
                                 {avatars[activeIndex].requirements.minElo && `نیاز به ریتینگ ${avatars[activeIndex].requirements.minElo}`}
@@ -89,7 +89,7 @@ const SelectAvatar = () => {
                 </View>
             </View>
 
-            <View style={[styles.container,{ backgroundColor: colors.card}]}>
+            <View style={[styles.container, { backgroundColor: colors.card }]}>
                 <ScrollView contentContainerStyle={styles.imgSection}>
                     {avatars.map((avatar, index) => {
                         const locked = isAvatarLocked(avatar);
@@ -138,7 +138,7 @@ const SelectAvatar = () => {
                         activeOpacity={0.7}
                         disabled={isAvatarLocked(avatars[activeIndex])}
                     >
-                        <Text style={[styles.confirmText,{color: colors.background}]}>تایید</Text>
+                        <Text style={[styles.confirmText, { color: colors.background }]}>تایید</Text>
                     </TouchableOpacity>
                 </View>
             </View>

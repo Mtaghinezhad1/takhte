@@ -16,11 +16,8 @@ import {
 const EditProfile = () => {
   // گرفتن state و متدها از store
   const {
-    username,
-    age,
-    gender,
+    user,
     isLoading,
-    avatarKey,
     setUsername,
     setAge,
     setGender,
@@ -30,18 +27,18 @@ const EditProfile = () => {
 
 
   // State محلی برای ویرایش موقت
-  const [localUsername, setLocalUsername] = useState(username);
-  const [localAge, setLocalAge] = useState(age?.toString() || '');
-  const [localGender, setLocalGender] = useState(gender || '');
+  const [localUsername, setLocalUsername] = useState(user.username);
+  const [localAge, setLocalAge] = useState(user.age?.toString() || '');
+  const [localGender, setLocalGender] = useState(user.gender || '');
   const [isSaving, setIsSaving] = useState(false);
 
   // به‌روزرسانی state محلی وقتی store تغییر می‌کنه
   useEffect(() => {
 
-    setLocalUsername(username);
-    setLocalAge(age?.toString() || '');
-    setLocalGender(gender || '');
-  }, [username, age, gender]);
+    setLocalUsername(user.username);
+    setLocalAge(user.age?.toString() || '');
+    setLocalGender(user.gender || '');
+  }, [user.username, user.age, user.gender]);
 
   // تابع ذخیره مشخصات
   const handleSave = async () => {
@@ -85,7 +82,7 @@ const EditProfile = () => {
       <View style={styles.profileSection}>
         <View style={styles.avatarSection}>
           <View style={styles.avatar}>
-            <Image style={styles.avatarImg} source={avatarKey ? getAvatarByKey(avatarKey) : require('@/assets/avatar/default.jpeg')}  />
+            <Image style={styles.avatarImg} source={user.avatarKey ? getAvatarByKey(user.avatarKey) : require('@/assets/avatar/default.jpeg')}  />
           </View>
         </View>
       </View>

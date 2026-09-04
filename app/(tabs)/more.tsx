@@ -11,7 +11,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 
 export default function MoreScreen() {
-  const { username, coins, avatarKey } = useUserStore();
+  const { user } = useUserStore();
   const elo = useUserStore.getState().getCurrentElo();
   const { colors } = useThemeStore();
 
@@ -50,7 +50,7 @@ export default function MoreScreen() {
 
           <View style={styles.avatarSection}>
             <View style={styles.avatar}>
-              <Image style={styles.avatarImg} source={avatarKey ? getAvatarByKey(avatarKey) : require('@/assets/avatar/default.jpeg')} />
+              <Image style={styles.avatarImg} source={user.avatarKey ? getAvatarByKey(user.avatarKey) : require('@/assets/avatar/default.jpeg')} />
             </View>
             <TouchableOpacity style={styles.edit} onPress={() => router.push(`/selectAvatar`)}>
               <View style={styles.arrow}>
@@ -59,7 +59,7 @@ export default function MoreScreen() {
             </TouchableOpacity>
           </View>
 
-          <Text style={[styles.profileName, { color: colors.text }]}>{username}</Text>
+          <Text style={[styles.profileName, { color: colors.text }]}>{user.username}</Text>
           {/* <Text style={styles.profileBio}>ID: 737848826</Text> */}
 
           <View style={[styles.btnContainer, { gap: width * 0.015 }]}>

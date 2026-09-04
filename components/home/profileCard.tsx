@@ -9,32 +9,44 @@ import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 const rem = 16;
 
 const ProfileCard = () => {
-    const { username, coins, avatarKey } = useUserStore();
+    const { user } = useUserStore();
     const elo = useUserStore.getState().getCurrentElo();
 
     return (
         <TouchableOpacity style={styles.body} onPress={() => router.push(`/charts`)}>
             <LinearGradient
-                colors={['#6495ed' || '#4c669f', '#3b5998', '#192f6a']}
+                colors={['rgba(18,43,87,0.95)', 'rgba(5,19,47,0.9)']}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
-                style={styles.container}
+                style={styles.card}
             >
-                {/* <TrainingButton/> */}
-                {/* Text section on the left (aligned to the right inside) */}
-                <View style={styles.textSection}>
-                    <Text style={styles.name}>{username}</Text>
-                    <View style={styles.amounts}>
-                        {/* <Text style={styles.amountText}>سکه: {coins}</Text> */}
-                        <Text style={[styles.amountMargin, styles.amountText]}>توانایی: {elo}</Text>
-                    </View>
-                </View>
-                {/* Avatar on the far right */}
-                <View style={styles.avatar}>
+
+                {/* Avatar */}
+                <View style={styles.avatarWrapper}>
                     <Image
-                        style={styles.image}
-                        source={avatarKey ? getAvatarByKey(avatarKey) : require('@/assets/avatar/default.jpeg')}
+                        source={user.avatarKey ? getAvatarByKey(user.avatarKey) : require('@/assets/avatar/default.jpeg')}
+                        style={styles.avatar}
                     />
+                </View>
+
+                {/* Info */}
+                <View style={styles.info}>
+                    <View style={styles.nameRow}>
+                        <Text style={styles.name}>{user.username}</Text>
+                        <TouchableOpacity onPress={() => { }} style={styles.editButton}>
+                            <Text style={styles.editIcon}>✎</Text>
+                        </TouchableOpacity>
+                    </View>
+                    {/* optional subtitle could be added here */}
+                </View>
+
+                {/* ELO */}
+                <View style={styles.eloContainer}>
+                    <Text style={styles.eloLabel}>توانایی</Text>
+                    <View style={styles.eloValue}>
+                        <Text style={styles.shield}>♛</Text>
+                        <Text style={styles.eloNumber}>{elo}</Text>
+                    </View>
                 </View>
             </LinearGradient>
         </TouchableOpacity>
@@ -47,49 +59,86 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
     },
-    container: {
-        backgroundColor: '#dee4e0',
-        borderRadius: 1 * rem, // 16px
-        width: '100%',
-        overflow: 'hidden',
-        flexDirection: 'row',     // horizontal layout
-        justifyContent: 'flex-end', // push children to the right
-        marginTop: 3 * rem,       // 80px
-        marginBottom: 1 * rem,       // 80px
-        padding: 0.5 * rem,         // 16px
-    },
-    textSection: {
-        flex: 1,                  // takes remaining space
-        alignItems: 'flex-end',   // right‑align the text
-        justifyContent: 'space-between', // separates name and amounts
-    },
-    name: {
-        fontWeight: '900',
-        color: 'white',
-        fontSize: 1.3 * rem,      // ~26px
-    },
-    amounts: {
+    card: {
         flexDirection: 'row',
-        marginTop: 0,             // adjust if needed
+        alignItems: 'center',
+        padding: 20,
+        borderRadius: 25,
+        borderWidth: 1,
+        borderColor: 'rgba(91,139,213,0.25)',
+        // Shadow (iOS & Android)
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 20 },
+        shadowOpacity: 0.3,
+        shadowRadius: 50,
+        elevation: 20,
+        backgroundColor: 'transparent', // gradient handles background
+        minHeight: 135,
     },
-    amountText: {
-        fontWeight: '900',
-        color: 'white',
-    },
-    amountMargin: {
-        marginLeft: 2 * rem,      // 32px
+    avatarWrapper: {
+        marginRight: 14,
     },
     avatar: {
-        marginLeft: 1 * rem,      // 16px
-        width: '20%',             // relative to container
-        aspectRatio: 1,           // keeps it square
-        overflow: 'hidden',
-        borderRadius: 1 * rem,    // 16px
+        width: 80,
+        height: 80,
+        borderRadius: 40,
+        borderWidth: 3,
+        borderColor: '#328cff',
+        // Glow effect using shadow
+        shadowColor: '#2075ff',
+        shadowOffset: { width: 0, height: 0 },
+        shadowOpacity: 0.3,
+        shadowRadius: 25,
+        elevation: 10,
     },
-    image: {
-        width: '100%',
-        height: '100%',
-        resizeMode: 'cover',
+    info: {
+        flex: 1,
+        flexShrink: 1,
+    },
+    nameRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 7, // works on iOS 13+ / Android; fallback margin
+    },
+    name: {
+        fontSize: 20,
+        fontWeight: '800',
+        color: '#f4f7ff',
+        fontFamily: 'Vazirmatn', // Make sure font is linked in your project
+    },
+    editButton: {
+        marginLeft: 7,
+    },
+    editIcon: {
+        fontSize: 18,
+        color: '#438fff',
+    },
+    eloContainer: {
+        alignItems: 'center',
+        borderLeftWidth: 1,
+        borderLeftColor: 'rgba(255,255,255,0.1)',
+        paddingLeft: 15,
+        minWidth: 78,
+    },
+    eloLabel: {
+        color: '#7d8eaf',
+        fontSize: 12,
+        fontWeight: '600',
+    },
+    eloValue: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginTop: 3,
+    },
+    shield: {
+        color: '#73aaff',
+        fontSize: 18,
+        marginRight: 4,
+    },
+    eloNumber: {
+        fontSize: 22,
+        fontWeight: 'bold',
+        color: '#f4f7ff',
     },
 });
 

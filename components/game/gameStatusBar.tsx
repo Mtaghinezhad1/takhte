@@ -6,8 +6,7 @@ import { Image, StyleSheet, Text, View } from 'react-native';
 
 const GameStatusBar = () => {
   const aiProfile = useGameStore(state => state.aiProfile);
-  const username = useUserStore(state => state.username);
-  const avatarKey = useUserStore(state => state.avatarKey);
+  const { user } = useUserStore();
 
   const elo = useUserStore.getState().getCurrentElo();
   const currentTurn = useGameStore(state => state.currentTurn);
@@ -42,15 +41,15 @@ const GameStatusBar = () => {
         {currentTurn == 'white' ? (
           <View style={styles.showTurn}>
             <View style={styles.avatar}>
-              <Image style={styles.avatarImg} source={avatarKey ? getAvatarByKey(avatarKey) : require('@/assets/avatar/default.jpeg')} />
+              <Image style={styles.avatarImg} source={user.avatarKey ? getAvatarByKey(user.avatarKey) : require('@/assets/avatar/default.jpeg')} />
             </View>
           </View>
         ) : (
           <View style={styles.avatar}>
-            <Image style={styles.avatarImg} source={avatarKey ? getAvatarByKey(avatarKey) : require('@/assets/avatar/default.jpeg')} />
+            <Image style={styles.avatarImg} source={user.avatarKey ? getAvatarByKey(user.avatarKey) : require('@/assets/avatar/default.jpeg')} />
           </View>
         )}
-        <Text style={styles.playerName}>{username}</Text>
+        <Text style={styles.playerName}>{user.username}</Text>
       </View>
     </View>
   );

@@ -17,7 +17,7 @@ export default function ResultModal() {
     const gameScore = useGameStore(state => state.gameScore);
     const gameWinner = useGameStore(state => state.gameWinner);
     const aiProfile = useGameStore(state => state.aiProfile);
-    const { username, avatarKey } = useUserStore();
+    const { user } = useUserStore();
 
 
     useEffect(() => {
@@ -81,10 +81,10 @@ export default function ResultModal() {
                             {/* White Player */}
                             <View style={styles.playerSection}>
                                 <Image
-                                    source={avatarKey ? getAvatarByKey(avatarKey) : require('@/assets/avatar/default.jpeg')}
+                                    source={user.avatarKey ? getAvatarByKey(user.avatarKey) : require('@/assets/avatar/default.jpeg')}
                                     style={[styles.playerImage, styles.whitePlayerBorder]}
                                 />
-                                <Text style={styles.playerName}>{username}</Text>
+                                <Text style={styles.playerName}>{user.username}</Text>
                                 <Text style={[styles.playerColor, { color: '#666666' }]}>مهره سفید</Text>
                             </View>
                         </View>

@@ -8,6 +8,7 @@ import {
     ScrollView, StyleSheet, Text,
     TouchableOpacity, useWindowDimensions, View
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const LearnScreen = () => {
     const completedLessons = useLearningStore(state => state.completedLessons);
@@ -54,114 +55,104 @@ const LearnScreen = () => {
 
 
     return (
-        <View style={styles.container}>
-            {/* Button Container */}
-            <View style={[styles.btnContainer, { paddingHorizontal: width * 0.08 }]}>
-                {buttons.map((btn) => (
-                    <TouchableOpacity
-                        key={btn.key}
-                        style={[
-                            styles.btn,
-                            activeTab === btn.key && styles.activeBtn,
-                            { padding: getPadding() },
-                        ]}
-                        onPress={() => setActiveTab(btn.key)}
-                    >
-                        <Text
-                            style={[
-                                styles.btnText,
-                                activeTab === btn.key && styles.activeBtnText,
-                                { fontSize: getFontSize() },
-                            ]}
-                        >
-                            {btn.label}
-                        </Text>
-                    </TouchableOpacity>
-                ))}
-            </View>
-
-            {/* Subcategories Container */}
-            <ScrollView
-                style={styles.scrollView}
-                contentContainerStyle={styles.itemContainer}
-                showsVerticalScrollIndicator={false}
-            >
-                {learnData
-                    .find(cat => cat.key === activeTab)
-                    ?.subcategories.map((subcat) => {
-                        const progress = getLocalProgress(activeTab, subcat.key);
+        <LinearGradient
+            colors={['#102b63', '#061636', '#02091c']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={{ flex: 1 }}
+        >
+            <SafeAreaView style={{ flex: 1, paddingHorizontal: 16 }}>
+                <View style={styles.levelsContainer}>
+                    {buttons.map((level) => {
+                        const isActive = activeTab === level.key;
                         return (
                             <TouchableOpacity
-                                key={subcat.key}
-                                style={styles.item}
-                                onPress={() => {
-                                    if (progress === 0) {
-                                        router.push(`/learn/${activeTab}/${subcat.key}/1`);
-                                    } else {
-                                        router.push(`/learn/${activeTab}/${subcat.key}`);
-                                    }
-                                }}
+                                key={level.key}
+                                style={styles.levelWrapper}
+                                onPress={() => setActiveTab(level.key)}
+                                activeOpacity={0.7}
                             >
-                                <LinearGradient
-                                    colors={['#6495ed' || '#4c669f', '#3b5998', '#192f6a']}
-                                    start={{ x: 0, y: 0 }}
-                                    end={{ x: 1, y: 1 }}
-                                    style={styles.gradient}
-                                >
-                                    {/* Progress Bar */}
-                                    <View style={styles.loader}>
-                                        <View
-                                            style={[
-                                                styles.progress,
-                                                { height: `${progress}%` },
-                                            ]}
-                                        />
-                                    </View>
-                                    <View style={styles.textSection}>
-                                        <Text style={[styles.text, { fontSize: getFontSize() }]}>
-                                            {subcat.title}
+                                {isActive ? (
+                                    <LinearGradient
+                                        colors={['#226eff', '#1244a7']}
+                                        start={{ x: 0, y: 0 }}
+                                        end={{ x: 1, y: 1 }}
+                                        style={[styles.level, styles.activeLevel]}
+                                    >
+                                        <Text style={[styles.levelText, styles.activeText]}>
+                                            {level.label}
                                         </Text>
+                                    </LinearGradient>
+                                ) : (
+                                    <View style={[styles.level, styles.inactiveLevel]}>
+                                        <Text style={styles.levelText}>{level.label}</Text>
                                     </View>
-                                </LinearGradient>
+                                )}
                             </TouchableOpacity>
                         );
                     })}
-            </ScrollView>
-        </View>
+                </View>
+
+                {/* Subcategories Container */}
+                <ScrollView
+                    style={styles.scrollView}
+                    contentContainerStyle={styles.itemContainer}
+                    showsVerticalScrollIndicator={false}
+                >
+                    {learnData
+                        .find(cat => cat.key === activeTab)
+                        ?.subcategories.map((subcat) => {
+                            const progress = getLocalProgress(activeTab, subcat.key);
+                            return (
+                                <TouchableOpacity
+                                    key={subcat.key}
+                                    style={styles.item}
+                                    onPress={() => {
+                                        if (progress === 0) {
+                                            router.push(`/learn/${activeTab}/${subcat.key}/1`);
+                                        } else {
+                                            router.push(`/learn/${activeTab}/${subcat.key}`);
+                                        }
+                                    }}
+                                >
+                                    <LinearGradient
+                                        colors={['#6495ed' || '#4c669f', '#3b5998', '#192f6a']}
+                                        start={{ x: 0, y: 0 }}
+                                        end={{ x: 1, y: 1 }}
+                                        style={styles.gradient}
+                                    >
+                                        {/* Progress Bar */}
+                                        <View style={styles.loader}>
+                                            <View
+                                                style={[
+                                                    styles.progress,
+                                                    { height: `${progress}%` },
+                                                ]}
+                                            />
+                                        </View>
+                                        
+                                        <View style={styles.textSection}>
+                                            <Text style={[styles.text, { fontSize: getFontSize() }]}>
+                                                {subcat.title}
+                                            </Text>
+                                        </View>
+                                    </LinearGradient>
+                                </TouchableOpacity>
+                            );
+                        })}
+                </ScrollView>
+            </SafeAreaView>
+        </LinearGradient>
+
     );
 };
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        padding: 16,
     },
     scrollView: {
         flex: 1,
-    },
-    btnContainer: {
-        flexDirection: 'row',
-        gap: 16,
-        marginTop: 25,
-        marginBottom: 16,
-    },
-    btn: {
-        flex: 1,
-        backgroundColor: '#dee4e0',
-        borderWidth: 0,
-        borderRadius: 16,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    activeBtn: {
-        backgroundColor: '#070024',
-    },
-    btnText: {
-        color: '#000',
-        fontWeight: '900',
-    },
-    activeBtnText: {
-        color: '#fff',
     },
     itemContainer: {
         width: '100%',
@@ -202,6 +193,47 @@ const styles = StyleSheet.create({
         fontSize: 24,
         color: 'white',
         fontWeight: '900',
+    },
+
+    levelsContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        paddingHorizontal: 20,
+    },
+    levelWrapper: {
+        width: '31%', // approx 1/3 minus gap
+        aspectRatio: undefined,
+        height: 62,
+        marginBottom: 12, // for spacing if wrap
+    },
+    level: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: 18,
+        borderWidth: 1,
+    },
+    inactiveLevel: {
+        backgroundColor: 'rgba(7, 28, 62, 0.65)',
+        borderColor: 'rgba(62, 119, 213, 0.15)',
+    },
+    activeLevel: {
+        borderColor: '#3989ff',
+        shadowColor: '#1a6aff',
+        shadowOffset: { width: 0, height: 0 },
+        shadowOpacity: 0.45,
+        shadowRadius: 22,
+        elevation: 8,
+    },
+    levelText: {
+        fontFamily: 'Vazirmatn', // You need to load this font; fallback to system
+        fontWeight: '700',
+        fontSize: 17,
+        color: '#8296ba',
+        textAlign: 'center',
+    },
+    activeText: {
+        color: '#ffffff',
     },
 });
 
