@@ -1,3 +1,4 @@
+import { fetchUserProfile } from '@/services/api/userApi';
 import storageService from '@/services/storageService';
 import { userService } from '@/services/userService';
 import { create } from 'zustand';
@@ -70,6 +71,51 @@ const useUserStore = create((set, get) => ({
     const stats = await storageService.loadStatistics();
     if (stats) {
       set({ statistics: stats });
+    }
+
+    set({ isLoading: false });
+  },
+
+  initializeFromServer: async () => {
+    set({ isLoading: true });
+
+    // ۱. بارگذاری داده‌های محلی (برای fallback)
+    const userData = await storageService.loadUserData();
+    const eloHistory = await storageService.loadEloHistory();
+    const stats = await storageService.loadStatistics();
+
+    // به‌روزرسانی اولیه state با داده‌های محلی
+    set({
+      user: {
+        username: userData?.username || DEFAULT_USER.username,
+        avatarKey: userData?.avatarKey || DEFAULT_USER.avatarKey,
+        coins: userData?.coins ?? DEFAULT_USER.coins,
+        // ... سایر فیلدها
+      },
+      eloHistory: eloHistory.length > 0 ? eloHistory : [/* default */],
+      statistics: stats || { /* default */ },
+    });
+
+    // ۲. درخواست به سرور برای دریافت جدیدترین اطلاعات
+    try {
+      const serverUser = await fetchUserProfile(); // از userApi.ts
+      if (serverUser) {
+        // به‌روزرسانی state با داده‌های سرور
+        set({
+          user: {
+            username: serverUser.displayName || serverUser.username || get().user.username,
+            avatarKey: serverUser.avatarKey || get().user.avatarKey,
+            coins: serverUser.coins ?? get().user.coins,
+            // ... سایر فیلدها (در صورت وجود)
+          },
+          // در صورت نیاز elo و statistics را هم از سرور به‌روز کن
+        });
+        // ذخیره داده‌های جدید در localStorage برای دفعات بعد
+        await storageService.saveUserData(get().user);
+      }
+    } catch (error) {
+      // در صورت خطا، همان داده‌های محلی حفظ می‌شوند
+      console.warn('Failed to fetch user from server, using local data:', error);
     }
 
     set({ isLoading: false });

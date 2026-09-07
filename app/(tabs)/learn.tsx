@@ -1,6 +1,8 @@
+import LessonCard from '@/components/learn/lessonCard';
 import { learnData } from '@/constants/learnData';
 import { learnService } from '@/services/learnService';
 import useLearningStore from '@/stores/useLearningStore';
+import useThemeStore from '@/stores/useThemeStore';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
@@ -13,6 +15,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 const LearnScreen = () => {
     const completedLessons = useLearningStore(state => state.completedLessons);
     const initializeFromStorage = useLearningStore(state => state.initialize);
+    const colors = useThemeStore(state => state.colors);
 
     const [activeTab, setActiveTab] = useState('beginner');
     const { width, height } = useWindowDimensions();
@@ -74,7 +77,7 @@ const LearnScreen = () => {
                             >
                                 {isActive ? (
                                     <LinearGradient
-                                        colors={['#226eff', '#1244a7']}
+                                        colors={[ colors.btnSecondary, colors.btnPrimary]}
                                         start={{ x: 0, y: 0 }}
                                         end={{ x: 1, y: 1 }}
                                         style={[styles.level, styles.activeLevel]}
@@ -104,9 +107,10 @@ const LearnScreen = () => {
                         ?.subcategories.map((subcat) => {
                             const progress = getLocalProgress(activeTab, subcat.key);
                             return (
-                                <TouchableOpacity
+                                <LessonCard
+                                    title={subcat.title}
                                     key={subcat.key}
-                                    style={styles.item}
+                                    numberOfLessons={subcat.pages.length}
                                     onPress={() => {
                                         if (progress === 0) {
                                             router.push(`/learn/${activeTab}/${subcat.key}/1`);
@@ -114,30 +118,7 @@ const LearnScreen = () => {
                                             router.push(`/learn/${activeTab}/${subcat.key}`);
                                         }
                                     }}
-                                >
-                                    <LinearGradient
-                                        colors={['#6495ed' || '#4c669f', '#3b5998', '#192f6a']}
-                                        start={{ x: 0, y: 0 }}
-                                        end={{ x: 1, y: 1 }}
-                                        style={styles.gradient}
-                                    >
-                                        {/* Progress Bar */}
-                                        <View style={styles.loader}>
-                                            <View
-                                                style={[
-                                                    styles.progress,
-                                                    { height: `${progress}%` },
-                                                ]}
-                                            />
-                                        </View>
-                                        
-                                        <View style={styles.textSection}>
-                                            <Text style={[styles.text, { fontSize: getFontSize() }]}>
-                                                {subcat.title}
-                                            </Text>
-                                        </View>
-                                    </LinearGradient>
-                                </TouchableOpacity>
+                                />
                             );
                         })}
                 </ScrollView>

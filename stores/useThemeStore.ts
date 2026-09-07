@@ -17,6 +17,8 @@ export const lightColors = {
   shadow: '#000000',
   profileBg: '#f0f2f5',
   inputBg: '#f0f2f5',
+  btnPrimary: '#1244a7',
+  btnSecondary: '#226eff',
 };
 
 export const darkColors = {
@@ -35,13 +37,17 @@ export const darkColors = {
   inputBg: '#2a2a2a',
 
   tabBar: '#071c39',
+  btnPrimary: '#1244a7',
+  btnSecondary: '#226eff',
+
+
 };
 
 const useThemeStore = create((set, get) => ({
   theme: 'dark',
   isDark: true,
   isLoading: true,
-  colors: lightColors,
+  colors: darkColors,
 
   // مقداردهی اولیه از storage
   initialize: async () => {

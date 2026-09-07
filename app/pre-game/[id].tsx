@@ -1,4 +1,5 @@
 // [id].tsx
+import CustomButton from '@/components/button';
 import { preGameTourSteps } from '@/constants/tourSteps';
 import storageService from '@/services/storageService'; // اضافه کنید
 import { CoachmarkAnchor, createTour, useCoachmark } from '@edwardloopez/react-native-coachmark';
@@ -189,6 +190,7 @@ export default function PreGameScreen() {
           </>
         )}
       </View>
+      <CustomButton onPress={startGame}> شروع بازی</CustomButton>
 
       {/* دکمه شروع */}
       <CoachmarkAnchor id="startButton" shape="rect" padding={12} radius={28}>
