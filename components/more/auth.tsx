@@ -1,3 +1,4 @@
+import { router } from 'expo-router';
 import React from 'react';
 import {
     Dimensions,
@@ -14,10 +15,6 @@ const Auth = () => {
 
     const handleLogin = () => {
         console.log('Login pressed');
-    };
-
-    const handleRegister = () => {
-        console.log('Register pressed');
     };
 
     return (
@@ -47,7 +44,7 @@ const Auth = () => {
                 </View>
                 <TouchableOpacity
                     style={[styles.authButton, styles.registerButton]}
-                    onPress={handleRegister}
+                    onPress={() => router.push(`/register`)}
                     activeOpacity={0.7}
                 >
                     <Text style={styles.authButtonText}>ایجاد حساب</Text>

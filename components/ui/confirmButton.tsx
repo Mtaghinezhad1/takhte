@@ -4,12 +4,12 @@ import React from 'react';
 import { StyleSheet, Text, TouchableOpacity } from 'react-native';
 
 
-export default function CustomButton({onPress, children}) {
+export default function ConfirmButton({onPress, children}) {
     const colors = useThemeStore(state => state.colors);
     return (
         <TouchableOpacity
             style={styles.levelWrapper}
-            onPress={() => {onPress}}
+            onPress={onPress}
             activeOpacity={0.7}
         >
             <LinearGradient
@@ -28,8 +28,7 @@ export default function CustomButton({onPress, children}) {
 
 const styles = StyleSheet.create({
     levelWrapper: {
-        width: '31%', // approx 1/3 minus gap
-        aspectRatio: undefined,
+        flex: 1,
         height: 62,
         marginBottom: 12, // for spacing if wrap
     },

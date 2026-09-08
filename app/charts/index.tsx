@@ -1,7 +1,8 @@
 import useThemeStore from '@/stores/useThemeStore';
 import useUserStore from '@/stores/useUserStore';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, Dimensions, ScrollView, Text, View } from 'react-native';
+import { ActivityIndicator, Dimensions, Text, View } from 'react-native';
 import { LineChart } from 'react-native-chart-kit';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -80,10 +81,13 @@ const CustomChart = () => {
     };
 
     return (
-        <ScrollView>
-            <View style={{ paddingVertical: 50, paddingHorizontal: 16, alignItems: 'center' }}>
-
-
+        <LinearGradient
+            colors={['#102b63', '#061636', '#02091c']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={{ flex: 1 }}
+        >
+            <SafeAreaView style={{ flex: 1, paddingHorizontal: 16 }}>
                 <View style={{ backgroundColor: '#1E1E2E', alignItems: 'center', borderRadius: 16 }}>
                     <Text style={{ fontSize: 20, fontWeight: 'bold', marginBottom: 8, color: 'white' }}>
                         📊 تاریخچه توانایی (Elo)
@@ -192,8 +196,8 @@ const CustomChart = () => {
                         </Text>
                     </View>
                 )}
-            </View>
-        </ScrollView>
+            </SafeAreaView>
+        </LinearGradient>
     );
 };
 

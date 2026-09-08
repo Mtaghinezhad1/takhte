@@ -1,5 +1,5 @@
 // [id].tsx
-import CustomButton from '@/components/button';
+import CustomButton from '@/components/ui/confirmButton';
 import { preGameTourSteps } from '@/constants/tourSteps';
 import storageService from '@/services/storageService'; // اضافه کنید
 import { CoachmarkAnchor, createTour, useCoachmark } from '@edwardloopez/react-native-coachmark';
@@ -7,11 +7,11 @@ import Slider from '@react-native-community/slider';
 import { router, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import {
-  ActivityIndicator,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View
+    ActivityIndicator,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 

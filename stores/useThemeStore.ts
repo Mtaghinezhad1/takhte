@@ -19,13 +19,14 @@ export const lightColors = {
   inputBg: '#f0f2f5',
   btnPrimary: '#1244a7',
   btnSecondary: '#226eff',
+  cancelBtnPrimary: 'rgba(4, 20, 43, 0.95)',
+  cancelBtnSecondary: 'rgba(17, 54, 98, 0.85)',
 };
 
 export const darkColors = {
   background: '#121212',
   card: '#1e1e1e',
   text: '#ffffff',
-  border: '#2c2c2c',
   primary: '#4a8aff',
   secondary: '#a78bfa',
   tertiary: '#fb923c',
@@ -37,8 +38,13 @@ export const darkColors = {
   inputBg: '#2a2a2a',
 
   tabBar: '#071c39',
+  //---------buttons----------
   btnPrimary: '#1244a7',
   btnSecondary: '#226eff',
+  cancelBtnPrimary: 'rgba(4, 20, 43, 0.95)',
+  cancelBtnSecondary: 'rgba(17, 54, 98, 0.85)',
+  //-----------border-------------
+  border: 'rgba(91,139,213,0.25)',
 
 
 };

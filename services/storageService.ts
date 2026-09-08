@@ -4,7 +4,6 @@ const STORAGE_KEYS = {
   USER_DATA: '@backgammon_user_data',
   GAME_SETTINGS: '@backgammon_game_settings',
   STATISTICS: '@backgammon_statistics',
-  LEARNING_PROGRESS: '@backgammon_learning_progress',
   ACTIVE_GAMES: '@backgammon_active_games',
   ELO_HISTORY: '@backgammon_elo_history',
   THEME: '@backgammon_theme',
@@ -178,29 +177,6 @@ class StorageService {
     }
   }
 
-  // ذخیره پیشرفت آموزشی
-  async saveLearningProgress(progressData) {
-    try {
-      const jsonValue = JSON.stringify(progressData);
-      await AsyncStorage.setItem(STORAGE_KEYS.LEARNING_PROGRESS, jsonValue);
-      return true;
-    } catch (error) {
-      console.error('خطا در ذخیره پیشرفت آموزشی:', error);
-      return false;
-    }
-  }
-
-  // بارگذاری پیشرفت آموزشی
-  async loadLearningProgress() {
-    try {
-      const jsonValue = await AsyncStorage.getItem(STORAGE_KEYS.LEARNING_PROGRESS);
-      return jsonValue != null ? JSON.parse(jsonValue) : null;
-    } catch (error) {
-      console.error('خطا در بارگذاری پیشرفت آموزشی:', error);
-      return null;
-    }
-  }
-
   // ذخیره وضعیت بازی در حال انجام برای یک gameMode خاص
   async saveActiveGame(gameMode, gameState) {
     try {
@@ -371,7 +347,6 @@ class StorageService {
         STORAGE_KEYS.USER_DATA,
         STORAGE_KEYS.GAME_SETTINGS,
         STORAGE_KEYS.STATISTICS,
-        STORAGE_KEYS.LEARNING_PROGRESS,
         STORAGE_KEYS.ACTIVE_GAMES,
         STORAGE_KEYS.THEME,
         STORAGE_KEYS.ELO_HISTORY,
