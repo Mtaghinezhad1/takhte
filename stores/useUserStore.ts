@@ -173,6 +173,26 @@ const useUserStore = create((set, get) => ({
     return defaultStats;
   },
 
+  // ─── ذخیره پروفایل در سرور ──────────────────────────
+  // اول سرور، بعد state + persist محلی
+  saveProfileToServer: async ({ username, gender }) => {
+    const serverUser = await userService.updateProfile({ username, gender });
+
+    if (serverUser) {
+      const currentUser = get().user;
+      const newUser = {
+        ...currentUser,
+        username:
+          serverUser.displayName || serverUser.username || currentUser.username,
+        gender: serverUser.gender || currentUser.gender,
+      };
+      set({ user: newUser });
+      await storageService.saveUserData(newUser);
+    }
+
+    return serverUser;
+  },
+
   // ─── به‌روزرسانی کاربر ──────────────────────────────────
   setUsername: async (name) => {
     const currentUser = get().user;

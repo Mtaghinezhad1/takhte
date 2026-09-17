@@ -202,29 +202,26 @@ export default function Index() {
 
   // ========== رندر اصلی ==========
   return (
-    <>
-      <View style={[styles.container, { height: screenHeight }]}>
-        <GameStatusBar />
+    <View style={[styles.container, { height: screenHeight }]}>
+      <GameStatusBar />
 
-        <View style={[styles.board, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+      <View style={[styles.board, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
 
-          <Leftbar />
+        <Leftbar />
 
-          <HalfBoard side="left" />
-          <StaticsBar />
-          <HalfBoard side="right" />
+        <HalfBoard side="left" />
+        <StaticsBar />
+        <HalfBoard side="right" />
 
-          <Rightbar />
+        <Rightbar />
 
-          {/* مودال‌ها */}
-          <ResultModal />
-          <InformModal />
-          <NoMoveModal />
-          <MatchEndModal />
-        </View>
+        {/* مودال‌ها */}
+        <ResultModal />
+        <InformModal />
+        <NoMoveModal />
+        <MatchEndModal />
       </View>
-
-    </>
+    </View>
   );
 }
 
@@ -236,7 +233,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#10308e',
+    backgroundColor: '#102b63',
   },
   loadingContainer: {
     flex: 1,

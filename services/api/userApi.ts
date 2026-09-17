@@ -42,6 +42,26 @@ export const upgradeGuest = async (userData) => {
   throw new Error(response.data?.error || 'Upgrade failed');
 };
 
+
+// ─── ویرایش پروفایل ────────────────
+export const updateUserProfile = async (payload) => {
+  const response = await apiClient.post('/api/v1/profile/edit', payload);
+  if (response.data?.success) {
+    return response.data.data;
+  }
+  throw new Error(response.data?.error || 'Update profile failed');
+};
+
+export const updateUserAvatar = async (avatarKey: string) => {
+  const response = await apiClient.post('/api/v1/profile/updateAvatar', {
+    avatarKey,
+  });
+  if (response.data?.success) {
+    return response.data.data; // user به‌روزرسانی‌شده
+  }
+  throw new Error(response.data?.error || 'Update avatar failed');
+};
+
 // ─── خروج ─────────────────────────────────────────────
 export const logout = async () => {
   await AsyncStorage.removeItem('@auth_token');

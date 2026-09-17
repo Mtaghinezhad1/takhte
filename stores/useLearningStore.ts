@@ -11,24 +11,36 @@ const useLearningStore = create((set, get) => ({
   // مقداردهی اولیه
   initialize: async () => {
     set({ isLoading: true });
-    const saved = await lessonStorage.loadLearningProgress();
-
-    if (saved) {
-      set({ completedLessons: saved.completedLessons || {} });
+    try {
+      const saved = await learnService.fetchOrLoadCachedLessons();
+      if (saved) {
+        set({ completedLessons: saved.completedLessons || {} });
+      }
+    } catch (error) {
+      console.warn('initialize error:', error);
+    } finally {
+      set({ isLoading: false });
     }
-    set({ isLoading: false });
   },
 
   // علامت‌گذاری درس به عنوان کامل شده
   completeLesson: async (categoryKey, subcategoryKey, lessonId) => {
     const lessonKey = `${categoryKey}-${subcategoryKey}-${lessonId}`;
+
+    // اگر قبلاً کامل شده بود، دوباره پردازش نکن
+    if (get().completedLessons[lessonKey]) return;
+
     const updated = {
       ...get().completedLessons,
-      [lessonKey]: true
+      [lessonKey]: true,
     };
 
+    // ۱) آپدیت state و ذخیره محلی
     set({ completedLessons: updated });
     await lessonStorage.saveLearningProgress({ completedLessons: updated });
+
+    // ۲) ارسال به سرور (fire-and-forget، UI را بلاک نمی‌کند)
+    learnService.syncProgress(categoryKey, subcategoryKey, lessonId);
   },
 
   // محاسبه درصد پیشرفت

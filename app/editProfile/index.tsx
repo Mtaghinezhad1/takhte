@@ -24,9 +24,7 @@ const EditProfile = () => {
   const {
     user,
     isLoading,
-    setUsername,
-    setAge,
-    setGender,
+    saveProfileToServer,
   } = useUserStore();
   const { colors } = useThemeStore();
 
@@ -34,44 +32,46 @@ const EditProfile = () => {
 
   // State محلی برای ویرایش موقت
   const [localUsername, setLocalUsername] = useState(user.username);
-  const [localAge, setLocalAge] = useState(user.age?.toString() || '');
   const [localGender, setLocalGender] = useState(user.gender || '');
   const [isSaving, setIsSaving] = useState(false);
+  const [showError, setShowError] = useState(false);
 
   const genderOptions = [
-    { id: 'female', label: 'زن', symbol: '♀', symbolStyle: styles.femaleSymbol },
-    { id: 'male', label: 'مرد', symbol: '♂', symbolStyle: styles.maleSymbol },
-    { id: 'neutral', label: '', symbol: '−', symbolStyle: styles.neutralSymbol },
+    { id: 'FEMALE', label: 'زن', symbol: '♀', symbolStyle: styles.femaleSymbol },
+    { id: 'MALE', label: 'مرد', symbol: '♂', symbolStyle: styles.maleSymbol },
+    { id: 'PREFER_NOT_TO_SAY', label: '', symbol: '−', symbolStyle: styles.neutralSymbol },
   ];
 
   // به‌روزرسانی state محلی وقتی store تغییر می‌کنه
   useEffect(() => {
     setLocalUsername(user.username);
-    setLocalAge(user.age?.toString() || '');
-    setLocalGender(user.gender || 'neutral');
+    setLocalGender(user.gender || 'PREFER_NOT_TO_SAY');
   }, [user.username, user.age, user.gender]);
 
   // تابع ذخیره مشخصات
   const handleSave = async () => {
     try {
-      // اعتبارسنجی‌های ساده
+      // اعتبارسنجی ساده سمت کلاینت
       if (!localUsername.trim()) {
         Alert.alert('خطا', 'لطفاً نام کاربری را وارد کنید');
-        setIsSaving(false);
+        return;
+      }
+      if (localUsername.trim().length < 3) {
+        Alert.alert('خطا', 'نام کاربری باید حداقل ۳ کاراکتر باشد');
         return;
       }
 
       setIsSaving(true);
-      // ذخیره تمام فیلدها
-      await Promise.all([
-        setUsername(localUsername),
-        setAge(localAge ? parseInt(localAge) : null),
-        setGender(localGender),
-      ]);
+
+      // اول سرور، بعد state + ذخیره محلی (داخل خود store انجام میشه)
+      await saveProfileToServer({
+        username: localUsername,
+        gender: localGender,
+      });
+
       router.back();
     } catch (error) {
-      console.error('خطا در ذخیره مشخصات:', error);
-      Alert.alert('خطا', 'مشکل در ذخیره مشخصات');
+      setShowError(true);
     } finally {
       setIsSaving(false);
     }
@@ -128,29 +128,6 @@ const EditProfile = () => {
               </Text>
             </View>
 
-            {/* Age */}
-            <View style={styles.field}>
-              <View style={styles.labelRow}>
-                <Text style={styles.labelIcon}>▣</Text>
-                <Text style={styles.labelText}>سن</Text>
-              </View>
-              <View style={styles.inputWrapper}>
-                <TextInput
-                  style={styles.input}
-                  value={localAge}
-                  onChangeText={setLocalAge}
-                  placeholder="سن"
-                  placeholderTextColor="#5e7598"
-                  keyboardType="numeric"
-                  textAlign="right"
-                />
-                <Text style={styles.inputSuffix}>سال</Text>
-              </View>
-              <Text style={styles.helperText}>
-                سن شما به صورت عمومی نمایش داده نمی‌شود.
-              </Text>
-            </View>
-
             {/* Gender */}
             <View style={styles.field}>
               <View style={styles.labelRow}>
@@ -192,10 +169,11 @@ const EditProfile = () => {
 
           {/* Buttons */}
           <View style={styles.btnContainer}>
-            <ConfirmButton onPress={handleSave}>ذخیره تغییرات</ConfirmButton>
+            <ConfirmButton onPress={handleSave}>{isSaving ? 'در حال ذخیره ...' : 'ذخیره تغییرات'}</ConfirmButton>
             <CancelButton onPress={() => router.back()}>انصراف</CancelButton>
 
           </View>
+          {showError && <Text style={{ color: colors.danger }}>خطایی پیش آمده لطفا بعدا تلاش کنید.</Text>}
         </ScrollView>
       </SafeAreaView>
     </LinearGradient>

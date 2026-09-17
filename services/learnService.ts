@@ -18,15 +18,8 @@ export const learnService = {
         return completedLessons[lessonKey] || false;
     },
 
-
-
-
-
-
-
-
     // دریافت درس‌ها با استراتژی کش
-    fetchLessons: async () => {
+    fetchOrLoadCachedLessons: async () => {
         const counter = await lessonStorage.getCounter();
 
         // اگر شمارنده کمتر از حد مجاز و کش موجود باشد
@@ -39,7 +32,7 @@ export const learnService = {
         }
 
         // در غیر این صورت از سرور دریافت کن
-        try {
+        try {   
             const data = await lessonApi.fetchLessons();
             await lessonStorage.saveLearningProgress(data);
             await lessonStorage.resetCounter();

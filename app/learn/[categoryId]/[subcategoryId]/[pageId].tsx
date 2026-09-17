@@ -89,7 +89,7 @@ export default function PageContent() {
                 router.replace(`/learn/${categoryId}/${subcategoryId}/${subcategory.pages[currentIndex + 1].id}`);
             }
         } catch (error) {
-            //dsfs
+            console.warn('goNext error:', error);
         } finally {
             setIsNavigating(false);
         }
