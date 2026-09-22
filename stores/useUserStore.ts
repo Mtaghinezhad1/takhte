@@ -15,20 +15,32 @@ const DEFAULT_USER = {
   email: '',
 };
 
+const DEFAULT_ELO_HISTORY = [
+  {
+    elo: 1500,
+    timestamp: Date.now(),
+    gameMode: 'initial',
+    opponent: 'system',
+    result: 'initial',
+    matchLength: 0,
+  },
+];
+
+const DEFAULT_STATISTICS = {
+  totalGames: 0,
+  wins: 0,
+  losses: 0,
+  totalWins: 0,
+  totalGamesPlayed: 0,
+  winStreak: 0,
+  maxWinStreak: 0,
+};
+
 const useUserStore = create((set, get) => ({
   user: { ...DEFAULT_USER },
   isLoading: false,
-  eloHistory: [{ elo: 1500, timestamp: Date.now(), gameMode: 'initial', opponent: 'system', result: 'initial', matchLength: 0 }],
-  statistics: {
-    totalGames: 0,
-    wins: 0,
-    losses: 0,
-    draws: 0,
-    totalWins: 0,
-    totalGamesPlayed: 0,
-    winStreak: 0,
-    maxWinStreak: 0
-  },
+  eloHistory: [...DEFAULT_ELO_HISTORY],
+  statistics: { ...DEFAULT_STATISTICS },
 
   // ─── مقداردهی اولیه ─────────────────────────────────────
   initializeFromStorage: async () => {
@@ -38,34 +50,15 @@ const useUserStore = create((set, get) => ({
     if (userData) {
       set({
         user: {
-          username: userData.username || DEFAULT_USER.username,
-          avatarKey: userData.avatarKey || DEFAULT_USER.avatarKey,
-          coins: userData.coins ?? DEFAULT_USER.coins,
-          age: userData.age ?? DEFAULT_USER.age,
-          gender: userData.gender ?? DEFAULT_USER.gender,
-          city: userData.city || DEFAULT_USER.city,
-          province: userData.province || DEFAULT_USER.province,
-          phoneNumber: userData.phoneNumber || DEFAULT_USER.phoneNumber,
-          email: userData.email || DEFAULT_USER.email,
+          ...DEFAULT_USER,
+          ...userData,
         },
       });
     }
 
     const eloHistory = await storageService.loadEloHistory();
     set({
-      eloHistory:
-        eloHistory.length > 0
-          ? eloHistory
-          : [
-            {
-              elo: 1500,
-              timestamp: Date.now(),
-              gameMode: 'initial',
-              opponent: 'system',
-              result: 'initial',
-              matchLength: 0,
-            },
-          ],
+      eloHistory: eloHistory.length > 0 ? eloHistory : [...DEFAULT_ELO_HISTORY],
     });
 
     const stats = await storageService.loadStatistics();
@@ -87,34 +80,37 @@ const useUserStore = create((set, get) => ({
     // به‌روزرسانی اولیه state با داده‌های محلی
     set({
       user: {
-        username: userData?.username || DEFAULT_USER.username,
-        avatarKey: userData?.avatarKey || DEFAULT_USER.avatarKey,
-        coins: userData?.coins ?? DEFAULT_USER.coins,
-        // ... سایر فیلدها
+        ...DEFAULT_USER,
+        ...(userData || {}),
       },
-      eloHistory: eloHistory.length > 0 ? eloHistory : [/* default */],
-      statistics: stats || { /* default */ },
+      eloHistory: eloHistory.length > 0 ? eloHistory : [...DEFAULT_ELO_HISTORY],
+      statistics: stats || { ...DEFAULT_STATISTICS },
     });
 
     // ۲. درخواست به سرور برای دریافت جدیدترین اطلاعات
     try {
-      const serverUser = await fetchUserProfile(); // از userApi.ts
+      const serverUser = await fetchUserProfile();
       if (serverUser) {
-        // به‌روزرسانی state با داده‌های سرور
-        set({
-          user: {
-            username: serverUser.displayName || serverUser.username || get().user.username,
-            avatarKey: serverUser.avatarKey || get().user.avatarKey,
-            coins: serverUser.coins ?? get().user.coins,
-            // ... سایر فیلدها (در صورت وجود)
-          },
-          // در صورت نیاز elo و statistics را هم از سرور به‌روز کن
-        });
-        // ذخیره داده‌های جدید در localStorage برای دفعات بعد
-        await storageService.saveUserData(get().user);
+        const currentUser = get().user;
+        const updatedUser = {
+          ...currentUser,
+          username:
+            serverUser.displayName ||
+            serverUser.username ||
+            currentUser.username,
+          avatarKey: serverUser.avatarKey || currentUser.avatarKey,
+          coins: serverUser.coins ?? currentUser.coins,
+          age: serverUser.age ?? currentUser.age,
+          gender: serverUser.gender ?? currentUser.gender,
+          city: serverUser.city || currentUser.city,
+          province: serverUser.province || currentUser.province,
+          phoneNumber: serverUser.phoneNumber || currentUser.phoneNumber,
+          email: serverUser.email || currentUser.email,
+        };
+        set({ user: updatedUser });
+        await storageService.saveUserData(updatedUser);
       }
     } catch (error) {
-      // در صورت خطا، همان داده‌های محلی حفظ می‌شوند
       console.warn('Failed to fetch user from server, using local data:', error);
     }
 
@@ -132,7 +128,7 @@ const useUserStore = create((set, get) => ({
   getHighestElo: () => {
     const state = get();
     return state.eloHistory.length > 0
-      ? Math.max(...state.eloHistory.map(record => record.elo))
+      ? Math.max(...state.eloHistory.map((record) => record.elo))
       : 1500;
   },
 
@@ -141,7 +137,7 @@ const useUserStore = create((set, get) => ({
   },
 
   resetEloHistory: async () => {
-    const defaultHistory = [{ elo: 1500, timestamp: Date.now(), gameMode: 'initial', opponent: 'system', result: 'initial', matchLength: 0 }];
+    const defaultHistory = [...DEFAULT_ELO_HISTORY];
     await storageService.saveEloHistory(defaultHistory);
     set({ eloHistory: defaultHistory });
     return defaultHistory;
@@ -195,103 +191,107 @@ const useUserStore = create((set, get) => ({
 
   // ─── به‌روزرسانی کاربر ──────────────────────────────────
   setUsername: async (name) => {
-    const currentUser = get().user;
-    const updatedUser = { ...currentUser, username: name };
+    const updatedUser = { ...get().user, username: name };
     set({ user: updatedUser });
     await storageService.saveUserData(updatedUser);
   },
 
   setAvatar: async (avatarKey) => {
-    const currentUser = get().user;
-    const updatedUser = { ...currentUser, avatarKey };
+    const updatedUser = { ...get().user, avatarKey };
     set({ user: updatedUser });
     await storageService.saveUserData(updatedUser);
   },
 
   setCoins: async (amount) => {
-    const currentUser = get().user;
-    const updatedUser = { ...currentUser, coins: amount };
+    const updatedUser = { ...get().user, coins: amount };
     set({ user: updatedUser });
     await storageService.saveUserData(updatedUser);
   },
 
   addCoins: async (amount) => {
-    const currentUser = get().user;
-    const newCoins = currentUser.coins + amount;
-    const updatedUser = { ...currentUser, coins: newCoins };
+    const updatedUser = { ...get().user, coins: get().user.coins + amount };
     set({ user: updatedUser });
     await storageService.saveUserData(updatedUser);
   },
 
   deductCoins: async (amount) => {
-    const currentUser = get().user;
-    const newCoins = Math.max(0, currentUser.coins - amount);
-    const updatedUser = { ...currentUser, coins: newCoins };
+    const updatedUser = {
+      ...get().user,
+      coins: Math.max(0, get().user.coins - amount),
+    };
     set({ user: updatedUser });
     await storageService.saveUserData(updatedUser);
   },
 
   setAge: async (age) => {
-    const currentUser = get().user;
-    const updatedUser = { ...currentUser, age };
+    const updatedUser = { ...get().user, age };
     set({ user: updatedUser });
     await storageService.saveUserData(updatedUser);
   },
 
   setGender: async (gender) => {
-    const currentUser = get().user;
-    const updatedUser = { ...currentUser, gender };
+    const updatedUser = { ...get().user, gender };
     set({ user: updatedUser });
     await storageService.saveUserData(updatedUser);
   },
 
   setCity: async (city) => {
-    const currentUser = get().user;
-    const updatedUser = { ...currentUser, city };
+    const updatedUser = { ...get().user, city };
     set({ user: updatedUser });
     await storageService.saveUserData(updatedUser);
   },
 
   setProvince: async (province) => {
-    const currentUser = get().user;
-    const updatedUser = { ...currentUser, province };
+    const updatedUser = { ...get().user, province };
     set({ user: updatedUser });
     await storageService.saveUserData(updatedUser);
   },
 
   setPhoneNumber: async (phoneNumber) => {
-    // اعتبارسنجی ساده (اختیاری)
     const phoneRegex = /^09[0-9]{9}$/;
     if (phoneNumber && !phoneRegex.test(phoneNumber)) {
       console.warn('شماره موبایل نامعتبر است');
     }
-    const currentUser = get().user;
-    const updatedUser = { ...currentUser, phoneNumber };
+    const updatedUser = { ...get().user, phoneNumber };
     set({ user: updatedUser });
     await storageService.saveUserData(updatedUser);
   },
 
   setEmail: async (email) => {
-    // اعتبارسنجی ساده (اختیاری)
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (email && !emailRegex.test(email)) {
       console.warn('آدرس ایمیل نامعتبر است');
     }
-    const currentUser = get().user;
-    const updatedUser = { ...currentUser, email };
+    const updatedUser = { ...get().user, email };
     set({ user: updatedUser });
     await storageService.saveUserData(updatedUser);
   },
 
   // ─── بروزرسانی پس از بازی ──────────────────────────────
-  updateEloAfterMatch: async (winner, userColor, opponentElo, matchLength = 5, gameMode = 'againstAI', opponent = 'AI') => {
-    const { username, avatarKey, coins, age, gender, city, province, phoneNumber, email, statistics } = get();
-    const isWin = (userColor === winner);
+  updateEloAfterMatch: async (
+    winner,
+    userColor,
+    opponentElo,
+    matchLength = 5,
+    gameMode = 'againstAI',
+    opponent = 'AI'
+  ) => {
     const currentUserElo = get().getCurrentElo();
+    const isWin = userColor === winner;
 
     // محاسبه الو جدید
-    const newUserElo = userService.calculateElo(currentUserElo, opponentElo, isWin, matchLength);
-    const newOpponentElo = userService.calculateElo(opponentElo, currentUserElo, !isWin, matchLength);
+    const newUserElo = userService.calculateElo(
+      currentUserElo,
+      opponentElo,
+      isWin,
+      matchLength
+    );
+    const newOpponentElo = userService.calculateElo(
+      opponentElo,
+      currentUserElo,
+      !isWin,
+      matchLength
+    );
 
     await storageService.addEloRecord(
       newUserElo,
@@ -309,18 +309,6 @@ const useUserStore = create((set, get) => ({
     const result = isWin ? 'win' : 'loss';
     await get().updateStatisticsAfterMatch(result, newUserElo);
 
-    await storageService.saveUserData({
-      username,
-      avatarKey,
-      coins,
-      age,
-      gender,
-      city,
-      province,
-      phoneNumber,
-      email,
-    });
-
     return { newUserElo, newOpponentElo };
   },
 
@@ -333,13 +321,3 @@ const useUserStore = create((set, get) => ({
 }));
 
 export default useUserStore;
-
-
-
-
-
-
-
-
-
-

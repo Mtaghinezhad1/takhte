@@ -1,3 +1,4 @@
+import AvatarGrid from '@/components/selectAvatar/avatarGrid';
 import AvatarTabs from '@/components/selectAvatar/avatarTabs';
 import ProfileSection from '@/components/selectAvatar/profileSection';
 import CancelButton from '@/components/ui/cancelButton';
@@ -8,17 +9,13 @@ import useUserStore from '@/stores/useUserStore';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { Dimensions, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-const { width } = Dimensions.get('window');
-const isSmallScreen = width < 360;
-
 const SelectAvatar = () => {
-    const { user, setAvatar } = useUserStore();
+    const { user, saveAvatarToServer } = useUserStore();
     const elo = useUserStore.getState().getCurrentElo();
     const { colors } = useThemeStore();
-
 
     const [activeTab, setActiveTab] = useState('all'); // 'all' | 'premium'
 
@@ -42,29 +39,21 @@ const SelectAvatar = () => {
         }
     }, [user.avatarKey]);
 
-    const handleImagePress = (index) => {
-        const selectedAvatar = avatars[index];
-        const isUnlocked = isAvatarUnlocked(selectedAvatar.key, elo, user.coins);
 
-        if (isUnlocked) {
-            setActiveIndex(index);
-        } else {
-            console.log('آواتار قفل است!');
-        }
-    };
 
     const handleConfirm = async () => {
         const selectedAvatar = avatars[activeIndex];
         const isUnlocked = isAvatarUnlocked(selectedAvatar.key, elo, user.coins);
 
-        if (isUnlocked) {
-            await setAvatar(selectedAvatar.key);
-            router.back();
-        }
-    };
+        if (!isUnlocked) return;
 
-    const isAvatarLocked = (avatar) => {
-        return !isAvatarUnlocked(avatar.key, elo, user.coins);
+        try {
+            await saveAvatarToServer(selectedAvatar.key);
+            router.back();
+        } catch (error) {
+            console.error('خطا در ذخیره آواتار روی سرور:', error);
+            // اینجا می‌تونی یه Alert یا Toast نشون بدی
+        }
     };
 
     return (
@@ -81,89 +70,11 @@ const SelectAvatar = () => {
 
                 <ProfileSection source={avatars[activeIndex].source} />
                 <AvatarTabs activeTab={activeTab} setActiveTab={setActiveTab} />
+                <AvatarGrid avatars={avatars} activeIndex={activeIndex} setActiveIndex={setActiveIndex} activeTab={activeTab} />
 
-                <ScrollView
-                    contentContainerStyle={styles.scrollContent}
-                    showsVerticalScrollIndicator={false}
-                >
-                    {/* Avatar Grid */}
-                    <View style={styles.avatarGrid}>
-                        {avatars.map((avatar, index) => {
-                            const locked = isAvatarLocked(avatar);
-                            const isSelected = activeIndex === index;
-
-                            return (
-                                <TouchableOpacity
-                                    key={avatar.key}
-                                    style={styles.avatarItem}
-                                    activeOpacity={0.8}
-                                    disabled={locked}
-                                    onPress={() => handleImagePress(index)}
-                                >
-                                    {/* Avatar wrapper (gradient ring) */}
-                                    {isSelected && !locked ? (
-                                        <LinearGradient
-                                            colors={['#48b0ff', '#1264ff']}
-                                            start={{ x: 0, y: 0 }}
-                                            end={{ x: 1, y: 1 }}
-                                            style={[styles.avatarWrapper, styles.avatarWrapperSelected]}
-                                        >
-                                            <Image
-                                                source={avatar.source}
-                                                style={styles.avatarImage}
-                                            />
-                                            {/* Checkmark badge */}
-                                            <View style={styles.checkBadge}>
-                                                <Text style={styles.checkText}>✓</Text>
-                                            </View>
-                                        </LinearGradient>
-                                    ) : (
-                                        <View
-                                            style={[
-                                                styles.avatarWrapper,
-                                                locked && styles.avatarWrapperLocked,
-                                            ]}
-                                        >
-                                            <Image
-                                                source={avatar.source}
-                                                style={[styles.avatarImage, locked && styles.avatarImageLocked]}
-                                            />
-                                            {locked && (
-                                                <>
-                                                    {/* Dark overlay */}
-                                                    <View style={styles.lockedOverlay} />
-                                                    {/* Lock badge */}
-                                                    <View style={styles.lockBadge}>
-                                                        <Text style={styles.lockIcon}>🔒</Text>
-                                                    </View>
-                                                </>
-                                            )}
-                                        </View>
-                                    )}
-
-                                    <Text
-                                        style={[styles.avatarName, isSelected && styles.avatarNameSelected]}
-                                        numberOfLines={1}
-                                    >
-                                        {avatar.name}
-                                    </Text>
-
-                                    {locked && (
-                                        <Text style={styles.premiumLabel} numberOfLines={1}>
-                                            👑 اشتراک ویژه
-                                        </Text>
-                                    )}
-                                </TouchableOpacity>
-                            );
-                        })}
-                    </View>
-                </ScrollView>
-
-                {/* Buttons */}
                 <View style={styles.btnContainer}>
                     <ConfirmButton onPress={handleConfirm}>تایید</ConfirmButton>
                     <CancelButton onPress={() => router.back()}>انصراف</CancelButton>
-
                 </View>
 
             </SafeAreaView>
@@ -171,24 +82,12 @@ const SelectAvatar = () => {
     );
 };
 
-const AVATAR_SIZE = isSmallScreen ? 68 : 76;
 
 
 const styles = StyleSheet.create({
     safeArea: {
         flex: 1,
         backgroundColor: '#020c1d',
-    },
-    scrollContent: {
-        flexGrow: 1,
-    },
-    appContainer: {
-        width: '100%',
-        maxWidth: 520,
-        alignSelf: 'center',
-        paddingHorizontal: isSmallScreen ? 12 : 16,
-        paddingTop: 18,
-        paddingBottom: 40,
     },
     glow: {
         position: 'absolute',
@@ -206,114 +105,8 @@ const styles = StyleSheet.create({
         bottom: 100,
         left: -150,
     },
-    avatarGrid: {
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        justifyContent: 'flex-start',
-        // Simulate grid gap: 18 vertical, 10 horizontal (we'll use margins on items)
-    },
-    avatarItem: {
-        width: '25%',
-        alignItems: 'center',
-        marginBottom: 18,
-        paddingHorizontal: 5,
-    },
-    avatarWrapper: {
-        width: AVATAR_SIZE,
-        height: AVATAR_SIZE,
-        borderRadius: AVATAR_SIZE / 2,
-        padding: 3,
-        backgroundColor: '#10294d',
-        alignItems: 'center',
-        justifyContent: 'center',
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 5 },
-        shadowOpacity: 0.25,
-        shadowRadius: 15,
-        elevation: 5,
-        position: 'relative',
-    },
-    avatarWrapperSelected: {
-        shadowColor: '#1680ff',
-        shadowOffset: { width: 0, height: 0 },
-        shadowOpacity: 0.6,
-        shadowRadius: 28,
-        elevation: 12,
-    },
-    avatarWrapperLocked: {
-        borderWidth: 1,
-        borderColor: 'rgba(100, 145, 200, 0.4)',
-    },
-    avatarImage: {
-        width: '100%',
-        height: '100%',
-        borderRadius: AVATAR_SIZE / 2,
-        borderWidth: 2,
-        borderColor: '#081c38',
-    },
-    avatarImageLocked: {
-        opacity: 0.68,
-    },
-    lockedOverlay: {
-        ...StyleSheet.absoluteFillObject,
-        borderRadius: AVATAR_SIZE / 2,
-        backgroundColor: 'rgba(0, 13, 31, 0.25)',
-    },
-    checkBadge: {
-        position: 'absolute',
-        left: -5,
-        bottom: -3,
-        width: 27,
-        height: 27,
-        borderRadius: 13.5,
-        backgroundColor: '#247cf5',
-        borderWidth: 3,
-        borderColor: '#071a36',
-        alignItems: 'center',
-        justifyContent: 'center',
-        zIndex: 3,
-    },
-    checkText: {
-        color: '#ffffff',
-        fontSize: 12,
-        fontWeight: 'bold',
-    },
-    lockBadge: {
-        position: 'absolute',
-        top: -5,
-        left: -5,
-        width: 28,
-        height: 28,
-        borderRadius: 14,
-        backgroundColor: '#17375f',
-        borderWidth: 2,
-        borderColor: '#6d91bb',
-        alignItems: 'center',
-        justifyContent: 'center',
-        zIndex: 3,
-    },
-    lockIcon: {
-        fontSize: 12,
-        color: '#ffffff',
-    },
-    avatarName: {
-        marginTop: 8,
-        fontSize: isSmallScreen ? 10 : 12,
-        fontWeight: 'bold',
-        color: '#d6e2f5',
-        textAlign: 'center',
-        width: '100%',
-    },
-    avatarNameSelected: {
-        color: '#3d9cff',
-    },
-    premiumLabel: {
-        marginTop: 4,
-        color: '#ffbe32',
-        fontSize: isSmallScreen ? 8 : 9,
-        textAlign: 'center',
-        width: '100%',
-    },
+
+
 
 
 

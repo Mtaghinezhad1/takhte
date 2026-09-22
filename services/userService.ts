@@ -1,14 +1,16 @@
-import { updateUserAvatar, updateUserProfile } from '@/services/api/userApi';
+import { submitMatchResult, updateUserAvatar, updateUserProfile } from '@/services/api/userApi';
 
 export const userService = {
     calculateElo(myRating, opponentRating, isWin, matchLength = 5) {
         const sqrtN = Math.sqrt(matchLength);
-        // const K = 4 * sqrtN;
         const K = 10 * sqrtN;
         const expected = 1 / (1 + Math.pow(10, ((opponentRating - myRating) * sqrtN) / 2000));
         const score = isWin ? 1 : 0;
         const delta = K * (score - expected);
-        return Math.round(myRating + delta);
+
+        const newRating = myRating + delta;
+
+        return Math.round(newRating * 100) / 100;
     },
 
     async updateProfile({ username, gender }) {
@@ -40,5 +42,13 @@ export const userService = {
         }
 
         return await updateUserAvatar(avatarKey);
+    },
+
+    // ─── Fire-and-forget: نتیجه بازی رو به سرور می‌فرستد، بدون بلاک کردن ───
+    syncMatchResultToServer(payload) {
+        // هیچ await نمی‌کنیم؛ فقط خطا رو می‌گیریم که unhandled نشه
+        submitMatchResult(payload).catch((err) => {
+            console.warn('[match-sync] sync failed (ignored):', err?.message || err);
+        });
     },
 }

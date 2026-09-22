@@ -1,8 +1,10 @@
 import { getAvatarByKey } from '@/constants/avatars';
 import useGameStore from '@/stores/useGameStore';
 import useUserStore from '@/stores/useUserStore';
+import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
+
 
 const GameStatusBar = () => {
   const aiProfile = useGameStore(state => state.aiProfile);
@@ -13,132 +15,173 @@ const GameStatusBar = () => {
   const targetScore = useGameStore(state => state.targetScore);
 
   return (
-    <View style={styles.leftStatusBar}>
-      <View style={styles.topContainer}>
+    <LinearGradient
+      colors={['rgba(25, 55, 91, 0.72)', 'rgba(7, 24, 45, 0.88)']}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
+      style={styles.playersPanel}
+    >
+      <View style={styles.player}>
+        <View style={styles.avatarWrapper}>
+          <Image
+            source={aiProfile ? getAvatarByKey(aiProfile.avatarKey) : require('@/assets/avatar/default.jpeg')}
+            style={[
+              styles.avatar,
+              currentTurn == 'black' && styles.avatarActive,
+            ]}
+          />
+          {currentTurn == 'black' && <View style={styles.activeDot} />}
+        </View>
+
+        {/* Name */}
         <Text style={styles.playerName}>{aiProfile ? aiProfile.name : 'کاربر مهمان'}</Text>
-        {currentTurn == 'black' ? (
-          <View style={styles.showTurn}>
-            <View style={styles.avatar}>
-              <Image style={styles.avatarImg} source={aiProfile ? getAvatarByKey(aiProfile.avatarKey) : require('@/assets/avatar/default.jpeg')} />
-            </View>
-          </View>
-        ) : (
-          <View style={styles.avatar}>
-            <Image style={styles.avatarImg} source={aiProfile ? getAvatarByKey(aiProfile.avatarKey) : require('@/assets/avatar/default.jpeg')} />
-          </View>
-        )}
-        <Text style={styles.rating}>{aiProfile ? aiProfile.baseRating : '1400'}</Text>
+
+        {/* Ability info */}
+        <View style={styles.playerInfo}>
+          <Text style={styles.playerInfoLabel}>توانایی</Text>
+          <Text style={styles.playerInfoValue}>{aiProfile ? aiProfile.baseRating : '1400'}</Text>
+        </View>
+
       </View>
 
-      <View style={styles.midContainer}>
-        <Text style={styles.midText}>
-          طول بازی<Text style={styles.span}>{targetScore}</Text>
-        </Text>
+
+      <View style={styles.matchScore}>
+        <Text style={styles.matchScoreLabel}>طول بازی:       <Text style={styles.matchScoreValue}>{targetScore}</Text></Text>
       </View>
 
-      <View style={styles.bottomContainer}>
-        <Text style={styles.rating}>{elo}</Text>
-        {currentTurn == 'white' ? (
-          <View style={styles.showTurn}>
-            <View style={styles.avatar}>
-              <Image style={styles.avatarImg} source={user.avatarKey ? getAvatarByKey(user.avatarKey) : require('@/assets/avatar/default.jpeg')} />
-            </View>
-          </View>
-        ) : (
-          <View style={styles.avatar}>
-            <Image style={styles.avatarImg} source={user.avatarKey ? getAvatarByKey(user.avatarKey) : require('@/assets/avatar/default.jpeg')} />
-          </View>
-        )}
+
+
+      <View style={styles.player}>
+        <View style={styles.avatarWrapper}>
+          <Image
+            source={user.avatarKey ? getAvatarByKey(user.avatarKey) : require('@/assets/avatar/default.jpeg')}
+            style={[
+              styles.avatar,
+              currentTurn == 'white' && styles.avatarActive,
+            ]}
+          />
+          {currentTurn == 'white' && <View style={styles.activeDot} />}
+        </View>
+
+        {/* Name */}
         <Text style={styles.playerName}>{user.username}</Text>
+
+        {/* Ability info */}
+        <View style={styles.playerInfo}>
+          <Text style={styles.playerInfoLabel}>توانایی</Text>
+          <Text style={styles.playerInfoValue}>{elo}</Text>
+        </View>
+
       </View>
-    </View>
+    </LinearGradient>
   );
 };
 
 const styles = StyleSheet.create({
-  leftStatusBar: {
+  playersPanel: {
+    width: '14%',
     height: '95%',
-    aspectRatio: 2 / 9,
-    flexDirection: 'column',
-    justifyContent: 'space-around',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.09)',
+    paddingHorizontal: 10,
+    paddingVertical: 15,
+    justifyContent:'space-between',
+    gap: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 20 },
+    shadowOpacity: 0.25,
+    shadowRadius: 50,
+    elevation: 12,
+  },
+  player: {
     alignItems: 'center',
-  },
-  topContainer: {
-    width: '80%',
-    alignItems: 'center',
-    paddingVertical: '10%',
-  },
-  midContainer: {
-    width: '80%',
-    borderTopWidth: 1,
-    borderBottomWidth: 1,
-    borderColor: 'white',
-    paddingVertical: '10%',
-    alignItems: 'center',
-  },
-  bottomContainer: {
-    width: '80%',
-    alignItems: 'center',
-    paddingVertical: 10,
-  },
-  playerName: {
-    color: 'white',
-    fontSize: 13,
-    fontFamily: 'Kaghaz',
-  },
-  rating: {
-    color: 'white',
-    fontSize: 13,
-    fontFamily: 'Kaghaz',
-  },
-  showTurn: {
     width: '100%',
+  },
+  avatarWrapper: {
+    width: '50%',
     aspectRatio: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
     borderRadius: '50%',
-    borderWidth: 3,
-    borderColor: 'orange',
-    marginVertical: 10,
+    position: 'relative',
   },
   avatar: {
     width: '100%',
-    aspectRatio: 1,
-    backgroundColor: 'grey',
-    borderRadius: '50%',
-    borderWidth: 3,
-    borderColor: '#3e7ce3',
-    marginVertical: 10,
-    overflow: 'hidden',
-  },
-  avatarImg: {
-    width: '100%',
     height: '100%',
+    borderRadius: 1000,
+    borderWidth: 2,
+    borderColor: '#267fff',
   },
-  midText: {
-    color: 'white',
-    fontFamily: 'Kaghaz',
-    fontSize: 13,
-    lineHeight: 19.5, // 13 * 1.5
+  avatarActive: {
+    shadowColor: '#005bdc',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.35,
+    shadowRadius: 30,
+    elevation: 10,
   },
-  span: {
+  activeDot: {
+    position: 'absolute',
+    bottom: 0,
+    right: 0,
+    width: '30%',
+    height: '30%',
+    borderRadius: 10,
+    backgroundColor: '#27d56f',
+    borderWidth: 3,
+    borderColor: '#10233e',
+  },
+  playerName: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#ffffff',
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  playerInfo: {
+    marginTop: 18,
+    paddingVertical: 9,
+    paddingHorizontal: 13,
+    borderRadius: 12,
+    backgroundColor: 'rgba(255, 255, 255, 0.035)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.06)',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    width: '100%',
+  },
+  playerInfoLabel: {
+    color: '#aebed5',
+    fontSize: 10,
+    textAlign: 'right',
+  },
+  playerInfoValue: {
+    color: '#ffffff',
+    fontSize: 12,
+    fontWeight: 'bold',
+    textAlign: 'left',
+  },
+  matchScore: {
+    paddingVertical: 5,
+    justifyContent: 'center',
     paddingHorizontal: 5,
-    color: 'white',
-    fontSize: 13,
-    fontFamily: 'Kaghaz',
-  },
-  hintBtn: {
-    marginTop: 10,
-    backgroundColor: '#3e7ced',
-    borderRadius: 5,
-    padding: '5%',
-    alignSelf: 'stretch',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(52, 130, 255, 0.4)',
+    backgroundColor: 'rgba(34, 102, 192, 0.18)',
+    width: '100%',
     alignItems: 'center',
   },
-  hintBtnText: {
-    color: 'white',
-    fontFamily: 'Kaghaz',
-    fontSize: 13,
+  matchScoreLabel: {
+    fontSize: 9,
+    color: '#4b9aff',
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  matchScoreValue: {
+    fontSize: 15,
+    fontWeight: 'bold',
+    color: '#ffffff',
+    textAlign: 'center',
   },
 });
 

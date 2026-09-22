@@ -229,11 +229,12 @@ export default function Index() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    gap: 10,
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#102b63',
+    backgroundColor: '#0f1b34',
   },
   loadingContainer: {
     flex: 1,

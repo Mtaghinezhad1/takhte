@@ -52,6 +52,7 @@ export const updateUserProfile = async (payload) => {
   throw new Error(response.data?.error || 'Update profile failed');
 };
 
+// ─── ویرایش آواتار────────────────
 export const updateUserAvatar = async (avatarKey: string) => {
   const response = await apiClient.post('/api/v1/profile/updateAvatar', {
     avatarKey,
@@ -60,6 +61,15 @@ export const updateUserAvatar = async (avatarKey: string) => {
     return response.data.data; // user به‌روزرسانی‌شده
   }
   throw new Error(response.data?.error || 'Update avatar failed');
+};
+
+// ─── ثبت نتیجه مسابقه در سرور ──────────────────────
+export const submitMatchResult = async (payload) => {
+  const response = await apiClient.post('/api/v1/match/result', payload);
+  if (response.data?.success) {
+    return response.data.data;
+  }
+  throw new Error(response.data?.error || 'Submit match result failed');
 };
 
 // ─── خروج ─────────────────────────────────────────────

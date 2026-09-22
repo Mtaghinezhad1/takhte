@@ -1,0 +1,424 @@
+import { LinearGradient } from 'expo-linear-gradient';
+import React from 'react';
+import {
+    Dimensions,
+    Image,
+    SafeAreaView,
+    ScrollView,
+    StatusBar,
+    StyleSheet,
+    Text,
+    View,
+} from 'react-native';
+
+const { width } = Dimensions.get('window');
+const isSmall = width < 370;
+
+// Persian digits helper
+const fa = (n) =>
+  String(n).replace(/[0-9]/g, (d) => '۰۱۲۳۴۵۶۷۸۹'[d]);
+
+// DiceBear PNG endpoint (RN Image cannot render SVG)
+const avatarUrl = (seed) =>
+  `https://api.dicebear.com/9.x/adventurer/png?seed=${seed}&size=200`;
+
+// Podium data — order in JSX: 2nd, 1st, 3rd (matches HTML)
+const PODIUM = [
+  { id: '2', name: 'آرش کاظمی', elo: 1580, seed: 'Arash', place: 'second' },
+  { id: '1', name: 'بازیکن حرفه‌ای', elo: 1620, seed: 'Professional', place: 'first' },
+  { id: '3', name: 'سامان رضایی', elo: 1540, seed: 'Saman', place: 'third' },
+];
+
+// Ranking list (4–11)
+const LIST = [
+  { rank: 4, name: 'کارآفرین', elo: 1510, seed: 'Karafarin' },
+  { rank: 5, name: 'سایبر مرموز', elo: 1487, seed: 'Shadow' },
+  { rank: 6, name: 'جادوگر', elo: 1460, seed: 'Wizard' },
+  { rank: 7, name: 'سامورایی', elo: 1510, seed: 'Samurai' },
+  { rank: 8, name: 'ربات جنگجو', elo: 1510, seed: 'Robot' },
+  { rank: 9, name: 'نینجا', elo: 1510, seed: 'Ninja' },
+  { rank: 10, name: 'جادوگر کهن', elo: 1365, seed: 'Wizard2' },
+  { rank: 11, name: 'فضانورد', elo: 1340, seed: 'Astronaut' },
+];
+
+const AVATAR_SIZE = isSmall ? 68 : 82;
+const FIRST_AVATAR_SIZE = isSmall ? 90 : 108;
+
+const RankingScreen = () => {
+  const renderPodiumPlayer = (player) => {
+    const isFirst = player.place === 'first';
+    const isSecond = player.place === 'second';
+    const isThird = player.place === 'third';
+
+    const avatarSize = isFirst ? FIRST_AVATAR_SIZE : AVATAR_SIZE;
+    const borderColor = isFirst ? '#ffc936' : isSecond ? '#b8d9ff' : '#ff8b35';
+
+    return (
+      <View key={player.id} style={styles.player}>
+        <View
+          style={[
+            styles.avatarWrap,
+            { width: avatarSize, height: avatarSize },
+          ]}
+        >
+          <Image
+            source={{ uri: avatarUrl(player.seed) }}
+            style={[
+              styles.avatar,
+              { borderColor },
+              isFirst && styles.avatarFirst,
+            ]}
+          />
+          <View
+            style={[
+              styles.rankBadge,
+              isFirst && styles.rankBadgeFirst,
+            ]}
+          >
+            <Text
+              style={[
+                styles.rankBadgeText,
+                isFirst && styles.rankBadgeTextFirst,
+              ]}
+            >
+              {fa(player.id)}
+            </Text>
+          </View>
+        </View>
+
+        <Text
+          style={[styles.playerName, isFirst && styles.playerNameFirst]}
+          numberOfLines={1}
+        >
+          {player.name}
+        </Text>
+
+        <Text style={styles.elo}>{fa(player.elo)}</Text>
+      </View>
+    );
+  };
+
+  return (
+    <SafeAreaView style={styles.safeArea}>
+      <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
+
+      {/* Background gradient */}
+      <LinearGradient
+        colors={['#031128', '#020b1c']}
+        start={{ x: 0.5, y: 0 }}
+        end={{ x: 0.5, y: 1 }}
+        style={StyleSheet.absoluteFill}
+      />
+
+      {/* Decorative glows */}
+      <View style={styles.glowTop} />
+
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={styles.appContainer}>
+          {/* Header */}
+          <View style={styles.header}>
+            <Text style={styles.title}>رتبه بندی</Text>
+            <Text style={styles.subtitle}>بهترین بازیکنان نرد لند</Text>
+          </View>
+
+          {/* Podium card */}
+          <LinearGradient
+            colors={['rgba(20,117,255,0.15)', 'rgba(7,28,61,0.82)']}
+            start={{ x: 0.5, y: 0 }}
+            end={{ x: 0.5, y: 1 }}
+            style={styles.podiumCard}
+          >
+            <View style={styles.podium}>
+              {PODIUM.map(renderPodiumPlayer)}
+            </View>
+          </LinearGradient>
+
+          {/* Ranking list */}
+          <View style={styles.rankingList}>
+            {LIST.map((row) => (
+              <View key={row.rank} style={styles.rankRow}>
+                <View style={styles.rankNumber}>
+                  <Text style={styles.rankNumberText}>{fa(row.rank)}</Text>
+                </View>
+
+                <Image
+                  source={{ uri: avatarUrl(row.seed) }}
+                  style={styles.listAvatar}
+                />
+
+                <View style={styles.rankInfo}>
+                  <Text style={styles.rankName} numberOfLines={1}>
+                    {row.name}
+                  </Text>
+                </View>
+
+                <Text style={styles.rankElo}>{fa(row.elo)}</Text>
+              </View>
+            ))}
+          </View>
+
+          {/* Current player */}
+          <View style={styles.myRank}>
+            <View style={styles.rankNumber}>
+              <Text style={styles.rankNumberText}>{fa(270)}</Text>
+            </View>
+
+            <Text style={styles.myBadge}>♛</Text>
+
+            <View style={styles.myRankText}>
+              <Text style={styles.myRankTitle}>رتبه شما</Text>
+              <Text style={styles.myRankNumber}># {fa(270)}</Text>
+            </View>
+
+            <Text style={styles.rankElo}>{fa(1365)}</Text>
+          </View>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
+  );
+};
+
+const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#020b1c',
+  },
+  scrollContent: {
+    flexGrow: 1,
+  },
+  appContainer: {
+    width: '100%',
+    maxWidth: 480,
+    alignSelf: 'center',
+    paddingHorizontal: isSmall ? 10 : 16,
+    paddingTop: 18,
+    paddingBottom: 40,
+  },
+  glowTop: {
+    position: 'absolute',
+    width: 380,
+    height: 380,
+    borderRadius: 190,
+    top: -200,
+    left: '50%',
+    transform: [{ translateX: -190 }],
+    backgroundColor: 'rgba(0, 102, 255, 0.25)',
+  },
+  header: {
+    alignItems: 'center',
+    paddingVertical: 8,
+    marginBottom: 22,
+  },
+  title: {
+    fontSize: isSmall ? 29 : 34,
+    fontWeight: '900',
+    color: '#f4f7ff',
+    letterSpacing: -1,
+    textAlign: 'center',
+    textShadowColor: 'rgba(40, 140, 255, 0.25)',
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 18,
+  },
+  subtitle: {
+    marginTop: 8,
+    color: '#8fa8d1',
+    fontSize: 15,
+    textAlign: 'center',
+  },
+
+  /* Podium */
+  podiumCard: {
+    borderRadius: 24,
+    borderWidth: 1,
+    borderColor: 'rgba(26, 130, 255, 0.42)',
+    paddingTop: 28,
+    paddingBottom: 18,
+    paddingHorizontal: 10,
+    marginBottom: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 15 },
+    shadowOpacity: 0.3,
+    shadowRadius: 45,
+    elevation: 10,
+  },
+  podium: {
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    // HTML uses LTR here so 2nd is left, 1st is center, 3rd is right
+    justifyContent: 'space-between',
+    gap: 4,
+  },
+  player: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  avatarWrap: {
+    position: 'relative',
+    marginBottom: 4,
+  },
+  avatar: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 999,
+    borderWidth: 4,
+    backgroundColor: '#102653',
+  },
+  avatarFirst: {
+    shadowColor: '#ffca2b',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.65,
+    shadowRadius: 28,
+    elevation: 10,
+  },
+  rankBadge: {
+    position: 'absolute',
+    bottom: -13,
+    left: '50%',
+    transform: [{ translateX: -17 }],
+    width: 34,
+    height: 34,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#0b4ca8',
+    borderWidth: 2,
+    borderColor: '#2b8dff',
+  },
+  rankBadgeFirst: {
+    width: 42,
+    height: 42,
+    borderRadius: 12,
+    transform: [{ translateX: -21 }],
+    backgroundColor: '#ffd84c',
+    borderColor: '#ffe66d',
+  },
+  rankBadgeText: {
+    color: '#ffffff',
+    fontSize: 17,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  rankBadgeTextFirst: {
+    color: '#291800',
+    fontSize: 20,
+  },
+  playerName: {
+    marginTop: 22,
+    fontSize: isSmall ? 11 : 14,
+    fontWeight: 'bold',
+    color: '#f4f7ff',
+    textAlign: 'center',
+  },
+  playerNameFirst: {
+    fontSize: isSmall ? 13 : 16,
+  },
+  elo: {
+    marginTop: 7,
+    color: '#77baff',
+    fontSize: 13,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+
+  /* Ranking list */
+  rankingList: {
+    gap: 9,
+  },
+  rankRow: {
+    minHeight: 77,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    paddingVertical: 9,
+    paddingHorizontal: 10,
+    backgroundColor: 'rgba(4, 26, 59, 0.9)',
+    borderWidth: 1,
+    borderColor: 'rgba(13, 112, 231, 0.42)',
+    borderRadius: 17,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 7 },
+    shadowOpacity: 0.22,
+    shadowRadius: 20,
+    elevation: 4,
+  },
+  rankNumber: {
+    width: isSmall ? 42 : 48,
+    height: isSmall ? 42 : 48,
+    borderRadius: 13,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#063b81',
+    borderWidth: 1,
+    borderColor: 'rgba(22, 133, 255, 0.25)',
+    flexShrink: 0,
+  },
+  rankNumberText: {
+    color: '#ffffff',
+    fontSize: 19,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  listAvatar: {
+    width: 53,
+    height: 53,
+    borderRadius: 999,
+    borderWidth: 2,
+    borderColor: '#1688ff',
+    backgroundColor: '#0a2754',
+    flexShrink: 0,
+  },
+  rankInfo: {
+    flex: 1,
+    minWidth: 0,
+  },
+  rankName: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#f4f7ff',
+    textAlign: 'right',
+  },
+  rankElo: {
+    color: '#89a9d5',
+    fontSize: 12,
+    fontWeight: 'bold',
+    textAlign: 'left',
+  },
+
+  /* Current player */
+  myRank: {
+    marginTop: 14,
+    padding: 15,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 198, 45, 0.4)',
+    backgroundColor: 'rgba(7, 36, 75, 0.85)',
+    borderRadius: 18,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  myBadge: {
+    color: '#ffc936',
+    fontSize: 24,
+    textAlign: 'center',
+  },
+  myRankText: {
+    flex: 1,
+  },
+  myRankTitle: {
+    fontSize: 13,
+    color: '#cbd8ef',
+    textAlign: 'right',
+  },
+  myRankNumber: {
+    marginTop: 4,
+    color: '#ffffff',
+    fontSize: 18,
+    fontWeight: 'bold',
+    textAlign: 'right',
+  },
+});
+
+export default RankingScreen;

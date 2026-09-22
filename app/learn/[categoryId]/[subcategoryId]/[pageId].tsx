@@ -5,9 +5,10 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'; // ← اضافه کن
 
 
+import Quiz from '@/components/learn/quiz';
 import useThemeStore from '@/stores/useThemeStore';
 import { useEffect, useState } from 'react';
-import { I18nManager, Image, ScrollView, StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
+import { I18nManager, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 export default function PageContent() {
     const insets = useSafeAreaInsets(); // ← اضافه کن
@@ -15,12 +16,9 @@ export default function PageContent() {
 
 
     const completeLesson = useLearningStore(state => state.completeLesson);
-    const resetProgress = useLearningStore(state => state.resetProgress);
 
-    const { width: screenWidth } = useWindowDimensions();
     const { categoryId, subcategoryId, pageId } = useLocalSearchParams();
 
-    const [selectedAnswer, setSelectedAnswer] = useState(null);
     const [isAnswerCorrect, setIsAnswerCorrect] = useState(false);
     const [isNavigating, setIsNavigating] = useState(false);
 
@@ -50,12 +48,9 @@ export default function PageContent() {
         }
     };
 
-
     useEffect(() => {
         checkRTL();
-
     }, []);
-
 
     if (!page || !subcategory || !category) {
         return <Text style={styles.notFoundText}>صفحه پیدا نشد</Text>;
@@ -75,13 +70,11 @@ export default function PageContent() {
     const goNext = async () => {
         if (!isNextEnabled || currentIndex > subcategory.pages.length - 1 || isNavigating) return;
 
-
         try {
             setIsNavigating(true);
             await completeLesson(categoryId, subcategoryId, subcategory.pages[currentIndex].id);
             // await resetProgress();
 
-            setSelectedAnswer(null);
             setIsAnswerCorrect(false);
             if (isLastPage) {
                 router.push('/learn');
@@ -93,27 +86,15 @@ export default function PageContent() {
         } finally {
             setIsNavigating(false);
         }
-
-
-
     };
 
     const goPrev = () => {
         if (currentIndex > 0) {
-            setSelectedAnswer(null);
             setIsAnswerCorrect(false);
             router.replace(`/learn/${categoryId}/${subcategoryId}/${subcategory.pages[currentIndex - 1].id}`);
         }
     };
 
-    const handleAnswer = (selectedIndex) => {
-        if (isAnswerCorrect) return;
-
-        setSelectedAnswer(selectedIndex);
-        if (selectedIndex === quizComponent.correctAnswer) {
-            setIsAnswerCorrect(true);
-        }
-    };
 
     return (
         <SafeAreaView style={[styles.container, { paddingBottom: insets.bottom }]}>
@@ -167,64 +148,7 @@ export default function PageContent() {
                 )}
 
                 {/* رندر سوال (quiz) */}
-                {hasQuiz && (
-                    <View style={[styles.quizContainer, { backgroundColor: colors.card }]}>
-                        <Text style={[styles.quizQuestion, { textAlign: isRTL ? 'left' : 'right', color: colors.text }]}>
-                            {quizComponent.question}
-                        </Text>
-
-                        {quizComponent.options.map((option, idx) => {
-                            let optionStyle = styles.quizOption;
-                            let textStyle = styles.quizOptionText;
-
-                            if (isAnswerCorrect) {
-                                if (idx === quizComponent.correctAnswer) {
-                                    optionStyle = [styles.quizOption, styles.quizOptionCorrect];
-                                    textStyle = [styles.quizOptionText, styles.quizOptionTextCorrect];
-                                } else if (idx === selectedAnswer && idx !== quizComponent.correctAnswer) {
-                                    optionStyle = [styles.quizOption, styles.quizOptionWrong];
-                                    textStyle = [styles.quizOptionText, styles.quizOptionTextWrong];
-                                } else {
-                                    optionStyle = [styles.quizOption, styles.quizOptionDisabled];
-                                }
-                            }
-                            else if (selectedAnswer !== null && selectedAnswer === idx && idx !== quizComponent.correctAnswer) {
-                                optionStyle = [styles.quizOption, styles.quizOptionWrong];
-                                textStyle = [styles.quizOptionText, styles.quizOptionTextWrong];
-                            }
-
-                            return (
-                                <TouchableOpacity
-                                    key={idx}
-                                    style={optionStyle}
-                                    onPress={() => handleAnswer(idx)}
-                                    disabled={isAnswerCorrect}
-                                    activeOpacity={0.7}
-                                >
-                                    <Text style={textStyle}>
-                                        {option}
-                                    </Text>
-                                </TouchableOpacity>
-                            );
-                        })}
-
-                        {isAnswerCorrect && (
-                            <View style={styles.correctMessageContainer}>
-                                <Text style={styles.correctMessage}>
-                                    ✅ آفرین! جواب صحیح است. اکنون می‌توانید به صفحه بعد بروید.
-                                </Text>
-                            </View>
-                        )}
-
-                        {selectedAnswer !== null && !isAnswerCorrect && (
-                            <View style={styles.wrongMessageContainer}>
-                                <Text style={styles.wrongMessage}>
-                                    ❌ جواب اشتباه است. دوباره تلاش کنید!
-                                </Text>
-                            </View>
-                        )}
-                    </View>
-                )}
+                {hasQuiz && <Quiz categoryId={categoryId} subcategoryId={subcategoryId} pageId={pageId} isAnswerCorrect={isAnswerCorrect} setIsAnswerCorrect={setIsAnswerCorrect} />}
             </ScrollView>
 
             {/* دکمه‌های پایین */}
@@ -330,75 +254,11 @@ const styles = StyleSheet.create({
         color: '#888',
         fontFamily: 'Kaghaz',
     },
-    quizContainer: {
-        padding: 20,
-        borderRadius: 16,
-        marginVertical: 20,
-        borderWidth: 1,
-    },
-    quizQuestion: {
-        fontSize: 20,
-        fontFamily: 'Kaghaz',
-        marginBottom: 20,
-        fontWeight: 'bold',
-    },
-    quizOption: {
-        backgroundColor: '#fff',
-        padding: 14,
-        borderRadius: 10,
-        marginVertical: 6,
-        borderWidth: 1,
-        borderColor: '#ddd',
-    },
-    quizOptionText: {
-        fontWeight: '800',
-        fontSize: 16,
-        textAlign: 'right',
-        color: '#333',
-    },
-    quizOptionCorrect: {
-        backgroundColor: '#4CAF50',
-        borderColor: '#4CAF50',
-    },
-    quizOptionTextCorrect: {
-        color: '#fff',
-    },
-    quizOptionWrong: {
-        backgroundColor: '#ffebee',
-        borderColor: '#f44336',
-    },
-    quizOptionTextWrong: {
-        color: '#c62828',
-    },
-    quizOptionDisabled: {
-        opacity: 0.5,
-    },
-    correctMessageContainer: {
-        backgroundColor: '#e8f5e9',
-        padding: 12,
-        borderRadius: 8,
-        marginTop: 16,
-        alignItems: 'center',
-    },
-    correctMessage: {
-        textAlign: 'center',
-        color: '#2e7d32',
-        fontFamily: 'Kaghaz',
-        fontSize: 14,
-    },
-    wrongMessageContainer: {
-        backgroundColor: '#ffebee',
-        padding: 12,
-        borderRadius: 8,
-        marginTop: 16,
-        alignItems: 'center',
-    },
-    wrongMessage: {
-        textAlign: 'center',
-        color: '#c62828',
-        fontFamily: 'Kaghaz',
-        fontSize: 14,
-    },
+
+
+
+
+
     footer: {
         flexDirection: 'row-reverse',
         justifyContent: 'space-between',
