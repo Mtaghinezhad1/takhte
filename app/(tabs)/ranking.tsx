@@ -1,60 +1,84 @@
+import { fetchLeaderboard } from '@/services/api/userApi';
 import { LinearGradient } from 'expo-linear-gradient';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
-    Dimensions,
-    Image,
-    SafeAreaView,
-    ScrollView,
-    StatusBar,
-    StyleSheet,
-    Text,
-    View,
+  ActivityIndicator,
+  Dimensions,
+  Image,
+  ScrollView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  View,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const { width } = Dimensions.get('window');
 const isSmall = width < 370;
 
 // Persian digits helper
 const fa = (n) =>
-  String(n).replace(/[0-9]/g, (d) => '۰۱۲۳۴۵۶۷۸۹'[d]);
+  String(n ?? '').replace(/[0-9]/g, (d) => '۰۱۲۳۴۵۶۷۸۹'[d]);
 
-// DiceBear PNG endpoint (RN Image cannot render SVG)
+// DiceBear PNG endpoint — از avatarKey به‌عنوان seed استفاده می‌کنیم
 const avatarUrl = (seed) =>
-  `https://api.dicebear.com/9.x/adventurer/png?seed=${seed}&size=200`;
-
-// Podium data — order in JSX: 2nd, 1st, 3rd (matches HTML)
-const PODIUM = [
-  { id: '2', name: 'آرش کاظمی', elo: 1580, seed: 'Arash', place: 'second' },
-  { id: '1', name: 'بازیکن حرفه‌ای', elo: 1620, seed: 'Professional', place: 'first' },
-  { id: '3', name: 'سامان رضایی', elo: 1540, seed: 'Saman', place: 'third' },
-];
-
-// Ranking list (4–11)
-const LIST = [
-  { rank: 4, name: 'کارآفرین', elo: 1510, seed: 'Karafarin' },
-  { rank: 5, name: 'سایبر مرموز', elo: 1487, seed: 'Shadow' },
-  { rank: 6, name: 'جادوگر', elo: 1460, seed: 'Wizard' },
-  { rank: 7, name: 'سامورایی', elo: 1510, seed: 'Samurai' },
-  { rank: 8, name: 'ربات جنگجو', elo: 1510, seed: 'Robot' },
-  { rank: 9, name: 'نینجا', elo: 1510, seed: 'Ninja' },
-  { rank: 10, name: 'جادوگر کهن', elo: 1365, seed: 'Wizard2' },
-  { rank: 11, name: 'فضانورد', elo: 1340, seed: 'Astronaut' },
-];
+  `https://api.dicebear.com/9.x/adventurer/png?seed=${seed || 'guest'}&size=200`;
 
 const AVATAR_SIZE = isSmall ? 68 : 82;
 const FIRST_AVATAR_SIZE = isSmall ? 90 : 108;
 
+// ترتیب نمایش روی سکو: نفر دوم (چپ)، نفر اول (وسط)، نفر سوم (راست)
+const PODIUM_ORDER = [1, 0, 2]; // [index in top3]
+
 const RankingScreen = () => {
-  const renderPodiumPlayer = (player) => {
-    const isFirst = player.place === 'first';
-    const isSecond = player.place === 'second';
-    const isThird = player.place === 'third';
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [topPlayers, setTopPlayers] = useState([]);
+  const [myRank, setMyRank] = useState(null);
+
+  useEffect(() => {
+    let mounted = true;
+
+    const load = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const data = await fetchLeaderboard();
+        if (!mounted) return;
+        setTopPlayers(data.topPlayers || []);
+        setMyRank(data.myRank || null);
+      } catch (e) {
+        if (!mounted) return;
+        setError(e.message || 'خطا در دریافت رتبه‌بندی');
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    };
+
+    load();
+    return () => { mounted = false; };
+  }, []);
+
+  // ─── تقسیم دیتا ─────────────────────────────
+  const podiumPlayers = topPlayers.slice(0, 3);
+  const listPlayers = topPlayers.slice(3);
+
+  // آیا کاربر جاری جزو ۵۰ نفر برتر است؟
+  const isMeInTop = myRank
+    ? topPlayers.some((p) => p.userId === myRank.userId)
+    : false;
+
+  // ─── رندر بازیکن سکو ────────────────────────
+  const renderPodiumPlayer = (player, position) => {
+    // position: 0 → first, 1 → second, 2 → third (بر اساس ترتیب نمایش)
+    const isFirst = position === 0;
+    const isSecond = position === 1;
 
     const avatarSize = isFirst ? FIRST_AVATAR_SIZE : AVATAR_SIZE;
     const borderColor = isFirst ? '#ffc936' : isSecond ? '#b8d9ff' : '#ff8b35';
 
     return (
-      <View key={player.id} style={styles.player}>
+      <View key={player.userId} style={styles.player}>
         <View
           style={[
             styles.avatarWrap,
@@ -62,7 +86,7 @@ const RankingScreen = () => {
           ]}
         >
           <Image
-            source={{ uri: avatarUrl(player.seed) }}
+            source={{ uri: avatarUrl(player.avatarKey) }}
             style={[
               styles.avatar,
               { borderColor },
@@ -81,7 +105,7 @@ const RankingScreen = () => {
                 isFirst && styles.rankBadgeTextFirst,
               ]}
             >
-              {fa(player.id)}
+              {fa(player.rank)}
             </Text>
           </View>
         </View>
@@ -90,19 +114,55 @@ const RankingScreen = () => {
           style={[styles.playerName, isFirst && styles.playerNameFirst]}
           numberOfLines={1}
         >
-          {player.name}
+          {player.username || 'ناشناس'}
         </Text>
 
-        <Text style={styles.elo}>{fa(player.elo)}</Text>
+        <Text style={styles.elo}>{fa(Math.round(player.elo))}</Text>
       </View>
     );
   };
+
+  // ─── لودینگ ─────────────────────────────────
+  if (loading) {
+    return (
+      <SafeAreaView style={styles.safeArea}>
+        <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
+        <LinearGradient
+          colors={['#031128', '#020b1c']}
+          start={{ x: 0.5, y: 0 }}
+          end={{ x: 0.5, y: 1 }}
+          style={StyleSheet.absoluteFill}
+        />
+        <View style={styles.centerBox}>
+          <ActivityIndicator size="large" color="#2b8dff" />
+          <Text style={styles.centerText}>در حال دریافت رتبه‌بندی…</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  // ─── خطا ────────────────────────────────────
+  if (error) {
+    return (
+      <SafeAreaView style={styles.safeArea}>
+        <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
+        <LinearGradient
+          colors={['#031128', '#020b1c']}
+          start={{ x: 0.5, y: 0 }}
+          end={{ x: 0.5, y: 1 }}
+          style={StyleSheet.absoluteFill}
+        />
+        <View style={styles.centerBox}>
+          <Text style={styles.errorText}>⚠️ {error}</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.safeArea}>
       <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
 
-      {/* Background gradient */}
       <LinearGradient
         colors={['#031128', '#020b1c']}
         start={{ x: 0.5, y: 0 }}
@@ -110,7 +170,6 @@ const RankingScreen = () => {
         style={StyleSheet.absoluteFill}
       />
 
-      {/* Decorative glows */}
       <View style={styles.glowTop} />
 
       <ScrollView
@@ -125,56 +184,64 @@ const RankingScreen = () => {
           </View>
 
           {/* Podium card */}
-          <LinearGradient
-            colors={['rgba(20,117,255,0.15)', 'rgba(7,28,61,0.82)']}
-            start={{ x: 0.5, y: 0 }}
-            end={{ x: 0.5, y: 1 }}
-            style={styles.podiumCard}
-          >
-            <View style={styles.podium}>
-              {PODIUM.map(renderPodiumPlayer)}
-            </View>
-          </LinearGradient>
+          {podiumPlayers.length > 0 && (
+            <LinearGradient
+              colors={['rgba(20,117,255,0.15)', 'rgba(7,28,61,0.82)']}
+              start={{ x: 0.5, y: 0 }}
+              end={{ x: 0.5, y: 1 }}
+              style={styles.podiumCard}
+            >
+              <View style={styles.podium}>
+                {PODIUM_ORDER.map((idx, position) => {
+                  const player = podiumPlayers[idx];
+                  if (!player) return <View key={idx} style={styles.player} />;
+                  return renderPodiumPlayer(player, position);
+                })}
+              </View>
+            </LinearGradient>
+          )}
 
-          {/* Ranking list */}
+          {/* Ranking list (ranks 4–50) */}
           <View style={styles.rankingList}>
-            {LIST.map((row) => (
-              <View key={row.rank} style={styles.rankRow}>
+            {listPlayers.map((row) => (
+              <View key={row.userId} style={styles.rankRow}>
                 <View style={styles.rankNumber}>
                   <Text style={styles.rankNumberText}>{fa(row.rank)}</Text>
                 </View>
 
                 <Image
-                  source={{ uri: avatarUrl(row.seed) }}
+                  source={{ uri: avatarUrl(row.avatarKey) }}
                   style={styles.listAvatar}
                 />
 
                 <View style={styles.rankInfo}>
                   <Text style={styles.rankName} numberOfLines={1}>
-                    {row.name}
+                    {row.username || 'ناشناس'}
                   </Text>
                 </View>
 
-                <Text style={styles.rankElo}>{fa(row.elo)}</Text>
+                <Text style={styles.rankElo}>{fa(Math.round(row.elo))}</Text>
               </View>
             ))}
           </View>
 
-          {/* Current player */}
-          <View style={styles.myRank}>
-            <View style={styles.rankNumber}>
-              <Text style={styles.rankNumberText}>{fa(270)}</Text>
+          {/* Current player — فقط اگر در ۵۰ نفر برتر نباشد */}
+          {myRank && !isMeInTop && (
+            <View style={styles.myRank}>
+              <View style={styles.rankNumber}>
+                <Text style={styles.rankNumberText}>{fa(myRank.rank)}</Text>
+              </View>
+
+              <Text style={styles.myBadge}>♛</Text>
+
+              <View style={styles.myRankText}>
+                <Text style={styles.myRankTitle}>رتبه شما</Text>
+                <Text style={styles.myRankNumber}># {fa(myRank.rank)}</Text>
+              </View>
+
+              <Text style={styles.rankElo}>{fa(Math.round(myRank.elo))}</Text>
             </View>
-
-            <Text style={styles.myBadge}>♛</Text>
-
-            <View style={styles.myRankText}>
-              <Text style={styles.myRankTitle}>رتبه شما</Text>
-              <Text style={styles.myRankNumber}># {fa(270)}</Text>
-            </View>
-
-            <Text style={styles.rankElo}>{fa(1365)}</Text>
-          </View>
+          )}
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -196,6 +263,22 @@ const styles = StyleSheet.create({
     paddingHorizontal: isSmall ? 10 : 16,
     paddingTop: 18,
     paddingBottom: 40,
+  },
+  centerBox: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 24,
+  },
+  centerText: {
+    marginTop: 16,
+    color: '#8fa8d1',
+    fontSize: 15,
+  },
+  errorText: {
+    color: '#ff8080',
+    fontSize: 15,
+    textAlign: 'center',
   },
   glowTop: {
     position: 'absolute',
@@ -247,7 +330,6 @@ const styles = StyleSheet.create({
   podium: {
     flexDirection: 'row',
     alignItems: 'flex-end',
-    // HTML uses LTR here so 2nd is left, 1st is center, 3rd is right
     justifyContent: 'space-between',
     gap: 4,
   },

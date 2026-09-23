@@ -46,8 +46,8 @@ export default function RootLayout() {
 
   useEffect(() => {
     StatusBar.setBarStyle(isDark ? 'light-content' : 'dark-content');
-    StatusBar.setBackgroundColor(colors.background);
-  }, [isDark, colors.background]);
+    StatusBar.setBackgroundColor(colors.backgroundPrimary);
+  }, [isDark, colors.backgroundPrimary]);
 
   if (!fontsLoaded && !fontError) return null;
   if (isLoading || themeLoading) return null;
@@ -57,7 +57,7 @@ export default function RootLayout() {
   return (
     <NavigationThemeProvider value={navigationTheme}>
       <CoachmarkProvider>
-        <View style={{ flex: 1, backgroundColor: colors.background }}>
+        <View style={{ flex: 1, backgroundColor: colors.backgroundPrimary }}>
           <Stack screenOptions={{ headerShown: false }}>
             <Stack.Screen name="(tabs)" />
             <Stack.Screen

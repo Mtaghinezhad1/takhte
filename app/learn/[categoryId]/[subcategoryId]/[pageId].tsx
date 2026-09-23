@@ -5,10 +5,14 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'; // ← اضافه کن
 
 
+import ContentCard from '@/components/learn/contentCard';
 import Quiz from '@/components/learn/quiz';
+import CancelButton from '@/components/ui/cancelButton';
+import ConfirmButton from '@/components/ui/confirmButton';
 import useThemeStore from '@/stores/useThemeStore';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useEffect, useState } from 'react';
-import { I18nManager, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { I18nManager, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 export default function PageContent() {
     const insets = useSafeAreaInsets(); // ← اضافه کن
@@ -57,10 +61,6 @@ export default function PageContent() {
     }
 
     const currentIndex = subcategory.pages.findIndex(p => p.id === Number(pageId));
-
-    const heroComponent = page.components?.find(c => c.type === 'hero');
-    const contentComponent = page.components?.find(c => c.type === 'content');
-    const imageComponent = page.components?.find(c => c.type === 'image');
     const quizComponent = page.components?.find(c => c.type === 'quiz');
 
     const hasQuiz = !!quizComponent;
@@ -97,87 +97,42 @@ export default function PageContent() {
 
 
     return (
-        <SafeAreaView style={[styles.container, { paddingBottom: insets.bottom }]}>
-            {/* هدر */}
-            <View style={styles.header}>
-                <TouchableOpacity onPress={() => router.back()} style={styles.closeButton}>
-                    <Text style={[styles.closeText, { color: colors.text }]}>✕</Text>
-                </TouchableOpacity>
-                <Text style={[styles.pageCounter, { color: colors.text }]}>
-                    {currentIndex + 1} از {subcategory.pages.length}
-                </Text>
-            </View>
+        <LinearGradient
+            colors={[colors.backgroundPrimary, colors.backgroundSecondary, colors.backgroundTertiary]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={{ flex: 1 }}
+        >
+            <SafeAreaView style={{ flex: 1, paddingHorizontal: 16 }}>
+                {/* هدر */}
+                <View style={styles.header}>
+                    <TouchableOpacity onPress={() => router.back()} style={styles.closeButton}>
+                        <Text style={[styles.closeText, { color: colors.text }]}>✕</Text>
+                    </TouchableOpacity>
+                    <Text style={[styles.pageCounter, { color: colors.text }]}>
+                        {currentIndex + 1} از {subcategory.pages.length}
+                    </Text>
+                </View>
 
-            <ScrollView
-                style={styles.scrollView}
-                showsVerticalScrollIndicator={false}
-                contentContainerStyle={styles.scrollContent}
-            >
-                {/* رندر hero */}
-                {heroComponent && heroComponent.title && heroComponent.title.trim() !== '' && (
-                    <View style={styles.heroContainer}>
-                        <Text style={styles.heroTitle}>
-                            {heroComponent.title}
-                        </Text>
-                    </View>
-                )}
-
-                {/* رندر تصویر */}
-                {imageComponent && imageComponent.src && (
-                    <View style={[styles.imageContainer, { backgroundColor: colors.card }]}>
-                        <Image
-                            source={imageComponent.src}
-                            style={styles.image}
-                            resizeMode="contain"
-                        />
-                        {imageComponent.alt && (
-                            <Text style={styles.imageAlt}>
-                                {imageComponent.alt}
-                            </Text>
-                        )}
-                    </View>
-                )}
-
-                {/* رندر محتوای متنی ساده */}
-                {contentComponent && (
-                    <View style={styles.contentContainer}>
-                        <Text style={[styles.contentText, { textAlign: isRTL ? 'left' : 'right', color: colors.text }]}>
-                            {contentComponent.value}
-                        </Text>
-                    </View>
-                )}
-
-                {/* رندر سوال (quiz) */}
-                {hasQuiz && <Quiz categoryId={categoryId} subcategoryId={subcategoryId} pageId={pageId} isAnswerCorrect={isAnswerCorrect} setIsAnswerCorrect={setIsAnswerCorrect} />}
-            </ScrollView>
-
-            {/* دکمه‌های پایین */}
-            <View style={styles.footer}>
-                <TouchableOpacity
-                    onPress={goNext}
-                    disabled={!isNextEnabled}
-                    style={[
-                        styles.nextButton,
-                        (!isNextEnabled) && styles.nextButtonDisabled
-                    ]}
+                <ScrollView
+                    style={styles.scrollView}
+                    showsVerticalScrollIndicator={false}
+                    contentContainerStyle={styles.scrollContent}
                 >
-                    <Text style={styles.buttonText}>بعدی ←</Text>
-                </TouchableOpacity>
 
-                <TouchableOpacity
-                    onPress={goPrev}
-                    disabled={currentIndex === 0}
-                    style={[
-                        styles.prevButton,
-                        currentIndex === 0 && styles.prevButtonDisabled
-                    ]}
-                >
-                    <Text style={styles.buttonText}>→ قبلی</Text>
-                </TouchableOpacity>
-            </View>
-        </SafeAreaView>
+                    <ContentCard categoryId={categoryId} subcategoryId={subcategoryId} pageId={pageId} />
 
+                    {/* رندر سوال (quiz) */}
+                    {hasQuiz && <Quiz categoryId={categoryId} subcategoryId={subcategoryId} pageId={pageId} isAnswerCorrect={isAnswerCorrect} setIsAnswerCorrect={setIsAnswerCorrect} />}
+                </ScrollView>
 
+                {/* دکمه‌های پایین */}
+                <View style={styles.footer}>
+                    <ConfirmButton onPress={goNext} disabled={!isNextEnabled}>بعدی ←</ConfirmButton>
+                    <CancelButton onPress={goPrev} disabled={currentIndex === 0}>→ قبلی</CancelButton>
+                </View>
+            </SafeAreaView>
+        </LinearGradient>
     );
 }
 
@@ -266,30 +221,6 @@ const styles = StyleSheet.create({
         paddingTop: 12,
         borderTopWidth: 1,
         borderTopColor: '#eee',
-    },
-    nextButton: {
-        paddingVertical: 12,
-        paddingHorizontal: 24,
-        backgroundColor: '#070024',
-        borderRadius: 10,
-    },
-    nextButtonDisabled: {
-        backgroundColor: '#ccc',
-        opacity: 0.6,
-    },
-    prevButton: {
-        paddingVertical: 12,
-        paddingHorizontal: 24,
-        backgroundColor: '#070024',
-        borderRadius: 10,
-    },
-    prevButtonDisabled: {
-        backgroundColor: '#ccc',
-        opacity: 0.6,
-    },
-    buttonText: {
-        color: '#fff',
-        fontFamily: 'Kaghaz',
-        fontSize: 16,
+        gap: 10,
     },
 });

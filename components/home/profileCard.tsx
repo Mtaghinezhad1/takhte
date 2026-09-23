@@ -33,9 +33,6 @@ const ProfileCard = () => {
                 <View style={styles.info}>
                     <View style={styles.nameRow}>
                         <Text style={styles.name}>{user.username}</Text>
-                        <TouchableOpacity onPress={() => { }} style={styles.editButton}>
-                            <Text style={styles.editIcon}>✎</Text>
-                        </TouchableOpacity>
                     </View>
                     {/* optional subtitle could be added here */}
                 </View>
@@ -105,13 +102,6 @@ const styles = StyleSheet.create({
         fontWeight: '800',
         color: '#f4f7ff',
         fontFamily: 'Vazirmatn', // Make sure font is linked in your project
-    },
-    editButton: {
-        marginLeft: 7,
-    },
-    editIcon: {
-        fontSize: 18,
-        color: '#438fff',
     },
     eloContainer: {
         alignItems: 'center',

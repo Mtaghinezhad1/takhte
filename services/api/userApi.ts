@@ -72,6 +72,15 @@ export const submitMatchResult = async (payload) => {
   throw new Error(response.data?.error || 'Submit match result failed');
 };
 
+// ─── دریافت رتبه‌بندی (۵۰ رتبه برتر + رتبه کاربر) ───
+export const fetchLeaderboard = async () => {
+  const response = await apiClient.get('/api/v1/leaderboard');
+  if (response.data?.success) {
+    return response.data.data; // { topPlayers, myRank }
+  }
+  throw new Error(response.data?.error || 'Failed to fetch leaderboard');
+};
+
 // ─── خروج ─────────────────────────────────────────────
 export const logout = async () => {
   await AsyncStorage.removeItem('@auth_token');

@@ -4,13 +4,14 @@ import React from 'react';
 import { StyleSheet, Text, TouchableOpacity } from 'react-native';
 
 
-export default function ConfirmButton({onPress, children}) {
+export default function ConfirmButton({ onPress, children, disabled = false }) {
     const colors = useThemeStore(state => state.colors);
     return (
         <TouchableOpacity
             style={styles.levelWrapper}
             onPress={onPress}
             activeOpacity={0.7}
+            disabled={disabled}
         >
             <LinearGradient
                 colors={[colors.btnSecondary, colors.btnPrimary]}
@@ -18,7 +19,7 @@ export default function ConfirmButton({onPress, children}) {
                 end={{ x: 1, y: 1 }}
                 style={[styles.level, styles.activeLevel]}
             >
-               { <Text style={[styles.levelText, styles.activeText]}>
+                {<Text style={[styles.levelText, styles.activeText]}>
                     {children}
                 </Text>}
             </LinearGradient>

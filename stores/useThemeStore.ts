@@ -3,7 +3,6 @@ import { create } from 'zustand';
 
 // رنگ‌ها
 export const lightColors = {
-  background: '#ffffff',
   card: '#f8f9fa',
   text: '#1a1a1a',
   border: '#e0e0e0',
@@ -21,10 +20,13 @@ export const lightColors = {
   btnSecondary: '#226eff',
   cancelBtnPrimary: 'rgba(4, 20, 43, 0.95)',
   cancelBtnSecondary: 'rgba(17, 54, 98, 0.85)',
+  //-----------background-------------
+  backgroundPrimary: 'white',
+  backgroundSecondary: '#061636',
+  backgroundTertiary: '#02091c',
 };
 
 export const darkColors = {
-  background: '#121212',
   card: '#1e1e1e',
   text: '#ffffff',
   primary: '#4a8aff',
@@ -45,6 +47,10 @@ export const darkColors = {
   cancelBtnSecondary: 'rgba(17, 54, 98, 0.85)',
   //-----------border-------------
   border: 'rgba(91,139,213,0.25)',
+  //-----------background-------------
+  backgroundPrimary: '#102b63',
+  backgroundSecondary: '#061636',
+  backgroundTertiary: '#02091c',
 
 
 };

@@ -4,13 +4,14 @@ import React from 'react';
 import { StyleSheet, Text, TouchableOpacity } from 'react-native';
 
 
-export default function CancelButton({onPress, children}) {
+export default function CancelButton({onPress, children, disabled = false}) {
     const colors = useThemeStore(state => state.colors);
     return (
         <TouchableOpacity
             style={styles.levelWrapper}
             onPress={onPress}
             activeOpacity={0.7}
+            disabled = {disabled}
         >
             <LinearGradient
                 colors={[colors.cancelBtnSecondary, colors.cancelBtnPrimary]}

@@ -255,7 +255,7 @@ const AchievementsScreen = () => {
 
   return (
     <ScrollView 
-      style={[styles.container, { backgroundColor: colors.background }]}
+      style={[styles.container, { backgroundColor: colors.backgroundPrimary }]}
       showsVerticalScrollIndicator={true}
       contentContainerStyle={styles.scrollContent}
     >
