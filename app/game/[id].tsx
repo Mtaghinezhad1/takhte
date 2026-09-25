@@ -240,7 +240,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#070024',
+    backgroundColor: 'rgba(25, 55, 91, 1)',
     gap: 20,
   },
   loadingText: {

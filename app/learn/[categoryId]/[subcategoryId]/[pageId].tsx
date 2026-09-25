@@ -2,22 +2,20 @@ import { learnData } from '@/constants/learnData';
 import useLearningStore from '@/stores/useLearningStore';
 import * as Localization from 'expo-localization';
 import { router, useLocalSearchParams } from 'expo-router';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'; // ← اضافه کن
-
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import ContentCard from '@/components/learn/contentCard';
+import LearnHeader from '@/components/learn/LearnHeader';
 import Quiz from '@/components/learn/quiz';
-import CancelButton from '@/components/ui/cancelButton';
-import ConfirmButton from '@/components/ui/confirmButton';
+import ActionButton from '@/components/ui/actionButton';
 import useThemeStore from '@/stores/useThemeStore';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useEffect, useState } from 'react';
-import { I18nManager, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { I18nManager, ScrollView, StyleSheet, Text, View } from 'react-native'; // TouchableOpacity حذف شد
 
 export default function PageContent() {
-    const insets = useSafeAreaInsets(); // ← اضافه کن
+    const insets = useSafeAreaInsets();
     const { colors } = useThemeStore();
-
 
     const completeLesson = useLearningStore(state => state.completeLesson);
 
@@ -33,21 +31,13 @@ export default function PageContent() {
 
     const checkRTL = () => {
         try {
-            // روش اول: از Localization
             const locales = Localization.getLocales();
             const isRTLSystem = locales[0]?.textDirection === 'rtl';
-
-            // روش دوم: از I18nManager (برای پشتیبانی از نسخه‌های قدیمی)
             const isRTLManager = I18nManager.isRTL;
-
-            // ترکیب هر دو روش
             const finalRTL = isRTLSystem || isRTLManager;
-
             setIsRTL(finalRTL);
-
         } catch (error) {
             console.error('Error checking RTL:', error);
-            // Fallback به I18nManager
             setIsRTL(I18nManager.isRTL);
         }
     };
@@ -73,7 +63,6 @@ export default function PageContent() {
         try {
             setIsNavigating(true);
             await completeLesson(categoryId, subcategoryId, subcategory.pages[currentIndex].id);
-            // await resetProgress();
 
             setIsAnswerCorrect(false);
             if (isLastPage) {
@@ -95,7 +84,6 @@ export default function PageContent() {
         }
     };
 
-
     return (
         <LinearGradient
             colors={[colors.backgroundPrimary, colors.backgroundSecondary, colors.backgroundTertiary]}
@@ -104,32 +92,35 @@ export default function PageContent() {
             style={{ flex: 1 }}
         >
             <SafeAreaView style={{ flex: 1, paddingHorizontal: 16 }}>
-                {/* هدر */}
-                <View style={styles.header}>
-                    <TouchableOpacity onPress={() => router.back()} style={styles.closeButton}>
-                        <Text style={[styles.closeText, { color: colors.text }]}>✕</Text>
-                    </TouchableOpacity>
-                    <Text style={[styles.pageCounter, { color: colors.text }]}>
-                        {currentIndex + 1} از {subcategory.pages.length}
-                    </Text>
-                </View>
+                {/* هدر جدید */}
+                <LearnHeader
+                    title={subcategory.title}
+                    currentLesson={currentIndex}
+                    totalLessons={subcategory.pages.length}
+                    onBack={() => router.back()}
+                />
 
                 <ScrollView
                     style={styles.scrollView}
                     showsVerticalScrollIndicator={false}
                     contentContainerStyle={styles.scrollContent}
                 >
-
                     <ContentCard categoryId={categoryId} subcategoryId={subcategoryId} pageId={pageId} />
 
-                    {/* رندر سوال (quiz) */}
-                    {hasQuiz && <Quiz categoryId={categoryId} subcategoryId={subcategoryId} pageId={pageId} isAnswerCorrect={isAnswerCorrect} setIsAnswerCorrect={setIsAnswerCorrect} />}
+                    {hasQuiz && (
+                        <Quiz
+                            categoryId={categoryId}
+                            subcategoryId={subcategoryId}
+                            pageId={pageId}
+                            isAnswerCorrect={isAnswerCorrect}
+                            setIsAnswerCorrect={setIsAnswerCorrect}
+                        />
+                    )}
                 </ScrollView>
 
-                {/* دکمه‌های پایین */}
                 <View style={styles.footer}>
-                    <ConfirmButton onPress={goNext} disabled={!isNextEnabled}>بعدی ←</ConfirmButton>
-                    <CancelButton onPress={goPrev} disabled={currentIndex === 0}>→ قبلی</CancelButton>
+                    <ActionButton onPress={goNext} disabled={!isNextEnabled} variant={isNextEnabled ? 'confirm' : 'cancel'}>بعدی ←</ActionButton>
+                    <ActionButton onPress={goPrev} disabled={currentIndex === 0} variant={currentIndex! != 0 ? 'confirm' : 'cancel'}>→ قبلی</ActionButton>
                 </View>
             </SafeAreaView>
         </LinearGradient>
@@ -147,24 +138,6 @@ const styles = StyleSheet.create({
         marginTop: 50,
         fontFamily: 'Kaghaz',
         color: '#f44336',
-    },
-    header: {
-        flexDirection: 'row-reverse',
-        justifyContent: 'space-between',
-        marginBottom: 16,
-        paddingBottom: 8,
-        borderBottomWidth: 1,
-        borderBottomColor: '#eee',
-    },
-    closeButton: {
-        padding: 8,
-    },
-    closeText: {
-        fontSize: 20,
-    },
-    pageCounter: {
-        fontSize: 16,
-        fontFamily: 'Kaghaz',
     },
     scrollView: {
         flex: 1,
@@ -209,11 +182,6 @@ const styles = StyleSheet.create({
         color: '#888',
         fontFamily: 'Kaghaz',
     },
-
-
-
-
-
     footer: {
         flexDirection: 'row-reverse',
         justifyContent: 'space-between',
