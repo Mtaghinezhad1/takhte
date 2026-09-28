@@ -3,32 +3,41 @@ import { create } from 'zustand';
 
 // رنگ‌ها
 export const lightColors = {
-  card: '#1e1e1e',
-  text: '#ffffff',
-  primary: '#4a8aff',
-  secondary: '#a78bfa',
-  tertiary: '#fb923c',
-  danger: '#ef4444',
-  tabBarActive: '#4a8aff',
-  tabBarInactive: '#888888',
-  shadow: '#000000',
-  inputBg: '#2a2a2a',
+  card: '#ffffff',
+  text: '#111827',
 
-  tabBar: '#071c39',
-  //---------buttons----------
-  btnPrimary: '#1244a7',
-  btnSecondary: '#226eff',
-  cancelBtnPrimary: 'rgba(4, 20, 43, 0.95)',
-  cancelBtnSecondary: 'rgba(17, 54, 98, 0.85)',
-  //-----------border-------------
-  border: 'rgba(91,139,213,0.25)',
-  //-----------background-------------
-  backgroundPrimary: '#102b63',
-  backgroundSecondary: '#061636',
-  backgroundTertiary: '#02091c',
-  //----------- profile card background-------------
-  profileBgPrimary: 'rgba(18,43,87,0.95)',
-  profileBgSecondary: 'rgba(5,19,47,0.9)',
+  primary: '#226eff',
+  secondary: '#7c5ce6',
+  tertiary: '#f59e0b',
+  danger: '#ef4444',
+
+  tabBarActive: '#226eff',
+  tabBarInactive: '#7b8798',
+
+  shadow: '#64748b',
+
+  inputBg: '#f5f8fc',
+
+  tabBar: '#ffffff',
+
+  // --------- buttons ----------
+  btnPrimary: '#226eff',
+  btnSecondary: '#4a8aff',
+
+  cancelBtnPrimary: '#eaf2ff',
+  cancelBtnSecondary: '#dbe9ff',
+
+  // ----------- border ----------
+  border: 'rgba(34,110,255,0.18)',
+
+  // ----------- background ----------
+  backgroundPrimary: '#f5f9ff',
+  backgroundSecondary: '#edf4ff',
+  backgroundTertiary: '#e4efff',
+
+  // ----------- profile card background ----------
+  profileBgPrimary: '#ffffff',
+  profileBgSecondary: '#eef5ff',
 };
 
 export const darkColors = {
