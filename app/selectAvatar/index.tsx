@@ -58,7 +58,7 @@ const SelectAvatar = () => {
 
     return (
         <LinearGradient
-            colors={['#102b63', '#061636', '#02091c']}
+            colors={[colors.backgroundPrimary, colors.backgroundSecondary, colors.backgroundTertiary]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={{ flex: 1 }}

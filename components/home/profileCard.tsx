@@ -1,4 +1,5 @@
 import { getAvatarByKey } from '@/constants/avatars';
+import useThemeStore from '@/stores/useThemeStore';
 import useUserStore from '@/stores/useUserStore';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
@@ -11,11 +12,13 @@ const rem = 16;
 const ProfileCard = () => {
     const { user } = useUserStore();
     const elo = useUserStore.getState().getCurrentElo();
+    const { colors } = useThemeStore();
+
 
     return (
         <TouchableOpacity style={styles.body} onPress={() => router.push(`/charts`)}>
             <LinearGradient
-                colors={['rgba(18,43,87,0.95)', 'rgba(5,19,47,0.9)']}
+                colors={[colors.profileBgPrimary, colors.profileBgSecondary]}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
                 style={styles.card}
@@ -41,7 +44,6 @@ const ProfileCard = () => {
                 <View style={styles.eloContainer}>
                     <Text style={styles.eloLabel}>توانایی</Text>
                     <View style={styles.eloValue}>
-                        <Text style={styles.shield}>♛</Text>
                         <Text style={styles.eloNumber}>{elo}</Text>
                     </View>
                 </View>

@@ -2,6 +2,7 @@ import AchievementCard from '@/components/achievement/AchievementCard';
 import useLearningStore from '@/stores/useLearningStore';
 import useThemeStore from '@/stores/useThemeStore';
 import useUserStore from '@/stores/useUserStore';
+import { LinearGradient } from 'expo-linear-gradient';
 import React, { useEffect, useState } from 'react';
 import {
   ScrollView,
@@ -55,38 +56,46 @@ const AchievementsScreen = () => {
   }
 
   return (
-    <ScrollView
-      style={[styles.container, { backgroundColor: colors.backgroundPrimary }]}
-      showsVerticalScrollIndicator={true}
-      contentContainerStyle={styles.scrollContent}
+    <LinearGradient
+      colors={[colors.backgroundPrimary, colors.backgroundSecondary, colors.backgroundTertiary]}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
+      style={{ flex: 1 }}
     >
-      <View style={styles.header}>
-        <Text style={[styles.headerTitle, { color: colors.text }]}>🏅 دستاوردها</Text>
-        <Text style={styles.headerSubtitle}>
-          {achievements.filter(a => a.completed).length} از {achievements.length} تکمیل شده
-        </Text>
-      </View>
-
-      {rows.map((row, index) => (
-        <View key={index} style={styles.row}>
-          {row.map((item) => (
-            <AchievementCard
-              key={item.id}
-              icon={item.icon}
-              title={item.title}
-              description={item.description}
-              progress={(item.current / item.total) * 100}
-              current={item.current}
-              total={item.total}
-              locked={item.locked}
-              completed={item.completed}
-            />
-          ))}
+      <ScrollView
+        style={styles.container}
+        showsVerticalScrollIndicator={true}
+        contentContainerStyle={styles.scrollContent}
+      >
+        <View style={styles.header}>
+          <Text style={[styles.headerTitle, { color: colors.text }]}>🏅 دستاوردها</Text>
+          <Text style={styles.headerSubtitle}>
+            {achievements.filter(a => a.completed).length} از {achievements.length} تکمیل شده
+          </Text>
         </View>
-      ))}
 
-      <View style={styles.bottomSpacer} />
-    </ScrollView>
+        {rows.map((row, index) => (
+          <View key={index} style={styles.row}>
+            {row.map((item) => (
+              <AchievementCard
+                key={item.id}
+                icon={item.icon}
+                title={item.title}
+                description={item.description}
+                progress={(item.current / item.total) * 100}
+                current={item.current}
+                total={item.total}
+                locked={item.locked}
+                completed={item.completed}
+              />
+            ))}
+          </View>
+        ))}
+
+        <View style={styles.bottomSpacer} />
+      </ScrollView>
+    </LinearGradient>
+
   );
 };
 

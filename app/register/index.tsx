@@ -6,13 +6,13 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import {
-    ActivityIndicator,
-    Alert,
-    Dimensions,
-    ScrollView,
-    StyleSheet, Text,
-    TextInput,
-    TouchableOpacity, View
+  ActivityIndicator,
+  Alert,
+  Dimensions,
+  ScrollView,
+  StyleSheet, Text,
+  TextInput,
+  TouchableOpacity, View
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -88,8 +88,8 @@ const EditProfile = () => {
   }
 
   return (
-    <LinearGradient
-      colors={['#102b63', '#061636', '#02091c']}
+   <LinearGradient
+      colors={[colors.backgroundPrimary, colors.backgroundSecondary, colors.backgroundTertiary]}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
       style={{ flex: 1 }}

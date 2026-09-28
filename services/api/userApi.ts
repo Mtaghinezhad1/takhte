@@ -65,7 +65,7 @@ export const updateUserAvatar = async (avatarKey: string) => {
 
 // ─── ثبت نتیجه مسابقه در سرور ──────────────────────
 export const submitMatchResult = async (payload) => {
-  const response = await apiClient.post('/api/v1/match/result', payload);
+  const response = await apiClient.post('/api/v1/stats/updateStats', payload);
   if (response.data?.success) {
     return response.data.data;
   }

@@ -1,5 +1,7 @@
 import { getAvatarByKey } from '@/constants/avatars';
+import useThemeStore from '@/stores/useThemeStore';
 import useUserStore from '@/stores/useUserStore';
+import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import React from 'react';
 import {
@@ -16,6 +18,8 @@ const { height: screenHeight } = Dimensions.get('window');
 const ProfileSection = () => {
     const { user, statistics } = useUserStore();
     const elo = useUserStore.getState().getCurrentElo();
+    const { colors } = useThemeStore();
+
 
 
     // Responsive styles based on screen height
@@ -33,7 +37,12 @@ const ProfileSection = () => {
             {/* Main content */}
             <View style={styles.main}>
                 {/* Profile Card */}
-                <View style={[styles.profileCard, isShort && styles.profileCardShort]}>
+                <LinearGradient
+                    colors={[colors.profileBgPrimary, colors.profileBgSecondary]}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 1 }}
+                    style={[styles.profileCard, isShort && styles.profileCardShort]}
+                >
                     <View style={styles.profileTop}>
                         {/* ELO box */}
                         <View style={styles.eloBox}>
@@ -81,7 +90,8 @@ const ProfileSection = () => {
                             <Text style={[styles.statLabel, isShort && styles.statLabelShort]}>تعداد باز</Text>
                         </View>
                     </View>
-                </View>
+                </LinearGradient>
+
             </View>
         </View>
     );
@@ -92,7 +102,6 @@ const styles = StyleSheet.create({
         flex: 1,
         alignSelf: 'center',
         width: '100%',
-        maxWidth: 480,
         overflow: 'hidden',
         marginBottom: 16,
     },
@@ -117,7 +126,6 @@ const styles = StyleSheet.create({
     },
     main: {
         flex: 1,
-        paddingHorizontal: 16,
         paddingVertical: 4,
         gap: 10,
     },

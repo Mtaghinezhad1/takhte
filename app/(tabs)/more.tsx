@@ -1,6 +1,7 @@
 import Auth from '@/components/more/auth';
 import MenuItem from '@/components/more/menuItem';
 import ProfileSection from '@/components/more/profileSection';
+import useThemeStore from '@/stores/useThemeStore';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import React from 'react';
@@ -9,9 +10,11 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 
 export default function MoreScreen() {
+  const { colors } = useThemeStore();
+
   return (
-    <LinearGradient
-      colors={['#102b63', '#061636', '#02091c']}
+   <LinearGradient
+      colors={[colors.backgroundPrimary, colors.backgroundSecondary, colors.backgroundTertiary]}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
       style={{ flex: 1 }}

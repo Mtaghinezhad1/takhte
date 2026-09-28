@@ -1,27 +1,25 @@
+// index.tsx
+import ChartSection from '@/components/chart/chartSection';
+import StatSection from '@/components/chart/statSection';
 import useThemeStore from '@/stores/useThemeStore';
 import useUserStore from '@/stores/useUserStore';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, Dimensions, Text, View } from 'react-native';
-import { LineChart } from 'react-native-chart-kit';
+import { ActivityIndicator, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
-
-const screenWidth = Dimensions.get('window').width;
 
 const CustomChart = () => {
     const [isLoading, setIsLoading] = useState(true);
-    const [eloData, setEloData] = useState([]);
+    const [eloData, setEloData] = useState<number[]>([]);
     const { getEloHistory } = useUserStore();
     const { colors } = useThemeStore();
-
 
     useEffect(() => {
         const loadEloData = async () => {
             try {
                 const history = await getEloHistory();
                 // فقط مقادیر Elo را استخراج می‌کنیم
-                const eloValues = history.map(record => record.elo);
+                const eloValues = history.map((record: { elo: number }) => record.elo);
                 setEloData(eloValues);
             } catch (error) {
                 console.error('خطا در دریافت تاریخچه Elo:', error);
@@ -52,7 +50,6 @@ const CustomChart = () => {
                     </Text>
                 </View>
             </SafeAreaView>
-
         );
     }
 
@@ -65,137 +62,23 @@ const CustomChart = () => {
     // آماده‌سازی داده برای نمودار (نمایش ۵۰ بازی آخر)
     const displayData = eloData.slice(-50);
 
-    // محاسبه رنگ‌ها بر اساس تغییرات
-    const getColor = (opacity = 1) => {
-        // اگر آخرین Elo بیشتر از اولین Elo باشد، سبز نشان می‌دهیم در غیر این صورت قرمز
-        if (displayData.length > 1) {
-            const first = displayData[0];
-            const last = displayData[displayData.length - 1];
-            if (last > first) {
-                return `rgba(76, 175, 80, ${opacity})`; // سبز
-            } else if (last < first) {
-                return `rgba(255, 107, 107, ${opacity})`; // قرمز
-            }
-        }
-        return `rgba(255, 215, 0, ${opacity})`; // طلایی
-    };
-
     return (
         <LinearGradient
-            colors={['#102b63', '#061636', '#02091c']}
+            colors={[colors.backgroundPrimary, colors.backgroundSecondary, colors.backgroundTertiary]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={{ flex: 1 }}
         >
             <SafeAreaView style={{ flex: 1, paddingHorizontal: 16 }}>
-                <View style={{ backgroundColor: '#1E1E2E', alignItems: 'center', borderRadius: 16 }}>
-                    <Text style={{ fontSize: 20, fontWeight: 'bold', marginBottom: 8, color: 'white' }}>
-                        📊 تاریخچه توانایی (Elo)
-                    </Text>
-                    <Text style={{ fontSize: 14, color: '#aaa', marginBottom: 16 }}>
-                        {displayData.length} بازی اخیر
-                    </Text>
-                    <LineChart
-                        data={{
-                            datasets: [{
-                                data: displayData,
-                                color: (opacity = 1) => getColor(opacity),
-                                strokeWidth: 3
-                            }],
-                            labels: displayData.map((_, index) => {
-                                // نمایش برچسب‌های کمتر برای خوانایی بهتر
-                                if (index % 5 === 0 || index === displayData.length - 1) {
-                                    return `${index + 1}`;
-                                }
-                                return '';
-                            })
-                        }}
-                        width={screenWidth - 32}
-                        height={300}
-                        chartConfig={{
-                            backgroundColor: '#1E1E2E',
-                            backgroundGradientFrom: '#2D2D44',
-                            backgroundGradientTo: '#1A1A2E',
-                            decimalPlaces: 0,
-                            color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-                            style: { borderRadius: 16 },
-                            formatYLabel: (value) => `${value}`,
-                            propsForLabels: {
-                                fontSize: 10
-                            }
-                        }}
-                        bezier
-                        withDots={true}
-                        withVerticalLines={false}
-                        style={{
-                            marginVertical: 8,
-                            borderRadius: 16
-                        }}
-                        onDataPointClick={({ value, index }) => {
-                            console.log(`بازی ${index + 1}: ${value} امتیاز Elo`);
-                        }}
-                    />
-                </View>
+                <ChartSection data={displayData} />
 
-
-                <View style={{
-                    marginTop: 20,
-                    flexDirection: 'row',
-                    justifyContent: 'space-around',
-                    width: '100%',
-                    flexWrap: 'wrap',
-                    gap: 10
-                }}>
-                    <View style={{ alignItems: 'center', backgroundColor: '#2D2D44', padding: 10, borderRadius: 10, minWidth: 80 }}>
-                        <Text style={{ color: 'gray', fontSize: 12 }}>میانگین</Text>
-                        <Text style={{ fontWeight: 'bold', color: 'white' }}>
-                            {average}
-                        </Text>
-                    </View>
-                    <View style={{ alignItems: 'center', backgroundColor: '#2D2D44', padding: 10, borderRadius: 10, minWidth: 80 }}>
-                        <Text style={{ color: 'gray', fontSize: 12 }}>بالاترین</Text>
-                        <Text style={{ fontWeight: 'bold', color: '#4CAF50' }}>
-                            {maxElo}
-                        </Text>
-                    </View>
-                    <View style={{ alignItems: 'center', backgroundColor: '#2D2D44', padding: 10, borderRadius: 10, minWidth: 80 }}>
-                        <Text style={{ color: 'gray', fontSize: 12 }}>کمترین</Text>
-                        <Text style={{ fontWeight: 'bold', color: '#FF6B6B' }}>
-                            {minElo}
-                        </Text>
-                    </View>
-                    <View style={{ alignItems: 'center', backgroundColor: '#2D2D44', padding: 10, borderRadius: 10, minWidth: 80 }}>
-                        <Text style={{ color: 'gray', fontSize: 12 }}>فعلی</Text>
-                        <Text style={{ fontWeight: 'bold', color: '#FFD700' }}>
-                            {currentElo}
-                        </Text>
-                    </View>
-                </View>
-
-                {/* نمایش تغییرات کلی */}
-                {displayData.length > 1 && (
-                    <View style={{
-                        marginTop: 15,
-                        padding: 10,
-                        backgroundColor: '#2D2D44',
-                        borderRadius: 10,
-                        width: '100%',
-                        alignItems: 'center'
-                    }}>
-                        <Text style={{ color: '#aaa', fontSize: 12 }}>
-                            تغییر کل:
-                            <Text style={{
-                                color: displayData[displayData.length - 1] > displayData[0] ? '#4CAF50' : '#FF6B6B',
-                                fontWeight: 'bold',
-                                fontSize: 14
-                            }}>
-                                {' '}
-                                {displayData[displayData.length - 1] - displayData[0] > 0 ? '+' : ''}
-                                {displayData[displayData.length - 1] - displayData[0]}
-                            </Text>
-                        </Text>
-                    </View>
-                )}
+                <StatSection
+                    average={average}
+                    maxElo={maxElo}
+                    minElo={minElo}
+                    currentElo={currentElo}
+                    data={displayData}
+                />
             </SafeAreaView>
         </LinearGradient>
     );

@@ -3,6 +3,7 @@ import { aiService } from '@/services/ai/aiService';
 import { boardService } from '@/services/boardService';
 import { gameService } from '@/services/gameService';
 import storageService from '@/services/storageService';
+import { userService } from '@/services/userService';
 import { create } from 'zustand';
 import useUserStore from './useUserStore';
 
@@ -128,7 +129,7 @@ const useGameStore = create((set, get) => ({
   endMatch: async (winner, newGameScore) => {
     const state = get();
     const opponentElo = state.aiProfile.baseRating;
-    const currentUserElo = useUserStore.getState().getCurrentElo(); //before change
+    const currentUserElo = useUserStore.getState().getCurrentElo(); // before change
 
     const oldUserElo = currentUserElo;
     const oldAIElo = opponentElo;
@@ -139,6 +140,16 @@ const useGameStore = create((set, get) => ({
       opponentElo,
       state.targetScore
     );
+
+    // 📊 ارسال نتیجه‌ی مسابقه به سرور برای آپدیت آمار (fire-and-forget)
+    const eloChange = Math.round(
+      (Number(newUserElo) - Number(oldUserElo)) * 100
+    ) / 100;
+
+    userService.syncMatchResultToServer({
+      result: winner === 'white' ? 'WIN' : 'LOSS',
+      eloChange,
+    });
 
     set({
       gameScore: newGameScore,

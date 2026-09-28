@@ -1,6 +1,7 @@
 // index.tsx
 import GameCard from '@/components/home/gameCard';
 import ProfileCard from '@/components/home/profileCard';
+import useThemeStore from '@/stores/useThemeStore';
 import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
@@ -15,11 +16,11 @@ const games = [
 ];
 
 export default function HomeScreen() {
-
+  const { colors } = useThemeStore();
 
   return (
-    <LinearGradient
-      colors={['#102b63', '#061636', '#02091c']}
+   <LinearGradient
+      colors={[colors.backgroundPrimary, colors.backgroundSecondary, colors.backgroundTertiary]}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
       style={{ flex: 1 }}
