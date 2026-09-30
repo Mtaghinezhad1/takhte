@@ -1,9 +1,12 @@
 import { learnData } from '@/constants/learnData';
+import useThemeStore from '@/stores/useThemeStore';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 const Quiz = ({ categoryId, subcategoryId, pageId, isAnswerCorrect, setIsAnswerCorrect }) => {
+    const { colors } = useThemeStore();
+
     const category = learnData.find(c => c.key === categoryId);
     const subcategory = category?.subcategories.find(s => s.key === subcategoryId);
     const page = subcategory?.pages.find(p => p.id === Number(pageId));
@@ -22,18 +25,18 @@ const Quiz = ({ categoryId, subcategoryId, pageId, isAnswerCorrect, setIsAnswerC
 
     return (
         <LinearGradient
-            colors={['rgba(4, 42, 82, 0.86)', 'rgba(2, 25, 52, 0.92)']}
+            colors={[colors.profileBgPrimary, colors.profileBgSecondary]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={styles.card}
         >
             {/* Header */}
             <View style={styles.questionHeader}>
-                <Text style={styles.questionTitle}>سوال</Text>
+                <Text style={[styles.questionTitle, { color: colors.text }]}>سوال</Text>
             </View>
 
             {/* Question text */}
-            <Text style={styles.questionText}>{quizComponent.question}</Text>
+            <Text style={[styles.questionText, { color: colors.text }]}>{quizComponent.question}</Text>
 
             {/* Answer options */}
             <View style={styles.answersContainer}>
@@ -77,6 +80,7 @@ const Quiz = ({ categoryId, subcategoryId, pageId, isAnswerCorrect, setIsAnswerC
                                     <Text
                                         style={[
                                             styles.answerText,
+                                            { color: colors.text },
                                             showAsWrong && styles.answerTextWrong,
                                         ]}
                                     >

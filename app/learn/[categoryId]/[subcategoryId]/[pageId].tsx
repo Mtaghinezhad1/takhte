@@ -187,8 +187,6 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         marginTop: 16,
         paddingTop: 12,
-        borderTopWidth: 1,
-        borderTopColor: '#eee',
         gap: 10,
     },
 });

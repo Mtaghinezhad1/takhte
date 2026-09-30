@@ -29,7 +29,7 @@ const ProfileSection = () => {
         <View style={styles.appContainer}>
             {/* Header */}
             <View style={[styles.header, isShort && styles.headerShort]}>
-                <Text style={styles.headerTitle}>
+                <Text style={[styles.headerTitle,{color: colors.text}]}>
                     نرد <Text style={styles.headerHighlight}>لند</Text>
                 </Text>
             </View>
@@ -47,12 +47,12 @@ const ProfileSection = () => {
                         {/* ELO box */}
                         <View style={styles.eloBox}>
                             <Text style={styles.eloLabel}>توانایی</Text>
-                            <Text style={[styles.eloNumber, isShort && styles.eloNumberShort]}>{elo}</Text>
+                            <Text style={[styles.eloNumber, isShort && styles.eloNumberShort, {color: colors.text}]}>{elo}</Text>
                         </View>
 
                         {/* Profile info */}
                         <View style={styles.profileInfo}>
-                            <Text style={[styles.profileName, isShort && styles.profileNameShort]}>{user.username}</Text>
+                            <Text style={[styles.profileName, isShort && styles.profileNameShort, {color: colors.text}]}>{user.username}</Text>
                             <Text style={[styles.profileStatus, isShort && styles.profileStatusShort]}>
                                 برای شروع بازی وارد حساب شوید
                             </Text>
@@ -65,7 +65,6 @@ const ProfileSection = () => {
                                 source={user.avatarKey ? getAvatarByKey(user.avatarKey) : require('@/assets/avatar/default.jpeg')}
                                 style={[styles.avatar, isShort && styles.avatarShort]}
                             />
-                            <View style={styles.onlineIndicator} />
                         </TouchableOpacity>
 
 
@@ -74,19 +73,19 @@ const ProfileSection = () => {
                     {/* Stats */}
                     <View style={styles.stats}>
                         <View style={styles.stat}>
-                            <Text style={[styles.statNumber, isShort && styles.statNumberShort]}>{statistics.wins / statistics.totalGames || 0}%</Text>
+                            <Text style={[styles.statNumber, isShort && styles.statNumberShort, {color: colors.text}]}>{statistics.wins / statistics.totalGames || 0}%</Text>
                             <Text style={[styles.statLabel, isShort && styles.statLabelShort]}>
                                 نرخ برد
                             </Text>
                         </View>
                         <View style={styles.stat}>
-                            <Text style={[styles.statNumber, isShort && styles.statNumberShort]}>{statistics.winStreak}</Text>
+                            <Text style={[styles.statNumber, isShort && styles.statNumberShort, {color: colors.text}]}>{statistics.winStreak}</Text>
                             <Text style={[styles.statLabel, isShort && styles.statLabelShort]}>
                                 برد متوالی
                             </Text>
                         </View>
                         <View style={styles.stat}>
-                            <Text style={[styles.statNumber, isShort && styles.statNumberShort]}>{statistics.totalGames}</Text>
+                            <Text style={[styles.statNumber, isShort && styles.statNumberShort, {color: colors.text}]}>{statistics.totalGames}</Text>
                             <Text style={[styles.statLabel, isShort && styles.statLabelShort]}>تعداد باز</Text>
                         </View>
                     </View>
@@ -102,7 +101,6 @@ const styles = StyleSheet.create({
         flex: 1,
         alignSelf: 'center',
         width: '100%',
-        overflow: 'hidden',
         marginBottom: 16,
     },
     header: {
@@ -118,7 +116,6 @@ const styles = StyleSheet.create({
     headerTitle: {
         fontSize: 20,
         fontWeight: '900',
-        color: '#ffffff',
         textAlign: 'right',
     },
     headerHighlight: {
@@ -164,17 +161,6 @@ const styles = StyleSheet.create({
         width: 58,
         height: 58,
         borderRadius: 29,
-    },
-    onlineIndicator: {
-        position: 'absolute',
-        width: 14,
-        height: 14,
-        borderRadius: 7,
-        backgroundColor: '#28df82',
-        borderWidth: 3,
-        borderColor: '#071a39',
-        bottom: 2,
-        left: 2,
     },
     profileInfo: {
         flex: 1,

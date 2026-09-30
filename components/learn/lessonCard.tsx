@@ -1,3 +1,5 @@
+import useThemeStore from '@/stores/useThemeStore';
+import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
@@ -5,37 +7,46 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 const rem = 16;
 
 const LessonCard = ({ title, onPress, numberOfLessons }) => {
+    const { colors } = useThemeStore();
 
 
     return (
         <TouchableOpacity style={styles.lessonCard} onPress={onPress}>
+            <LinearGradient
+                colors={[colors.profileBgPrimary, colors.profileBgSecondary]}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={{flex: 1, flexDirection: 'row', padding: 22,}}
+            >
+                <View style={styles.blurDecoration} />
 
-            <View style={styles.blurDecoration} />
-
-            {/* Progress Bar */}
-            <View style={styles.loader}>
-                <View
-                    style={[
-                        styles.progress,
-                        { height: `${20}%` },
-                    ]}
-                />
-            </View>
-
-            {/* Content column */}
-            <View style={styles.lessonContent}>
-                <View style={styles.lessonTop}>
-                    <Text style={styles.lessonTitle}>{title}</Text>
+                {/* Progress Bar */}
+                <View style={styles.loader}>
+                    <View
+                        style={[
+                            styles.progress,
+                            { height: `${20}%` },
+                        ]}
+                    />
                 </View>
 
-                {/* Meta */}
-                <View style={styles.lessonMeta}>
-                    <View style={styles.meta}>
-                        <Text style={styles.metaIcon}>▢</Text>
-                        <Text style={styles.metaText}>{numberOfLessons} درس</Text>
+                {/* Content column */}
+                <View style={styles.lessonContent}>
+                    <View style={styles.lessonTop}>
+                        <Text style={[styles.lessonTitle, { color: colors.text }]}>{title}</Text>
+                    </View>
+
+                    {/* Meta */}
+                    <View style={styles.lessonMeta}>
+                        <View style={styles.meta}>
+                            <Text style={styles.metaIcon}>▢</Text>
+                            <Text style={styles.metaText}>{numberOfLessons} درس</Text>
+                        </View>
                     </View>
                 </View>
-            </View>
+            </LinearGradient>
+
+
         </TouchableOpacity>
 
 
@@ -45,8 +56,6 @@ const LessonCard = ({ title, onPress, numberOfLessons }) => {
 const styles = StyleSheet.create({
     lessonCard: {
         position: 'relative',
-        padding: 22,
-        flexDirection: 'row',
         marginBottom: 16,
         gap: 18, // works on newer RN, fallback: use margin/padding
         borderRadius: 25,

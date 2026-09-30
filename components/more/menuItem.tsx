@@ -11,7 +11,7 @@ import {
 const { height: screenHeight } = Dimensions.get('window');
 
 const MenuItem = ({ icon, title, subtitle, onPress = null, showToggle = false }) => {
-    const { isDark, toggleTheme, getColors } = useThemeStore();
+    const { isDark, toggleTheme, colors } = useThemeStore();
     const isShort = screenHeight < 700;
 
 
@@ -35,7 +35,7 @@ const MenuItem = ({ icon, title, subtitle, onPress = null, showToggle = false })
                 <Text style={styles.arrow}>‹</Text>
             )}
             <View style={styles.menuContent}>
-                <Text style={styles.menuTitle}>{title}</Text>
+                <Text style={[styles.menuTitle, { color: colors.text }]}>{title}</Text>
                 <Text style={styles.menuSubtitle}>{subtitle}</Text>
             </View>
             <View style={styles.menuIcon}>

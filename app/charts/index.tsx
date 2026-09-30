@@ -1,6 +1,7 @@
 // index.tsx
 import ChartSection from '@/components/chart/chartSection';
 import StatSection from '@/components/chart/statSection';
+import ProfileCard from '@/components/home/profileCard';
 import useThemeStore from '@/stores/useThemeStore';
 import useUserStore from '@/stores/useUserStore';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -70,6 +71,7 @@ const CustomChart = () => {
             style={{ flex: 1 }}
         >
             <SafeAreaView style={{ flex: 1, paddingHorizontal: 16 }}>
+                <ProfileCard />
                 <ChartSection data={displayData} />
 
                 <StatSection

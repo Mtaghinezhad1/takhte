@@ -87,7 +87,7 @@ const LearnScreen = () => {
                                         </Text>
                                     </LinearGradient>
                                 ) : (
-                                    <View style={[styles.level, styles.inactiveLevel]}>
+                                    <View style={[styles.level, styles.inactiveLevel, {backgroundColor: colors.inactiveTab}]}>
                                         <Text style={styles.levelText}>{level.label}</Text>
                                     </View>
                                 )}
@@ -195,7 +195,6 @@ const styles = StyleSheet.create({
         borderWidth: 1,
     },
     inactiveLevel: {
-        backgroundColor: 'rgba(7, 28, 62, 0.65)',
         borderColor: 'rgba(62, 119, 213, 0.15)',
     },
     activeLevel: {

@@ -102,20 +102,25 @@ const EditProfile = () => {
         >
           {/* Header */}
           <View style={styles.header}>
-            <Text style={styles.headerTitle}>ویرایش اطلاعات</Text>
+            <Text style={[styles.headerTitle, { color: colors.text }]}>ویرایش اطلاعات</Text>
           </View>
 
           {/* Form Card */}
-          <View style={styles.formCard}>
+            <LinearGradient
+              colors={[colors.profileBgPrimary, colors.profileBgSecondary]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={styles.formCard}
+            >
             {/* Username */}
             <View style={styles.field}>
               <View style={styles.labelRow}>
                 <Text style={styles.labelIcon}>♙</Text>
-                <Text style={styles.labelText}>نام کاربری</Text>
+                <Text style={[styles.labelText, { color: colors.text }]}>نام کاربری</Text>
               </View>
               <View style={styles.inputWrapper}>
                 <TextInput
-                  style={styles.input}
+                  style={[styles.input, { color: colors.text }]}
                   value={localUsername}
                   onChangeText={setLocalUsername}
                   placeholder="نام کاربری"
@@ -132,7 +137,7 @@ const EditProfile = () => {
             <View style={styles.field}>
               <View style={styles.labelRow}>
                 <Text style={styles.labelIcon}>♙</Text>
-                <Text style={styles.labelText}>جنسیت</Text>
+                <Text style={[styles.labelText, { color: colors.text }]}>جنسیت</Text>
               </View>
               <View style={styles.genderOptions}>
                 {genderOptions.map((option) => {
@@ -165,7 +170,8 @@ const EditProfile = () => {
                 })}
               </View>
             </View>
-          </View>
+            </LinearGradient>
+
 
           {/* Buttons */}
           <View style={styles.btnContainer}>

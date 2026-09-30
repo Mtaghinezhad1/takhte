@@ -1,5 +1,6 @@
 // [id].tsx
 import storageService from '@/services/storageService';
+import useThemeStore from '@/stores/useThemeStore';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useState } from 'react';
@@ -14,6 +15,8 @@ const PreGameScreen = () => {
   const [isReady, setIsReady] = useState(true);
   const [matchLength, setMatchLength] = useState(3);
   const [difficulty, setDifficulty] = useState(5);
+  const { colors } = useThemeStore();
+
 
   const isAIvsAI = gameMode === 'AIvsAI';
 
@@ -27,7 +30,7 @@ const PreGameScreen = () => {
 
 
       if (typeof saved.matchLength === 'number') {
-        
+
         setMatchLength(saved.matchLength);
       }
       if (typeof saved.difficulty === 'number') {
@@ -85,148 +88,167 @@ const PreGameScreen = () => {
   }
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
+    <LinearGradient
+      colors={[colors.backgroundPrimary, colors.backgroundSecondary, colors.backgroundTertiary]}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
+      style={{ flex: 1 }}
+    >
+      <SafeAreaView style={{ flex: 1, paddingHorizontal: 16 }}>
+        <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
 
-      {/* Background gradient */}
-      <LinearGradient
-        colors={['#041a3c', '#020f25', '#020f25']}
-        start={{ x: 0.5, y: 0 }}
-        end={{ x: 0.5, y: 1 }}
-        style={StyleSheet.absoluteFill}
-      />
+        {/* Decorative glow approximations */}
+        <View style={styles.glowTop} />
+        <View style={styles.glowRight} />
 
-      {/* Decorative glow approximations */}
-      <View style={styles.glowTop} />
-      <View style={styles.glowRight} />
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+        >
+          <View style={styles.appContainer}>
+            {/* Header */}
+            <View style={styles.header}>
 
-      <ScrollView
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-      >
-        <View style={styles.appContainer}>
-          {/* Header */}
-          <View style={styles.header}>
-            <TouchableOpacity
-              style={styles.backBtn}
-              onPress={() => router.back()}
-              activeOpacity={0.8}
-            >
-              <Text style={styles.backIcon}>‹</Text>
-            </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.back}
+                onPress={() => router.back()}
+                activeOpacity={0.8}
+              >
+                <LinearGradient
+                  colors={[colors.profileBgPrimary, colors.profileBgSecondary]}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                  style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}
+                >
+                  <Text style={[styles.backIcon, { color: colors.text }]}>‹</Text>
+                </LinearGradient>
+              </TouchableOpacity>
 
-            <View>
-              <Text style={styles.headerTitleText}>تنظیمات بازی</Text>
-              <Text style={styles.headerSubtitle}>
-                لطفاً تنظیمات بازی را مشخص کنید
-              </Text>
-            </View>
-          </View>
-
-          {/* Match length card */}
-          <View style={styles.settingsCard}>
-            <View style={styles.sectionTitle}>
-              <Text style={styles.sectionTitleText}>طول بازی</Text>
-              <Text style={styles.sectionIcon}>🎯</Text>
-            </View>
-
-            <Text style={styles.sectionDescription}>
-              بازی تا رسیدن به امتیاز انتخابی ادامه پیدا می‌کند.
-            </Text>
-
-            <View style={styles.numbersRow}>
-              {MATCH_LENGTHS.map((num) => {
-                const isActive = matchLength === num;
-                return (
-                  <TouchableOpacity
-                    key={num}
-                    style={styles.numberWrapper}
-                    onPress={() => setMatchLength(num)}
-                    activeOpacity={0.8}
-                  >
-                    {isActive ? (
-                      <LinearGradient
-                        colors={['#148cff', '#0757d6']}
-                        start={{ x: 0, y: 0 }}
-                        end={{ x: 1, y: 1 }}
-                        style={[styles.number, styles.numberActive]}
-                      >
-                        <Text style={[styles.numberText, styles.numberTextActive]}>
-                          {num}
-                        </Text>
-                      </LinearGradient>
-                    ) : (
-                      <View style={styles.number}>
-                        <Text style={styles.numberText}>{num}</Text>
-                      </View>
-                    )}
-                  </TouchableOpacity>
-                );
-              })}
-            </View>
-          </View>
-
-          {/* Difficulty card */}
-          <View style={styles.settingsCard}>
-            <View style={styles.sectionTitle}>
-              <Text style={styles.sectionTitleText}>سختی بازی</Text>
-              <Text style={styles.sectionIcon}>🧠</Text>
+              <View>
+                <Text style={[styles.headerTitleText, { color: colors.text }]}>تنظیمات بازی</Text>
+                <Text style={styles.headerSubtitle}>
+                  لطفاً تنظیمات بازی را مشخص کنید
+                </Text>
+              </View>
             </View>
 
-            <Text style={styles.sectionDescription}>
-              هرچه عدد بالاتر باشد، هوش مصنوعی قوی‌تر و حرفه‌ای‌تر بازی می‌کند.
-            </Text>
-
-            <View style={styles.numbersGrid}>
-              {DIFFICULTIES.map((num) => {
-                const isActive = difficulty === num;
-                return (
-                  <TouchableOpacity
-                    key={num}
-                    style={styles.difficultyItem}
-                    onPress={() => setDifficulty(num)}
-                    activeOpacity={0.8}
-                  >
-                    {isActive ? (
-                      <LinearGradient
-                        colors={['#148cff', '#0757d6']}
-                        start={{ x: 0, y: 0 }}
-                        end={{ x: 1, y: 1 }}
-                        style={[styles.number, styles.numberActive]}
-                      >
-                        <Text style={[styles.numberText, styles.numberTextActive]}>
-                          {num}
-                        </Text>
-                      </LinearGradient>
-                    ) : (
-                      <View style={styles.number}>
-                        <Text style={styles.numberText}>{num}</Text>
-                      </View>
-                    )}
-                  </TouchableOpacity>
-                );
-              })}
-            </View>
-          </View>
-
-          {/* Start button */}
-          <TouchableOpacity
-            style={styles.startBtnWrapper}
-            onPress={startGame}
-            activeOpacity={0.85}
-          >
+            {/* Match length card */}
             <LinearGradient
-              colors={['#188dff', '#0757db']}
+              colors={[colors.profileBgPrimary, colors.profileBgSecondary]}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
-              style={styles.startBtn}
+              style={styles.settingsCard}
             >
-              <Text style={styles.startBtnText}>شروع بازی</Text>
+              <View style={styles.sectionTitle}>
+                <Text style={[styles.sectionTitleText, { color: colors.text }]}>طول بازی</Text>
+                <Text style={styles.sectionIcon}>🎯</Text>
+              </View>
+
+              <Text style={styles.sectionDescription}>
+                بازی تا رسیدن به امتیاز انتخابی ادامه پیدا می‌کند.
+              </Text>
+
+              <View style={styles.numbersRow}>
+                {MATCH_LENGTHS.map((num) => {
+                  const isActive = matchLength === num;
+                  return (
+                    <TouchableOpacity
+                      key={num}
+                      style={styles.numberWrapper}
+                      onPress={() => setMatchLength(num)}
+                      activeOpacity={0.8}
+                    >
+                      {isActive ? (
+                        <LinearGradient
+                          colors={['#148cff', '#0757d6']}
+                          start={{ x: 0, y: 0 }}
+                          end={{ x: 1, y: 1 }}
+                          style={[styles.number, styles.numberActive]}
+                        >
+                          <Text style={[styles.numberText, styles.numberTextActive]}>
+                            {num}
+                          </Text>
+                        </LinearGradient>
+                      ) : (
+                        <View style={[styles.number,{backgroundColor: colors.inactiveTab}]}>
+                          <Text style={styles.numberText}>{num}</Text>
+                        </View>
+                      )}
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
             </LinearGradient>
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+
+
+            {/* Difficulty card */}
+            <LinearGradient
+              colors={[colors.profileBgPrimary, colors.profileBgSecondary]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={styles.settingsCard}
+            >
+              <View style={styles.sectionTitle}>
+                <Text style={[styles.sectionTitleText, { color: colors.text }]}>سختی بازی</Text>
+                <Text style={styles.sectionIcon}>🧠</Text>
+              </View>
+
+              <Text style={styles.sectionDescription}>
+                هرچه عدد بالاتر باشد، هوش مصنوعی قوی‌تر و حرفه‌ای‌تر بازی می‌کند.
+              </Text>
+
+              <View style={styles.numbersGrid}>
+                {DIFFICULTIES.map((num) => {
+                  const isActive = difficulty === num;
+                  return (
+                    <TouchableOpacity
+                      key={num}
+                      style={styles.difficultyItem}
+                      onPress={() => setDifficulty(num)}
+                      activeOpacity={0.8}
+                    >
+                      {isActive ? (
+                        <LinearGradient
+                          colors={['#148cff', '#0757d6']}
+                          start={{ x: 0, y: 0 }}
+                          end={{ x: 1, y: 1 }}
+                          style={[styles.number, styles.numberActive]}
+                        >
+                          <Text style={[styles.numberText, styles.numberTextActive]}>
+                            {num}
+                          </Text>
+                        </LinearGradient>
+                      ) : (
+                        <View style={[styles.number,{backgroundColor: colors.inactiveTab}]}>
+                          <Text style={styles.numberText}>{num}</Text>
+                        </View>
+                      )}
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+            </LinearGradient>
+
+
+            {/* Start button */}
+            <TouchableOpacity
+              style={styles.startBtnWrapper}
+              onPress={startGame}
+              activeOpacity={0.85}
+            >
+              <LinearGradient
+                colors={['#188dff', '#0757db']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={styles.startBtn}
+              >
+                <Text style={styles.startBtnText}>شروع بازی</Text>
+              </LinearGradient>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
+      </SafeAreaView>
+    </LinearGradient>
   );
 };
 
@@ -254,7 +276,6 @@ const styles = StyleSheet.create({
     width: '100%',
     maxWidth: 480,
     alignSelf: 'center',
-    paddingHorizontal: 18,
     paddingTop: 18,
     paddingBottom: 40,
   },
@@ -301,6 +322,18 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.08,
     shadowRadius: 20,
     elevation: 4,
+  },
+  back: {
+    width: 52,
+    height: 52,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: '#0879e9',
+    shadowColor: '#0082ff',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.25,
+    shadowRadius: 15,
+    elevation: 6,
   },
   backIcon: {
     color: '#ffffff',

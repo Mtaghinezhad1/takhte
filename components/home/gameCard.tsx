@@ -1,4 +1,5 @@
 import storageService from '@/services/storageService';
+import useThemeStore from '@/stores/useThemeStore';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import React, { useState } from 'react';
@@ -6,10 +7,12 @@ import {
   StyleSheet, Text, TouchableOpacity, useWindowDimensions, View
 } from 'react-native';
 
-const GameCard = ({game}) => {
+const GameCard = ({ game }) => {
   const isStandard = game.variant === 'standard';
   const [isLoading, setIsLoading] = useState(false);
   const { width, height } = useWindowDimensions();
+  const { colors } = useThemeStore();
+
 
 
   const handleStartGame = async () => {
@@ -79,7 +82,7 @@ const GameCard = ({game}) => {
         style={StyleSheet.absoluteFillObject}
       />
       <View style={styles.content}>
-        <Text style={styles.title}>{game.title}</Text>
+        <Text style={[styles.title, { color: colors.text }]}>{game.title}</Text>
         <Text style={styles.subtitle}>{game.subtitle}</Text>
 
         {/* Features tags */}
@@ -115,7 +118,7 @@ const GameCard = ({game}) => {
           activeOpacity={0.8}
           onPress={handleStartGame}
           disabled={isLoading}        >
-          <Text style={styles.buttonText}>
+          <Text style={[styles.buttonText, { color: colors.text }]}>
             {isLoading ? '...' : 'شروع'}
           </Text>
         </TouchableOpacity>

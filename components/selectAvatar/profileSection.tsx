@@ -1,4 +1,6 @@
+import useThemeStore from '@/stores/useThemeStore';
 import useUserStore from '@/stores/useUserStore';
+import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
 import {
     Dimensions,
@@ -13,22 +15,29 @@ const { height: screenHeight } = Dimensions.get('window');
 const ProfileSection = ({ source }) => {
     const { user, statistics } = useUserStore();
     const elo = useUserStore.getState().getCurrentElo();
+    const { colors } = useThemeStore();
+
 
 
     // Responsive styles based on screen height
     const isShort = screenHeight < 700;
 
     return (
-        <View style={[styles.profileCard, isShort && styles.profileCardShort]}>
+        <LinearGradient
+            colors={[colors.profileBgPrimary, colors.profileBgSecondary]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={[styles.profileCard, isShort && styles.profileCardShort]}
+        >
             {/* ELO box */}
             <View style={styles.eloBox}>
                 <Text style={styles.eloLabel}>توانایی</Text>
-                <Text style={[styles.eloNumber, isShort && styles.eloNumberShort]}>{elo}</Text>
+                <Text style={[styles.eloNumber, isShort && styles.eloNumberShort, { color: colors.text }]}>{elo}</Text>
             </View>
 
             {/* Profile info */}
             <View style={styles.profileInfo}>
-                <Text style={[styles.profileName, isShort && styles.profileNameShort]}>{user.username}</Text>
+                <Text style={[styles.profileName, isShort && styles.profileNameShort, { color: colors.text }]}>{user.username}</Text>
             </View>
 
             {/* Avatar */}
@@ -37,9 +46,9 @@ const ProfileSection = ({ source }) => {
                     source={source}
                     style={[styles.avatar, isShort && styles.avatarShort]}
                 />
-                <View style={styles.onlineIndicator} />
             </View>
-        </View>
+        </LinearGradient>
+
     );
 };
 
@@ -78,17 +87,6 @@ const styles = StyleSheet.create({
         width: 58,
         height: 58,
         borderRadius: 29,
-    },
-    onlineIndicator: {
-        position: 'absolute',
-        width: 14,
-        height: 14,
-        borderRadius: 7,
-        backgroundColor: '#28df82',
-        borderWidth: 3,
-        borderColor: '#071a39',
-        bottom: 2,
-        left: 2,
     },
     profileInfo: {
         flex: 1,

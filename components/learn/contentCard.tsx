@@ -1,4 +1,5 @@
 import { learnData } from '@/constants/learnData';
+import useThemeStore from '@/stores/useThemeStore';
 import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
@@ -6,6 +7,8 @@ import { Image, StyleSheet, Text, View } from 'react-native';
 
 
 const ContentCard = ({ categoryId, subcategoryId, pageId }) => {
+    const { colors } = useThemeStore();
+
     const category = learnData.find(c => c.key === categoryId);
     const subcategory = category?.subcategories.find(s => s.key === subcategoryId);
     const page = subcategory?.pages.find(p => p.id === Number(pageId));
@@ -19,7 +22,7 @@ const ContentCard = ({ categoryId, subcategoryId, pageId }) => {
 
     return (
         <LinearGradient
-            colors={['rgba(4, 42, 82, 0.86)', 'rgba(2, 25, 52, 0.92)']}
+            colors={[colors.profileBgPrimary, colors.profileBgSecondary]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={styles.card}
@@ -29,11 +32,11 @@ const ContentCard = ({ categoryId, subcategoryId, pageId }) => {
                 <View style={styles.titleIcon}>
                     <Text style={styles.titleIconText}>{page?.id}</Text>
                 </View>
-                <Text style={styles.titleText}>{heroComponent.title}</Text>
+                <Text style={[styles.titleText,{color: colors.text}]}>{heroComponent.title}</Text>
             </View>
 
             {/* Body text */}
-            <Text style={styles.text}>{contentComponent.value}</Text>
+            <Text style={[styles.text,{color: colors.text}]}>{contentComponent.value}</Text>
 
             {/* Board image wrapper */}
             <View style={styles.boardWrapper}>

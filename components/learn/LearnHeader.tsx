@@ -1,11 +1,12 @@
 // 7 learn top.js
+import useThemeStore from '@/stores/useThemeStore';
 import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
 import {
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 
 // Persian digits helper
@@ -18,6 +19,7 @@ const LearnHeader = ({
   totalLessons = 10,
   onBack,
 }) => {
+  const { colors } = useThemeStore();
   return (
     <View style={styles.header}>
       {/* Back button */}
@@ -26,17 +28,24 @@ const LearnHeader = ({
         onPress={onBack}
         activeOpacity={0.8}
       >
-        <Text style={styles.backIcon}>‹</Text>
+        <LinearGradient
+          colors={[colors.profileBgPrimary, colors.profileBgSecondary]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}
+        >
+          <Text style={[styles.backIcon, { color: colors.text }]}>‹</Text>
+        </LinearGradient>
       </TouchableOpacity>
 
       {/* Progress card */}
       <LinearGradient
-        colors={['rgba(3, 43, 87, 0.9)', 'rgba(2, 27, 57, 0.9)']}
+        colors={[colors.profileBgPrimary, colors.profileBgSecondary]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 0 }}
         style={styles.progressCard}
       >
-        <Text style={styles.progressTitle} numberOfLines={1}>
+        <Text style={[styles.progressTitle, { color: colors.text }]} numberOfLines={1}>
           {title}
         </Text>
         <Text style={styles.lessonNumber} numberOfLines={1}>
@@ -61,9 +70,6 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     borderWidth: 1,
     borderColor: '#0879e9',
-    backgroundColor: 'rgba(4, 42, 83, 0.65)',
-    alignItems: 'center',
-    justifyContent: 'center',
     shadowColor: '#0082ff',
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.25,

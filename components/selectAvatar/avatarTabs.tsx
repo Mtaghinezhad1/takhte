@@ -1,3 +1,4 @@
+import useThemeStore from '@/stores/useThemeStore';
 import {
     StyleSheet,
     Text,
@@ -6,15 +7,17 @@ import {
 } from 'react-native';
 
 const AvatarTabs = ({ activeTab, setActiveTab }) => {
+    const { colors } = useThemeStore();
+
     return (
-        <View style={styles.tabs}>
+        <View style={[styles.tabs,{backgroundColor: colors.inactiveTab}]}>
             <TouchableOpacity
                 style={[styles.tab, activeTab === 'all' && styles.tabActive]}
                 onPress={() => setActiveTab('all')}
                 activeOpacity={0.8}
             >
                 <Text
-                    style={[styles.tabText, activeTab === 'all' && styles.tabTextActive]}
+                    style={[styles.tabText, { color: colors.text }, activeTab === 'all' && styles.tabTextActive]}
                 >
                     همه آواتارها 👤
                 </Text>
@@ -26,7 +29,7 @@ const AvatarTabs = ({ activeTab, setActiveTab }) => {
                 activeOpacity={0.8}
             >
                 <Text
-                    style={[styles.tabText, activeTab === 'premium' && styles.tabTextActive]}
+                    style={[styles.tabText, { color: colors.text }, activeTab === 'premium' && styles.tabTextActive]}
                 >
                     ویژه 👑
                 </Text>

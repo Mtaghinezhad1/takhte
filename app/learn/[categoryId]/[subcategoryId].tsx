@@ -44,7 +44,7 @@ export default function SubcategoryPage() {
                         return (
                             <TouchableOpacity
                                 key={page.id}
-                                style={[styles.item, isCompeleted && styles.passed]}
+                                style={[styles.item,{backgroundColor: colors.profileBgPrimary}, isCompeleted && styles.passed]}
                                 onPress={() => router.push(`/learn/${categoryId}/${subcategoryId}/${page.id}`)}
                             >
                                 <Text style={{ fontSize: 18, textAlign: 'right', color: colors.text }}>

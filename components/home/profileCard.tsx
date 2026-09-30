@@ -35,7 +35,7 @@ const ProfileCard = () => {
                 {/* Info */}
                 <View style={styles.info}>
                     <View style={styles.nameRow}>
-                        <Text style={styles.name}>{user.username}</Text>
+                        <Text style={[styles.name, {color: colors.text}]}>{user.username}</Text>
                     </View>
                     {/* optional subtitle could be added here */}
                 </View>
@@ -44,7 +44,7 @@ const ProfileCard = () => {
                 <View style={styles.eloContainer}>
                     <Text style={styles.eloLabel}>توانایی</Text>
                     <View style={styles.eloValue}>
-                        <Text style={styles.eloNumber}>{elo}</Text>
+                        <Text style={[styles.eloNumber,{color: colors.text}]}>{elo}</Text>
                     </View>
                 </View>
             </LinearGradient>

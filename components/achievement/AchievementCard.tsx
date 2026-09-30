@@ -1,11 +1,12 @@
 // AchievementCard.js
+import useThemeStore from '@/stores/useThemeStore';
 import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
 import {
-    Dimensions,
-    StyleSheet,
-    Text,
-    View,
+  Dimensions,
+  StyleSheet,
+  Text,
+  View,
 } from 'react-native';
 
 const { width } = Dimensions.get('window');
@@ -27,6 +28,8 @@ const AchievementCard = ({
 }) => {
   const isCompleted = completed || progress >= 100;
   const percent = Math.min(Math.max(progress, 0), 100);
+  const { colors } = useThemeStore();
+
 
   // ---------- Incomplete / locked state ----------
   if (!isCompleted) {
@@ -37,7 +40,7 @@ const AchievementCard = ({
         </View>
 
         <Text
-          style={[styles.title, styles.titleIncomplete]}
+          style={[styles.title, styles.titleIncomplete, { color: colors.text }]}
           numberOfLines={2}
         >
           {title}
@@ -60,7 +63,7 @@ const AchievementCard = ({
               ]}
             />
           </View>
-          <Text style={[styles.progressValue, styles.progressValueIncomplete]}>
+          <Text style={[styles.progressValue, styles.progressValueIncomplete, { color: colors.text }]}>
             {fa(current)}/{fa(total)}
           </Text>
         </View>
@@ -71,7 +74,7 @@ const AchievementCard = ({
   // ---------- Completed state ----------
   return (
     <LinearGradient
-      colors={['rgba(8, 42, 91, 0.98)', 'rgba(3, 20, 47, 0.98)']}
+      colors={[colors.profileBgPrimary, colors.profileBgSecondary]}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
       style={[styles.card, styles.cardCompleted]}
@@ -82,7 +85,7 @@ const AchievementCard = ({
         <Text style={styles.iconText}>{icon}</Text>
       </View>
 
-      <Text style={[styles.title, styles.titleCompleted]} numberOfLines={2}>
+      <Text style={[styles.title, styles.titleCompleted, { color: colors.text }]} numberOfLines={2}>
         {title}
       </Text>
 
@@ -102,7 +105,7 @@ const AchievementCard = ({
             style={[styles.progressFill, { width: `${percent}%` }]}
           />
         </View>
-        <Text style={[styles.progressValue, styles.progressValueCompleted]}>
+        <Text style={[styles.progressValue, styles.progressValueCompleted, { color: colors.text }]}>
           {fa(current)}/{fa(total)}
         </Text>
       </View>
@@ -110,14 +113,12 @@ const AchievementCard = ({
   );
 };
 
-const CARD_MIN_HEIGHT = isSmall ? 245 : 270;
 const ICON_SIZE = isSmall ? 80 : 100;
 
 const styles = StyleSheet.create({
   /* ---------- Card base ---------- */
   card: {
     width: isSmall ? '31.5%' : '31%',
-    minHeight: CARD_MIN_HEIGHT,
     borderRadius: isSmall ? 18 : 22,
     paddingVertical: isSmall ? 11 : 14,
     paddingHorizontal: isSmall ? 6 : 9,
@@ -196,7 +197,6 @@ const styles = StyleSheet.create({
 
   /* ---------- Title ---------- */
   title: {
-    minHeight: 48,
     textAlign: 'center',
     fontSize: isSmall ? 13 : 15,
     lineHeight: isSmall ? 20 : 23,
@@ -212,7 +212,6 @@ const styles = StyleSheet.create({
 
   /* ---------- Description ---------- */
   description: {
-    minHeight: 38,
     textAlign: 'center',
     fontSize: isSmall ? 9 : 10,
     lineHeight: isSmall ? 15 : 17,

@@ -1,5 +1,7 @@
 // components/ChartSection.tsx
-import { Dimensions, Text, View } from 'react-native';
+import useThemeStore from '@/stores/useThemeStore';
+import { LinearGradient } from 'expo-linear-gradient';
+import { Dimensions, Text } from 'react-native';
 import { LineChart } from 'react-native-chart-kit';
 
 const screenWidth = Dimensions.get('window').width;
@@ -9,6 +11,8 @@ type ChartSectionProps = {
 };
 
 const ChartSection = ({ data }: ChartSectionProps) => {
+    const { colors } = useThemeStore();
+
     // محاسبه رنگ‌ها بر اساس تغییرات
     const getColor = (opacity = 1) => {
         if (data.length > 1) {
@@ -24,8 +28,13 @@ const ChartSection = ({ data }: ChartSectionProps) => {
     };
 
     return (
-        <View style={{ backgroundColor: '#1E1E2E', alignItems: 'center', borderRadius: 16 }}>
-            <Text style={{ fontSize: 20, fontWeight: 'bold', marginBottom: 8, color: 'white' }}>
+        <LinearGradient
+            colors={[colors.profileBgPrimary, colors.profileBgSecondary]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={{ backgroundColor: '#1E1E2E', alignItems: 'center', borderRadius: 16, marginTop: 16, borderWidth: 1, borderColor: 'rgba(91,139,213,0.25)' }}
+        >
+            <Text style={{ fontSize: 20, fontWeight: 'bold', marginBottom: 8 , color: colors.text}}>
                 📊 تاریخچه توانایی (Elo)
             </Text>
             <Text style={{ fontSize: 14, color: '#aaa', marginBottom: 16 }}>
@@ -50,8 +59,8 @@ const ChartSection = ({ data }: ChartSectionProps) => {
                 height={300}
                 chartConfig={{
                     backgroundColor: '#1E1E2E',
-                    backgroundGradientFrom: '#2D2D44',
-                    backgroundGradientTo: '#1A1A2E',
+                    backgroundGradientFrom: colors.profileBgPrimary,
+                    backgroundGradientTo: colors.profileBgSecondary,
                     decimalPlaces: 0,
                     color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
                     style: { borderRadius: 16 },
@@ -71,7 +80,7 @@ const ChartSection = ({ data }: ChartSectionProps) => {
                     console.log(`بازی ${index + 1}: ${value} امتیاز Elo`);
                 }}
             />
-        </View>
+        </LinearGradient>
     );
 };
 

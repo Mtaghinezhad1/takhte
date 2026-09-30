@@ -28,7 +28,7 @@ export const lightColors = {
   cancelBtnSecondary: '#dbe9ff',
 
   // ----------- border ----------
-  border: 'rgba(34,110,255,0.18)',
+  border: 'rgb(117, 148, 239)',
 
   // ----------- background ----------
   backgroundPrimary: '#f5f9ff',
@@ -38,6 +38,9 @@ export const lightColors = {
   // ----------- profile card background ----------
   profileBgPrimary: '#ffffff',
   profileBgSecondary: '#eef5ff',
+
+  //----------- tabs -------------
+  inactiveTab: 'rgba(0, 102, 255, 0.19)',
 };
 
 export const darkColors = {
@@ -67,6 +70,9 @@ export const darkColors = {
   //----------- profile card background-------------
   profileBgPrimary: 'rgba(18,43,87,0.95)',
   profileBgSecondary: 'rgba(5,19,47,0.9)',
+  //----------- tabs -------------
+  inactiveTab: 'rgba(9, 28, 56, 0.85)',
+
 
 
 };

@@ -5,7 +5,7 @@ import useThemeStore from '@/stores/useThemeStore';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import React from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { ScrollView, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 
@@ -13,7 +13,7 @@ export default function MoreScreen() {
   const { colors } = useThemeStore();
 
   return (
-   <LinearGradient
+    <LinearGradient
       colors={[colors.backgroundPrimary, colors.backgroundSecondary, colors.backgroundTertiary]}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
@@ -27,7 +27,12 @@ export default function MoreScreen() {
         >
           <ProfileSection />
 
-          <View style={styles.menuGroup}>
+          <LinearGradient
+            colors={[colors.profileBgPrimary, colors.profileBgSecondary]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.menuGroup}
+          >
             <MenuItem
               icon="👤"
               title="ویرایش پروفایل"
@@ -46,18 +51,23 @@ export default function MoreScreen() {
               subtitle="تم تیره برنامه"
               showToggle
             />
-          </View>
+          </LinearGradient>
 
           <Auth />
 
-          <View style={styles.menuGroup}>
+          <LinearGradient
+            colors={[colors.profileBgPrimary, colors.profileBgSecondary]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.menuGroup}
+          >
             <MenuItem
               icon="i"
               title="نسخه اپیکیشن:                    2.0.0"
               subtitle=""
             />
-          </View>
-
+          </LinearGradient>
+          
         </ScrollView>
       </SafeAreaView>
     </LinearGradient>
