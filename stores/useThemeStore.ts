@@ -14,8 +14,6 @@ export const lightColors = {
   tabBarActive: '#226eff',
   tabBarInactive: '#7b8798',
 
-  shadow: '#64748b',
-
   inputBg: '#f5f8fc',
 
   tabBar: '#ffffff',
@@ -28,7 +26,7 @@ export const lightColors = {
   cancelBtnSecondary: '#dbe9ff',
 
   // ----------- border ----------
-  border: 'rgb(117, 148, 239)',
+  border: 'rgba(0, 132, 255, 0.45)',
 
   // ----------- background ----------
   backgroundPrimary: '#f5f9ff',
@@ -37,10 +35,14 @@ export const lightColors = {
 
   // ----------- profile card background ----------
   profileBgPrimary: '#ffffff',
-  profileBgSecondary: '#eef5ff',
+  profileBgSecondary: '#dbe9ff',
 
   //----------- tabs -------------
   inactiveTab: 'rgba(0, 102, 255, 0.19)',
+
+  //----------- shadow -------------
+  shadow: '#1a6aff',
+
 };
 
 export const darkColors = {
@@ -52,7 +54,6 @@ export const darkColors = {
   danger: '#ef4444',
   tabBarActive: '#4a8aff',
   tabBarInactive: '#888888',
-  shadow: '#000000',
   inputBg: '#2a2a2a',
 
   tabBar: '#071c39',
@@ -72,6 +73,8 @@ export const darkColors = {
   profileBgSecondary: 'rgba(5,19,47,0.9)',
   //----------- tabs -------------
   inactiveTab: 'rgba(9, 28, 56, 0.85)',
+    //----------- shadow -------------
+  shadow: '#1a6aff',
 
 
 

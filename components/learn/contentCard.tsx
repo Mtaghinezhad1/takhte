@@ -25,21 +25,21 @@ const ContentCard = ({ categoryId, subcategoryId, pageId }) => {
             colors={[colors.profileBgPrimary, colors.profileBgSecondary]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
-            style={styles.card}
+            style={[styles.card, { borderColor: colors.border, shadowColor: colors.shadow }]}
         >
             {/* Title */}
             <View style={styles.cardTitle}>
                 <View style={styles.titleIcon}>
                     <Text style={styles.titleIconText}>{page?.id}</Text>
                 </View>
-                <Text style={[styles.titleText,{color: colors.text}]}>{heroComponent.title}</Text>
+                <Text style={[styles.titleText, { color: colors.text }]}>{heroComponent.title}</Text>
             </View>
 
             {/* Body text */}
-            <Text style={[styles.text,{color: colors.text}]}>{contentComponent.value}</Text>
+            <Text style={[styles.text, { color: colors.text }]}>{contentComponent.value}</Text>
 
             {/* Board image wrapper */}
-            <View style={styles.boardWrapper}>
+            <View style={[styles.boardWrapper,{borderColor: colors.border, shadowColor: colors.shadow}]}>
                 <Image
                     source={imageComponent.src}
                     style={styles.boardImage}
@@ -54,11 +54,9 @@ const styles = StyleSheet.create({
     card: {
         borderRadius: 22,
         borderWidth: 1,
-        borderColor: 'rgba(0, 127, 255, 0.42)',
         paddingVertical: 22,
         paddingHorizontal: 14,
         marginBottom: 18,
-        shadowColor: '#000',
         shadowOffset: { width: 0, height: 10 },
         shadowOpacity: 0.25,
         shadowRadius: 35,
@@ -108,9 +106,6 @@ const styles = StyleSheet.create({
         borderRadius: 18,
         overflow: 'hidden',
         borderWidth: 2,
-        borderColor: '#0087ff',
-        backgroundColor: '#021631',
-        shadowColor: '#007eff',
         shadowOffset: { width: 0, height: 0 },
         shadowOpacity: 0.22,
         shadowRadius: 18,

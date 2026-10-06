@@ -44,7 +44,7 @@ export default function SubcategoryPage() {
                         return (
                             <TouchableOpacity
                                 key={page.id}
-                                style={[styles.item,{backgroundColor: colors.profileBgPrimary}, isCompeleted && styles.passed]}
+                                style={[styles.item,{backgroundColor: colors.profileBgPrimary,borderColor: colors.border, shadowColor: colors.shadow}, isCompeleted && styles.passed]}
                                 onPress={() => router.push(`/learn/${categoryId}/${subcategoryId}/${page.id}`)}
                             >
                                 <Text style={{ fontSize: 18, textAlign: 'right', color: colors.text }}>
@@ -68,10 +68,7 @@ const styles = StyleSheet.create({
         position: 'relative',
         flexDirection: 'row',
         gap: 18, // works on newer RN, fallback: use margin/padding
-        backgroundColor: 'rgba(14, 45, 94, 0.95)',
         borderWidth: 1,
-        borderColor: 'rgba(61, 132, 255, 0.25)',
-        shadowColor: '#000',
         shadowOffset: { width: 0, height: 15 },
         shadowOpacity: 0.25,
         shadowRadius: 40,

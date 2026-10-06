@@ -24,7 +24,7 @@ const LearnHeader = ({
     <View style={styles.header}>
       {/* Back button */}
       <TouchableOpacity
-        style={styles.back}
+        style={[styles.back,{borderColor: colors.border,  shadowColor: colors.shadow}]}
         onPress={onBack}
         activeOpacity={0.8}
       >
@@ -43,7 +43,7 @@ const LearnHeader = ({
         colors={[colors.profileBgPrimary, colors.profileBgSecondary]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 0 }}
-        style={styles.progressCard}
+        style={[styles.progressCard,{borderColor: colors.border, shadowColor: colors.shadow}]}
       >
         <Text style={[styles.progressTitle, { color: colors.text }]} numberOfLines={1}>
           {title}
@@ -69,12 +69,11 @@ const styles = StyleSheet.create({
     height: 52,
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: '#0879e9',
-    shadowColor: '#0082ff',
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.25,
     shadowRadius: 15,
     elevation: 6,
+    overflow: 'hidden'
   },
   backIcon: {
     color: '#ffffff',
@@ -87,14 +86,12 @@ const styles = StyleSheet.create({
     flex: 1,
     borderRadius: 18,
     borderWidth: 1,
-    borderColor: 'rgba(0, 132, 255, 0.45)',
     paddingVertical: 13,
     paddingHorizontal: 15,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     gap: 14,
-    shadowColor: '#006cff',
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.1,
     shadowRadius: 18,

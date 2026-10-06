@@ -28,7 +28,7 @@ const Quiz = ({ categoryId, subcategoryId, pageId, isAnswerCorrect, setIsAnswerC
             colors={[colors.profileBgPrimary, colors.profileBgSecondary]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
-            style={styles.card}
+            style={[styles.card,{borderColor: colors.border, shadowColor: colors.shadow}]}
         >
             {/* Header */}
             <View style={styles.questionHeader}>
@@ -74,6 +74,7 @@ const Quiz = ({ categoryId, subcategoryId, pageId, isAnswerCorrect, setIsAnswerC
                                 <View
                                     style={[
                                         styles.answer,
+                                        {backgroundColor: colors.profileBgSecondary},
                                         showAsWrong && styles.answerWrong,
                                     ]}
                                 >
@@ -100,12 +101,10 @@ const styles = StyleSheet.create({
     card: {
         borderRadius: 22,
         borderWidth: 1,
-        borderColor: 'rgba(0, 127, 255, 0.42)',
         paddingVertical: 22,
         paddingHorizontal: 14,
         marginBottom: 18,
         marginTop: 4,
-        shadowColor: '#000',
         shadowOffset: { width: 0, height: 10 },
         shadowOpacity: 0.25,
         shadowRadius: 35,
@@ -138,7 +137,6 @@ const styles = StyleSheet.create({
         borderRadius: 14,
         borderWidth: 1,
         borderColor: 'rgba(0, 122, 255, 0.38)',
-        backgroundColor: 'rgba(3, 37, 76, 0.65)',
         marginTop: 9,
         flexDirection: 'row',
         alignItems: 'center',

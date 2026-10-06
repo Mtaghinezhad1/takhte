@@ -32,7 +32,7 @@ const ChartSection = ({ data }: ChartSectionProps) => {
             colors={[colors.profileBgPrimary, colors.profileBgSecondary]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
-            style={{ backgroundColor: '#1E1E2E', alignItems: 'center', borderRadius: 16, marginTop: 16, borderWidth: 1, borderColor: 'rgba(91,139,213,0.25)' }}
+            style={{  alignItems: 'center', borderRadius: 16, marginTop: 16, borderWidth: 1, borderColor: colors.border }}
         >
             <Text style={{ fontSize: 20, fontWeight: 'bold', marginBottom: 8 , color: colors.text}}>
                 📊 تاریخچه توانایی (Elo)

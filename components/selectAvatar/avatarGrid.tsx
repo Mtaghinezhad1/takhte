@@ -1,4 +1,5 @@
 import { isAvatarUnlocked } from '@/constants/avatars';
+import useThemeStore from '@/stores/useThemeStore';
 import useUserStore from '@/stores/useUserStore';
 import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
@@ -19,6 +20,8 @@ const isSmallScreen = width < 360;
 const AvatarGrid = ({ avatars, activeIndex, setActiveIndex, activeTab }) => {
     const { user, setAvatar } = useUserStore();
     const elo = useUserStore.getState().getCurrentElo();
+    const { colors } = useThemeStore();
+
 
     const isAvatarLocked = (avatar) => {
         return !isAvatarUnlocked(avatar.key, elo, user.coins);
@@ -70,7 +73,7 @@ const AvatarGrid = ({ avatars, activeIndex, setActiveIndex, activeTab }) => {
                                     colors={['#48b0ff', '#1264ff']}
                                     start={{ x: 0, y: 0 }}
                                     end={{ x: 1, y: 1 }}
-                                    style={[styles.avatarWrapper, styles.avatarWrapperSelected]}
+                                    style={[styles.avatarWrapper, styles.avatarWrapperSelected,{shadowColor: colors.shadow }]}
                                 >
                                     <Image
                                         source={avatar.source}

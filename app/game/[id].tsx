@@ -221,6 +221,8 @@ export default function Index() {
         <NoMoveModal />
         <MatchEndModal />
       </View>
+
+      <Text style={{color: 'white'}}>strategy</Text>
     </View>
   );
 }

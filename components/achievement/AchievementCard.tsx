@@ -34,7 +34,7 @@ const AchievementCard = ({
   // ---------- Incomplete / locked state ----------
   if (!isCompleted) {
     return (
-      <View style={[styles.card, styles.cardIncomplete]}>
+      <View style={[styles.card, styles.cardIncomplete, {shadowColor: colors.shadow}]}>
         <View style={[styles.iconWrap, styles.iconWrapIncomplete]}>
           <Text style={[styles.iconText, styles.iconTextIncomplete]}>{icon}</Text>
         </View>
@@ -77,7 +77,7 @@ const AchievementCard = ({
       colors={[colors.profileBgPrimary, colors.profileBgSecondary]}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
-      style={[styles.card, styles.cardCompleted]}
+      style={[styles.card, styles.cardCompleted, {borderColor: colors.border,shadowColor: colors.shadow}]}
     >
       <View style={styles.completedHighlight} pointerEvents="none" />
 
@@ -131,9 +131,7 @@ const styles = StyleSheet.create({
   cardIncomplete: {
     backgroundColor: 'rgba(9, 28, 56, 0.92)',
     borderWidth: 1,
-    borderColor: 'rgba(70, 103, 145, 0.32)',
     opacity: 0.78,
-    shadowColor: '#000',
     shadowOffset: { width: 0, height: 10 },
     shadowOpacity: 0.2,
     shadowRadius: 25,
@@ -143,8 +141,6 @@ const styles = StyleSheet.create({
   /* Completed */
   cardCompleted: {
     borderWidth: 1,
-    borderColor: 'rgba(34, 137, 255, 0.85)',
-    shadowColor: '#1473ff',
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.16,
     shadowRadius: 18,

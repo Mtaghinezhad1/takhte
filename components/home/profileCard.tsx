@@ -16,12 +16,12 @@ const ProfileCard = () => {
 
 
     return (
-        <TouchableOpacity style={styles.body} onPress={() => router.push(`/charts`)}>
+        <TouchableOpacity style={[styles.body,{borderColor: colors.border, shadowColor: colors.shadow}]} onPress={() => router.push(`/charts`)}>
             <LinearGradient
                 colors={[colors.profileBgPrimary, colors.profileBgSecondary]}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
-                style={styles.card}
+                style={[styles.card,{borderColor: colors.border, shadowColor: colors.shadow}]}
             >
 
                 {/* Avatar */}
@@ -35,16 +35,16 @@ const ProfileCard = () => {
                 {/* Info */}
                 <View style={styles.info}>
                     <View style={styles.nameRow}>
-                        <Text style={[styles.name, {color: colors.text}]}>{user.username}</Text>
+                        <Text style={[styles.name, { color: colors.text }]}>{user.username}</Text>
                     </View>
                     {/* optional subtitle could be added here */}
                 </View>
 
                 {/* ELO */}
-                <View style={styles.eloContainer}>
+                <View style={[styles.eloContainer,{borderLeftColor: colors.border}]}>
                     <Text style={styles.eloLabel}>توانایی</Text>
                     <View style={styles.eloValue}>
-                        <Text style={[styles.eloNumber,{color: colors.text}]}>{elo}</Text>
+                        <Text style={[styles.eloNumber, { color: colors.text }]}>{elo}</Text>
                     </View>
                 </View>
             </LinearGradient>
@@ -57,6 +57,7 @@ const styles = StyleSheet.create({
         width: '100%',
         justifyContent: 'center',
         alignItems: 'center',
+
     },
     card: {
         flexDirection: 'row',
@@ -64,9 +65,8 @@ const styles = StyleSheet.create({
         padding: 20,
         borderRadius: 25,
         borderWidth: 1,
-        borderColor: 'rgba(91,139,213,0.25)',
         // Shadow (iOS & Android)
-        shadowColor: '#000',
+        shadowColor: '#1a6aff',
         shadowOffset: { width: 0, height: 20 },
         shadowOpacity: 0.3,
         shadowRadius: 50,
@@ -108,7 +108,6 @@ const styles = StyleSheet.create({
     eloContainer: {
         alignItems: 'center',
         borderLeftWidth: 1,
-        borderLeftColor: 'rgba(255,255,255,0.1)',
         paddingLeft: 15,
         minWidth: 78,
     },

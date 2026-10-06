@@ -11,7 +11,7 @@ const LessonCard = ({ title, onPress, numberOfLessons }) => {
 
 
     return (
-        <TouchableOpacity style={styles.lessonCard} onPress={onPress}>
+        <TouchableOpacity style={[styles.lessonCard,{borderColor: colors.border, shadowColor: colors.shadow}]} onPress={onPress}>
             <LinearGradient
                 colors={[colors.profileBgPrimary, colors.profileBgSecondary]}
                 start={{ x: 0, y: 0 }}
@@ -59,10 +59,7 @@ const styles = StyleSheet.create({
         marginBottom: 16,
         gap: 18, // works on newer RN, fallback: use margin/padding
         borderRadius: 25,
-        backgroundColor: 'rgba(14, 45, 94, 0.95)',
         borderWidth: 1,
-        borderColor: 'rgba(61, 132, 255, 0.25)',
-        shadowColor: '#000',
         shadowOffset: { width: 0, height: 15 },
         shadowOpacity: 0.25,
         shadowRadius: 40,

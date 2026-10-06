@@ -87,8 +87,8 @@ const LearnScreen = () => {
                                         </Text>
                                     </LinearGradient>
                                 ) : (
-                                    <View style={[styles.level, styles.inactiveLevel, {backgroundColor: colors.inactiveTab}]}>
-                                        <Text style={styles.levelText}>{level.label}</Text>
+                                    <View style={[styles.level, styles.inactiveLevel, {backgroundColor: colors.inactiveTab,borderColor: colors.border}]}>
+                                        <Text style={[styles.levelText,{ color: colors.text }]}>{level.label}</Text>
                                     </View>
                                 )}
                             </TouchableOpacity>

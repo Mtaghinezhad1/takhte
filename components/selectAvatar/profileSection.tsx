@@ -27,10 +27,10 @@ const ProfileSection = ({ source }) => {
             colors={[colors.profileBgPrimary, colors.profileBgSecondary]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
-            style={[styles.profileCard, isShort && styles.profileCardShort]}
+            style={[styles.profileCard, {borderColor: colors.border, shadowColor: colors.shadow}]}
         >
             {/* ELO box */}
-            <View style={styles.eloBox}>
+            <View style={[styles.eloBox,{borderRightColor: colors.border}]}>
                 <Text style={styles.eloLabel}>توانایی</Text>
                 <Text style={[styles.eloNumber, isShort && styles.eloNumberShort, { color: colors.text }]}>{elo}</Text>
             </View>
@@ -56,9 +56,7 @@ const styles = StyleSheet.create({
     profileCard: {
         padding: 14,
         borderRadius: 22,
-        backgroundColor: 'rgba(19, 55, 105, 0.92)',
         borderWidth: 1,
-        borderColor: 'rgba(71, 137, 230, 0.32)',
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 10 },
         shadowOpacity: 0.25,
@@ -113,7 +111,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         paddingRight: 10,
         borderRightWidth: 1,
-        borderRightColor: 'rgba(255, 255, 255, 0.12)',
     },
     eloLabel: {
         color: '#4992ff',

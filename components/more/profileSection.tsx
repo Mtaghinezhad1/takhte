@@ -29,7 +29,7 @@ const ProfileSection = () => {
         <View style={styles.appContainer}>
             {/* Header */}
             <View style={[styles.header, isShort && styles.headerShort]}>
-                <Text style={[styles.headerTitle,{color: colors.text}]}>
+                <Text style={[styles.headerTitle, { color: colors.text }]}>
                     نرد <Text style={styles.headerHighlight}>لند</Text>
                 </Text>
             </View>
@@ -41,18 +41,18 @@ const ProfileSection = () => {
                     colors={[colors.profileBgPrimary, colors.profileBgSecondary]}
                     start={{ x: 0, y: 0 }}
                     end={{ x: 1, y: 1 }}
-                    style={[styles.profileCard, isShort && styles.profileCardShort]}
+                    style={[styles.profileCard, { borderColor: colors.border, shadowColor: colors.shadow }]}
                 >
                     <View style={styles.profileTop}>
                         {/* ELO box */}
-                        <View style={styles.eloBox}>
+                        <View style={[styles.eloBox, { borderRightColor: colors.border }]}>
                             <Text style={styles.eloLabel}>توانایی</Text>
-                            <Text style={[styles.eloNumber, isShort && styles.eloNumberShort, {color: colors.text}]}>{elo}</Text>
+                            <Text style={[styles.eloNumber, isShort && styles.eloNumberShort, { color: colors.text }]}>{elo}</Text>
                         </View>
 
                         {/* Profile info */}
                         <View style={styles.profileInfo}>
-                            <Text style={[styles.profileName, isShort && styles.profileNameShort, {color: colors.text}]}>{user.username}</Text>
+                            <Text style={[styles.profileName, isShort && styles.profileNameShort, { color: colors.text }]}>{user.username}</Text>
                             <Text style={[styles.profileStatus, isShort && styles.profileStatusShort]}>
                                 برای شروع بازی وارد حساب شوید
                             </Text>
@@ -71,21 +71,21 @@ const ProfileSection = () => {
                     </View>
 
                     {/* Stats */}
-                    <View style={styles.stats}>
+                    <View style={[styles.stats, { borderTopColor: colors.border }]}>
                         <View style={styles.stat}>
-                            <Text style={[styles.statNumber, isShort && styles.statNumberShort, {color: colors.text}]}>{statistics.wins / statistics.totalGames || 0}%</Text>
+                            <Text style={[styles.statNumber, isShort && styles.statNumberShort, { color: colors.text }]}>{statistics.wins / statistics.totalGames || 0}%</Text>
                             <Text style={[styles.statLabel, isShort && styles.statLabelShort]}>
                                 نرخ برد
                             </Text>
                         </View>
-                        <View style={styles.stat}>
-                            <Text style={[styles.statNumber, isShort && styles.statNumberShort, {color: colors.text}]}>{statistics.winStreak}</Text>
+                        <View style={[styles.stat, styles.statMid, { borderLeftColor: colors.border, borderRightColor: colors.border }]}>
+                            <Text style={[styles.statNumber, isShort && styles.statNumberShort, { color: colors.text }]}>{statistics.winStreak}</Text>
                             <Text style={[styles.statLabel, isShort && styles.statLabelShort]}>
                                 برد متوالی
                             </Text>
                         </View>
                         <View style={styles.stat}>
-                            <Text style={[styles.statNumber, isShort && styles.statNumberShort, {color: colors.text}]}>{statistics.totalGames}</Text>
+                            <Text style={[styles.statNumber, isShort && styles.statNumberShort, { color: colors.text }]}>{statistics.totalGames}</Text>
                             <Text style={[styles.statLabel, isShort && styles.statLabelShort]}>تعداد باز</Text>
                         </View>
                     </View>
@@ -129,10 +129,7 @@ const styles = StyleSheet.create({
     profileCard: {
         padding: 14,
         borderRadius: 22,
-        backgroundColor: 'rgba(19, 55, 105, 0.92)',
         borderWidth: 1,
-        borderColor: 'rgba(71, 137, 230, 0.32)',
-        shadowColor: '#000',
         shadowOffset: { width: 0, height: 10 },
         shadowOpacity: 0.25,
         shadowRadius: 30,
@@ -187,7 +184,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         paddingRight: 10,
         borderRightWidth: 1,
-        borderRightColor: 'rgba(255, 255, 255, 0.12)',
     },
     eloLabel: {
         color: '#4992ff',
@@ -211,13 +207,14 @@ const styles = StyleSheet.create({
         marginTop: 12,
         paddingTop: 10,
         borderTopWidth: 1,
-        borderTopColor: 'rgba(255, 255, 255, 0.08)',
     },
     stat: {
         flex: 1,
         alignItems: 'center',
+    },
+    statMid: {
         borderLeftWidth: 1,
-        borderLeftColor: 'rgba(255, 255, 255, 0.07)',
+        borderRightWidth: 1,
     },
     statNumber: {
         fontSize: 14,

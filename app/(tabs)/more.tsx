@@ -31,7 +31,7 @@ export default function MoreScreen() {
             colors={[colors.profileBgPrimary, colors.profileBgSecondary]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
-            style={styles.menuGroup}
+            style={[styles.menuGroup, { borderColor: colors.border, shadowColor: colors.shadow }]}
           >
             <MenuItem
               icon="👤"
@@ -59,7 +59,7 @@ export default function MoreScreen() {
             colors={[colors.profileBgPrimary, colors.profileBgSecondary]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
-            style={styles.menuGroup}
+            style={[styles.menuGroup, { borderColor: colors.border, shadowColor: colors.shadow }]}
           >
             <MenuItem
               icon="i"
@@ -67,7 +67,7 @@ export default function MoreScreen() {
               subtitle=""
             />
           </LinearGradient>
-          
+
         </ScrollView>
       </SafeAreaView>
     </LinearGradient>
@@ -78,12 +78,14 @@ export default function MoreScreen() {
 const styles = StyleSheet.create({
   menuGroup: {
     flexShrink: 0,
-    backgroundColor: 'rgba(7, 29, 62, 0.72)',
     borderWidth: 1,
-    borderColor: 'rgba(70, 126, 201, 0.2)',
     borderRadius: 18,
     overflow: 'hidden',
     marginBottom: 16,
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.25,
+    shadowRadius: 30,
+    elevation: 8,
   },
   scrollContent: {
     paddingBottom: 20,

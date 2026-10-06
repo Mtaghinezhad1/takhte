@@ -10,7 +10,7 @@ const AvatarTabs = ({ activeTab, setActiveTab }) => {
     const { colors } = useThemeStore();
 
     return (
-        <View style={[styles.tabs,{backgroundColor: colors.inactiveTab}]}>
+        <View style={[styles.tabs,{backgroundColor: colors.inactiveTab,borderColor: colors.border}]}>
             <TouchableOpacity
                 style={[styles.tab, activeTab === 'all' && styles.tabActive]}
                 onPress={() => setActiveTab('all')}
@@ -41,9 +41,7 @@ const AvatarTabs = ({ activeTab, setActiveTab }) => {
 const styles = StyleSheet.create({
     tabs: {
         flexDirection: 'row',
-        backgroundColor: 'rgba(9, 29, 58, 0.7)',
         borderWidth: 1,
-        borderColor: 'rgba(65, 130, 220, 0.2)',
         borderRadius: 18,
         padding: 4,
         marginBottom: 20,

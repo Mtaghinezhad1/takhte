@@ -1,5 +1,5 @@
+import ActionButton from '@/components/ui/actionButton';
 import CancelButton from '@/components/ui/cancelButton';
-import ConfirmButton from '@/components/ui/confirmButton';
 import useThemeStore from '@/stores/useThemeStore';
 import useUserStore from '@/stores/useUserStore';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -106,19 +106,19 @@ const EditProfile = () => {
           </View>
 
           {/* Form Card */}
-            <LinearGradient
-              colors={[colors.profileBgPrimary, colors.profileBgSecondary]}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              style={styles.formCard}
-            >
+          <LinearGradient
+            colors={[colors.profileBgPrimary, colors.profileBgSecondary]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={[styles.formCard, { borderColor: colors.border, shadowColor: colors.shadow }]}
+          >
             {/* Username */}
             <View style={styles.field}>
               <View style={styles.labelRow}>
                 <Text style={styles.labelIcon}>♙</Text>
                 <Text style={[styles.labelText, { color: colors.text }]}>نام کاربری</Text>
               </View>
-              <View style={styles.inputWrapper}>
+              <View style={[styles.inputWrapper, { backgroundColor: colors.profileBgSecondary }]}>
                 <TextInput
                   style={[styles.input, { color: colors.text }]}
                   value={localUsername}
@@ -147,6 +147,7 @@ const EditProfile = () => {
                       key={option.id}
                       style={[
                         styles.genderOption,
+                        { backgroundColor: colors.profileBgSecondary },
                         isActive && styles.genderOptionActive,
                       ]}
                       onPress={() => setLocalGender(option.id)}
@@ -170,12 +171,12 @@ const EditProfile = () => {
                 })}
               </View>
             </View>
-            </LinearGradient>
+          </LinearGradient>
 
 
           {/* Buttons */}
           <View style={styles.btnContainer}>
-            <ConfirmButton onPress={handleSave}>{isSaving ? 'در حال ذخیره ...' : 'ذخیره تغییرات'}</ConfirmButton>
+            <ActionButton onPress={handleSave}>{isSaving ? 'در حال ذخیره ...' : 'ذخیره تغییرات'}</ActionButton>
             <CancelButton onPress={() => router.back()}>انصراف</CancelButton>
 
           </View>
@@ -224,9 +225,7 @@ const styles = StyleSheet.create({
   formCard: {
     padding: 24,
     borderRadius: 24,
-    backgroundColor: 'rgba(7, 31, 63, 0.92)',
     borderWidth: 1,
-    borderColor: 'rgba(35, 112, 220, 0.22)',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 15 },
     shadowOpacity: 0.2,
@@ -258,7 +257,6 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     borderWidth: 1,
     borderColor: 'rgba(34, 117, 235, 0.38)',
-    backgroundColor: 'rgba(2, 16, 35, 0.7)',
     flexDirection: 'row',
     alignItems: 'center',
   },
@@ -296,7 +294,6 @@ const styles = StyleSheet.create({
     borderRadius: 17,
     borderWidth: 1,
     borderColor: 'rgba(35, 112, 220, 0.25)',
-    backgroundColor: 'rgba(3, 20, 42, 0.65)',
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 12,

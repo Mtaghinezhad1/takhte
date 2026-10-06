@@ -4,7 +4,7 @@ import React from 'react';
 import { StyleSheet, Text, TouchableOpacity } from 'react-native';
 
 export default function ActionButton({ onPress, children, disabled = false, variant = 'confirm' }) {
-    const colors = useThemeStore(state => state.colors);
+    const {colors, isDark} = useThemeStore();
 
     const isCancel = variant === 'cancel';
 
@@ -25,7 +25,7 @@ export default function ActionButton({ onPress, children, disabled = false, vari
                 end={{ x: 1, y: 1 }}
                 style={[styles.level, styles.activeLevel]}
             >
-                <Text style={[styles.levelText, styles.activeText]}>
+                <Text style={[styles.levelText, styles.activeText,{color: (!isDark && variant == 'cancel' ? '#3989ff' : 'white')}]}>
                     {children}
                 </Text>
             </LinearGradient>

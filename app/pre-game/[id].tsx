@@ -110,7 +110,7 @@ const PreGameScreen = () => {
             <View style={styles.header}>
 
               <TouchableOpacity
-                style={styles.back}
+                style={[styles.back,{borderColor: colors.border, shadowColor: colors.shadow}]}
                 onPress={() => router.back()}
                 activeOpacity={0.8}
               >
@@ -137,7 +137,7 @@ const PreGameScreen = () => {
               colors={[colors.profileBgPrimary, colors.profileBgSecondary]}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
-              style={styles.settingsCard}
+              style={[styles.settingsCard,{borderColor: colors.border, shadowColor: colors.shadow}]}
             >
               <View style={styles.sectionTitle}>
                 <Text style={[styles.sectionTitleText, { color: colors.text }]}>طول بازی</Text>
@@ -170,8 +170,8 @@ const PreGameScreen = () => {
                           </Text>
                         </LinearGradient>
                       ) : (
-                        <View style={[styles.number,{backgroundColor: colors.inactiveTab}]}>
-                          <Text style={styles.numberText}>{num}</Text>
+                        <View style={[styles.number,{backgroundColor: colors.inactiveTab,borderColor: colors.border}]}>
+                          <Text style={[styles.numberText,{ color: colors.text }]}>{num}</Text>
                         </View>
                       )}
                     </TouchableOpacity>
@@ -186,7 +186,7 @@ const PreGameScreen = () => {
               colors={[colors.profileBgPrimary, colors.profileBgSecondary]}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
-              style={styles.settingsCard}
+              style={[styles.settingsCard,{borderColor: colors.border, shadowColor: colors.shadow}]}
             >
               <View style={styles.sectionTitle}>
                 <Text style={[styles.sectionTitleText, { color: colors.text }]}>سختی بازی</Text>
@@ -219,8 +219,8 @@ const PreGameScreen = () => {
                           </Text>
                         </LinearGradient>
                       ) : (
-                        <View style={[styles.number,{backgroundColor: colors.inactiveTab}]}>
-                          <Text style={styles.numberText}>{num}</Text>
+                        <View style={[styles.number,{backgroundColor: colors.inactiveTab,borderColor: colors.border}]}>
+                          <Text style={[styles.numberText,{ color: colors.text }]}>{num}</Text>
                         </View>
                       )}
                     </TouchableOpacity>
@@ -328,12 +328,12 @@ const styles = StyleSheet.create({
     height: 52,
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: '#0879e9',
     shadowColor: '#0082ff',
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.25,
     shadowRadius: 15,
     elevation: 6,
+    overflow: 'hidden'
   },
   backIcon: {
     color: '#ffffff',
@@ -362,10 +362,7 @@ const styles = StyleSheet.create({
     paddingVertical: 23,
     paddingHorizontal: 18,
     borderRadius: 25,
-    backgroundColor: 'rgba(7, 34, 69, 0.94)',
     borderWidth: 1,
-    borderColor: 'rgba(28, 120, 255, 0.42)',
-    shadowColor: '#000',
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.15,
     shadowRadius: 20,
@@ -414,7 +411,6 @@ const styles = StyleSheet.create({
     borderRadius: 13,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'rgba(10, 48, 91, 0.85)',
     borderWidth: 1,
     borderColor: 'rgba(20, 120, 255, 0.42)',
   },

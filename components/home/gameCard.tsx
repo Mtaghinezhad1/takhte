@@ -11,7 +11,7 @@ const GameCard = ({ game }) => {
   const isStandard = game.variant === 'standard';
   const [isLoading, setIsLoading] = useState(false);
   const { width, height } = useWindowDimensions();
-  const { colors } = useThemeStore();
+  const { colors, isDark } = useThemeStore();
 
 
 
@@ -57,8 +57,8 @@ const GameCard = ({ game }) => {
   // Dynamic styles based on variant
   const cardBorderColor = isStandard ? '#2782ff' : '#42a75c';
   const gradientColors = isStandard
-    ? ['rgba(35, 117, 255, 0.45)', 'transparent']
-    : ['rgba(50, 173, 101, 0.32)', 'transparent'];
+    ? [isDark ? 'rgba(35, 117, 255, 0.45)' : '#62bbf6', isDark ? 'transparent' : '#f8fbfe']
+    : [isDark? 'rgba(50, 173, 101, 0.32)' : '#aefac1', isDark? 'transparent' : '#fdfefe'];
   const tagBorderColor = isStandard
     ? 'rgba(125, 156, 205, 0.16)'
     : 'rgba(81, 201, 95, 0.2)';
