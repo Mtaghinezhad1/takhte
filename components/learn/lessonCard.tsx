@@ -38,9 +38,9 @@ const LessonCard = ({ title, onPress, numberOfLessons }) => {
 
                     {/* Meta */}
                     <View style={styles.lessonMeta}>
-                        <View style={styles.meta}>
+                        <View style={[styles.meta,{backgroundColor: colors.inactiveTab, borderColor: colors.border}]}>
                             <Text style={styles.metaIcon}>▢</Text>
-                            <Text style={styles.metaText}>{numberOfLessons} درس</Text>
+                            <Text style={[styles.metaText,{color: colors.text}]}>{numberOfLessons} درس</Text>
                         </View>
                     </View>
                 </View>
@@ -91,7 +91,6 @@ const styles = StyleSheet.create({
     lessonTitle: {
         fontSize: 20,
         fontWeight: '800',
-        color: '#f4f7ff',
         lineHeight: 34, // 1.7 * 20
         textAlign: 'right',
         flex: 1,
@@ -101,7 +100,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         flexWrap: 'wrap',
         gap: 7,
-        justifyContent: 'flex-start',
+        justifyContent: 'flex-end',
     },
     meta: {
         flexDirection: 'row',
@@ -109,9 +108,7 @@ const styles = StyleSheet.create({
         paddingVertical: 6,
         paddingHorizontal: 9,
         borderRadius: 14,
-        backgroundColor: 'rgba(3, 19, 45, 0.65)',
         borderWidth: 1,
-        borderColor: 'rgba(47, 112, 218, 0.25)',
         gap: 5,
     },
     metaIcon: {
@@ -119,7 +116,6 @@ const styles = StyleSheet.create({
         fontSize: 14,
     },
     metaText: {
-        color: '#b4c8e8',
         fontSize: 11,
         fontWeight: '400',
         textAlign: 'right',

@@ -1,4 +1,5 @@
 import { fetchLeaderboard } from '@/services/api/userApi';
+import useThemeStore from '@/stores/useThemeStore';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useEffect, useState } from 'react';
 import {
@@ -35,6 +36,8 @@ const RankingScreen = () => {
   const [error, setError] = useState(null);
   const [topPlayers, setTopPlayers] = useState([]);
   const [myRank, setMyRank] = useState(null);
+  const colors = useThemeStore(state => state.colors);
+
 
   useEffect(() => {
     let mounted = true;
@@ -160,91 +163,89 @@ const RankingScreen = () => {
   }
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
+    <LinearGradient
+      colors={[colors.backgroundPrimary, colors.backgroundSecondary, colors.backgroundTertiary]}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
+      style={{ flex: 1 }}
+    >
+      <SafeAreaView style={{ flex: 1 }}>
+        <View style={styles.glowTop} />
 
-      <LinearGradient
-        colors={['#031128', '#020b1c']}
-        start={{ x: 0.5, y: 0 }}
-        end={{ x: 0.5, y: 1 }}
-        style={StyleSheet.absoluteFill}
-      />
-
-      <View style={styles.glowTop} />
-
-      <ScrollView
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-      >
-        <View style={styles.appContainer}>
-          {/* Header */}
-          <View style={styles.header}>
-            <Text style={styles.title}>رتبه بندی</Text>
-            <Text style={styles.subtitle}>بهترین بازیکنان نرد لند</Text>
-          </View>
-
-          {/* Podium card */}
-          {podiumPlayers.length > 0 && (
-            <LinearGradient
-              colors={['rgba(20,117,255,0.15)', 'rgba(7,28,61,0.82)']}
-              start={{ x: 0.5, y: 0 }}
-              end={{ x: 0.5, y: 1 }}
-              style={styles.podiumCard}
-            >
-              <View style={styles.podium}>
-                {PODIUM_ORDER.map((idx, position) => {
-                  const player = podiumPlayers[idx];
-                  if (!player) return <View key={idx} style={styles.player} />;
-                  return renderPodiumPlayer(player, position);
-                })}
-              </View>
-            </LinearGradient>
-          )}
-
-          {/* Ranking list (ranks 4–50) */}
-          <View style={styles.rankingList}>
-            {listPlayers.map((row) => (
-              <View key={row.userId} style={styles.rankRow}>
-                <View style={styles.rankNumber}>
-                  <Text style={styles.rankNumberText}>{fa(row.rank)}</Text>
-                </View>
-
-                <Image
-                  source={{ uri: avatarUrl(row.avatarKey) }}
-                  style={styles.listAvatar}
-                />
-
-                <View style={styles.rankInfo}>
-                  <Text style={styles.rankName} numberOfLines={1}>
-                    {row.username || 'ناشناس'}
-                  </Text>
-                </View>
-
-                <Text style={styles.rankElo}>{fa(Math.round(row.elo))}</Text>
-              </View>
-            ))}
-          </View>
-
-          {/* Current player — فقط اگر در ۵۰ نفر برتر نباشد */}
-          {myRank && !isMeInTop && (
-            <View style={styles.myRank}>
-              <View style={styles.rankNumber}>
-                <Text style={styles.rankNumberText}>{fa(myRank.rank)}</Text>
-              </View>
-
-              <Text style={styles.myBadge}>♛</Text>
-
-              <View style={styles.myRankText}>
-                <Text style={styles.myRankTitle}>رتبه شما</Text>
-                <Text style={styles.myRankNumber}># {fa(myRank.rank)}</Text>
-              </View>
-
-              <Text style={styles.rankElo}>{fa(Math.round(myRank.elo))}</Text>
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+        >
+          <View style={styles.appContainer}>
+            {/* Header */}
+            <View style={styles.header}>
+              <Text style={styles.title}>رتبه بندی</Text>
+              <Text style={styles.subtitle}>بهترین بازیکنان نرد لند</Text>
             </View>
-          )}
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+
+            {/* Podium card */}
+            {podiumPlayers.length > 0 && (
+              <LinearGradient
+                colors={['rgba(20,117,255,0.15)', 'rgba(7,28,61,0.82)']}
+                start={{ x: 0.5, y: 0 }}
+                end={{ x: 0.5, y: 1 }}
+                style={styles.podiumCard}
+              >
+                <View style={styles.podium}>
+                  {PODIUM_ORDER.map((idx, position) => {
+                    const player = podiumPlayers[idx];
+                    if (!player) return <View key={idx} style={styles.player} />;
+                    return renderPodiumPlayer(player, position);
+                  })}
+                </View>
+              </LinearGradient>
+            )}
+
+            {/* Ranking list (ranks 4–50) */}
+            <View style={styles.rankingList}>
+              {listPlayers.map((row) => (
+                <View key={row.userId} style={styles.rankRow}>
+                  <View style={styles.rankNumber}>
+                    <Text style={styles.rankNumberText}>{fa(row.rank)}</Text>
+                  </View>
+
+                  <Image
+                    source={{ uri: avatarUrl(row.avatarKey) }}
+                    style={styles.listAvatar}
+                  />
+
+                  <View style={styles.rankInfo}>
+                    <Text style={styles.rankName} numberOfLines={1}>
+                      {row.username || 'ناشناس'}
+                    </Text>
+                  </View>
+
+                  <Text style={styles.rankElo}>{fa(Math.round(row.elo))}</Text>
+                </View>
+              ))}
+            </View>
+
+            {/* Current player — فقط اگر در ۵۰ نفر برتر نباشد */}
+            {myRank && !isMeInTop && (
+              <View style={styles.myRank}>
+                <View style={styles.rankNumber}>
+                  <Text style={styles.rankNumberText}>{fa(myRank.rank)}</Text>
+                </View>
+
+                <Text style={styles.myBadge}>♛</Text>
+
+                <View style={styles.myRankText}>
+                  <Text style={styles.myRankTitle}>رتبه شما</Text>
+                  <Text style={styles.myRankNumber}># {fa(myRank.rank)}</Text>
+                </View>
+
+                <Text style={styles.rankElo}>{fa(Math.round(myRank.elo))}</Text>
+              </View>
+            )}
+          </View>
+        </ScrollView>
+      </SafeAreaView>
+    </LinearGradient>
   );
 };
 

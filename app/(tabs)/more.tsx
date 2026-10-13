@@ -1,4 +1,3 @@
-import Auth from '@/components/more/auth';
 import MenuItem from '@/components/more/menuItem';
 import ProfileSection from '@/components/more/profileSection';
 import useThemeStore from '@/stores/useThemeStore';
@@ -53,7 +52,7 @@ export default function MoreScreen() {
             />
           </LinearGradient>
 
-          <Auth />
+          {/* <Auth /> */}
 
           <LinearGradient
             colors={[colors.profileBgPrimary, colors.profileBgSecondary]}

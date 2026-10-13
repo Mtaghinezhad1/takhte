@@ -56,9 +56,6 @@ const GameCard = ({ game }) => {
 
   // Dynamic styles based on variant
   const cardBorderColor = isStandard ? '#2782ff' : '#42a75c';
-  const gradientColors = isStandard
-    ? [isDark ? 'rgba(35, 117, 255, 0.45)' : '#62bbf6', isDark ? 'transparent' : '#f8fbfe']
-    : [isDark? 'rgba(50, 173, 101, 0.32)' : '#aefac1', isDark? 'transparent' : '#fdfefe'];
   const tagBorderColor = isStandard
     ? 'rgba(125, 156, 205, 0.16)'
     : 'rgba(81, 201, 95, 0.2)';
@@ -76,7 +73,7 @@ const GameCard = ({ game }) => {
     <View style={[styles.card, { borderColor: cardBorderColor, width: width * 0.9 }]}>
       {/* Accent gradient overlay */}
       <LinearGradient
-        colors={gradientColors}
+        colors={[colors.profileBgPrimary, colors.profileBgSecondary]}
         start={{ x: 1, y: 0.5 }}
         end={{ x: 0, y: 0.5 }}
         style={StyleSheet.absoluteFillObject}

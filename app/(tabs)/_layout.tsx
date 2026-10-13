@@ -68,7 +68,7 @@ export default function TabLayout() {
         name="ranking"
         options={{
           title: 'رتبه بندی',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="stars.fill" color={color} />,
+          tabBarIcon: ({ color }) => <IconSymbol size={28} name="leaderboard.fill" color={color} />,
         }}
       />
       <Tabs.Screen

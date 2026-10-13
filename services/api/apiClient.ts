@@ -4,7 +4,7 @@ import * as Device from 'expo-device';
 import { Platform } from 'react-native';
 
 // آدرس پایه سرور – می‌توانید از متغیر محیطی استفاده کنید
-const BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://192.168.1.100:3000';
+const BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://10.96.212.95:3000';
 
 const apiClient = axios.create({
   baseURL: BASE_URL,
@@ -58,6 +58,9 @@ apiClient.interceptors.request.use(
       config.headers.Authorization = `Bearer ${token}`;
     }
 
+    const fullUrl = `${config.baseURL || ''}${config.url || ''}`;
+    console.log(fullUrl);
+
     return config;
   },
   (error) => {
@@ -68,13 +71,16 @@ apiClient.interceptors.request.use(
 // ─── اینترسپتور پاسخ (مدیریت خطاهای عمومی) ──────────
 apiClient.interceptors.response.use(
   (response) => response,
+
   async (error) => {
-    // اگر خطای ۴۰۱ (Unauthorized) رخ داد، می‌توانید توکن را پاک کنید
-    if (error.response?.status === 401) {
-      await AsyncStorage.removeItem(TOKEN_KEY);
-      // می‌توانید رویداد خروج را منتشر کنید (مثلاً با استفاده از EventEmitter)
-    }
-    return Promise.reject(error);
+    
+    console.log(error.config.data);
+// اگر خطای ۴۰۱ (Unauthorized) رخ داد، می‌توانید توکن را پاک کنید
+if (error.response?.status === 401) {
+  await AsyncStorage.removeItem(TOKEN_KEY);
+  // می‌توانید رویداد خروج را منتشر کنید (مثلاً با استفاده از EventEmitter)
+}
+return Promise.reject(error);
   }
 );
 
