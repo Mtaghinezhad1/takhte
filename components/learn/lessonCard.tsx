@@ -6,7 +6,7 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 // 1rem ≈ 16px (converted from your CSS)
 const rem = 16;
 
-const LessonCard = ({ title, onPress, numberOfLessons }) => {
+const LessonCard = ({ title, onPress, numberOfLessons, progress }) => {
     const { colors } = useThemeStore();
 
 
@@ -25,7 +25,7 @@ const LessonCard = ({ title, onPress, numberOfLessons }) => {
                     <View
                         style={[
                             styles.progress,
-                            { height: `${20}%` },
+                            { height: progress },
                         ]}
                     />
                 </View>

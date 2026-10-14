@@ -5,7 +5,7 @@ import React, { useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 const Quiz = ({ categoryId, subcategoryId, pageId, isAnswerCorrect, setIsAnswerCorrect }) => {
-    const { colors } = useThemeStore();
+    const { colors, isDark } = useThemeStore();
 
     const category = learnData.find(c => c.key === categoryId);
     const subcategory = category?.subcategories.find(s => s.key === subcategoryId);
@@ -76,6 +76,8 @@ const Quiz = ({ categoryId, subcategoryId, pageId, isAnswerCorrect, setIsAnswerC
                                         styles.answer,
                                         {backgroundColor: colors.profileBgSecondary},
                                         showAsWrong && styles.answerWrong,
+                                        showAsWrong && isDark && {backgroundColor: 'rgba(120, 20, 30, 0.55)'},
+                                        showAsWrong && !isDark && {backgroundColor: 'rgba(227, 122, 133, 0.55)'},
                                     ]}
                                 >
                                     <Text
@@ -158,7 +160,6 @@ const styles = StyleSheet.create({
     answerWrong: {
         borderWidth: 2,
         borderColor: '#ff4d4f',
-        backgroundColor: 'rgba(120, 20, 30, 0.55)',
         shadowColor: '#ff4d4f',
         shadowOffset: { width: 0, height: 0 },
         shadowOpacity: 0.2,

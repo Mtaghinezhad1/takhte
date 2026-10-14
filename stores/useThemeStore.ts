@@ -16,7 +16,7 @@ export const lightColors = {
 
   inputBg: '#f5f8fc',
 
-  tabBar: '#ffffff',
+  tabBar: '#eaf2ff',
 
   // --------- buttons ----------
   btnPrimary: '#226eff',

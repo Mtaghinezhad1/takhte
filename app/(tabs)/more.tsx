@@ -4,7 +4,7 @@ import useThemeStore from '@/stores/useThemeStore';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import React from 'react';
-import { ScrollView, StyleSheet } from 'react-native';
+import { ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 
@@ -19,6 +19,10 @@ export default function MoreScreen() {
       style={{ flex: 1 }}
     >
       <SafeAreaView style={{ flex: 1, paddingHorizontal: 16 }}>
+        {/* Decorative glows (approximated; RN has no blur, so we use soft circles) */}
+        <View style={[styles.glow, styles.glowOne]} />
+        <View style={[styles.glow, styles.glowTwo]} />
+
         <ScrollView
           style={{ flex: 1 }}
           showsVerticalScrollIndicator={false}
@@ -88,5 +92,21 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingBottom: 20,
+  },
+    glow: {
+    position: 'absolute',
+    width: 280,
+    height: 280,
+    borderRadius: 140,
+    backgroundColor: '#1769ff',
+    opacity: 0.14,
+  },
+  glowOne: {
+    top: -120,
+    right: -100,
+  },
+  glowTwo: {
+    bottom: 100,
+    left: -150,
   },
 });

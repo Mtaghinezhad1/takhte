@@ -106,11 +106,13 @@ const LearnScreen = () => {
                         .find(cat => cat.key === activeTab)
                         ?.subcategories.map((subcat) => {
                             const progress = getLocalProgress(activeTab, subcat.key);
+                            console.log(progress);
                             return (
                                 <LessonCard
                                     title={subcat.title}
                                     key={subcat.key}
                                     numberOfLessons={subcat.pages.length}
+                                    progress={progress}
                                     onPress={() => {
                                         if (progress === 0) {
                                             router.push(`/learn/${activeTab}/${subcat.key}/1`);

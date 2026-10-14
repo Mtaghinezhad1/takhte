@@ -92,6 +92,10 @@ export default function PageContent() {
             style={{ flex: 1 }}
         >
             <SafeAreaView style={{ flex: 1, paddingHorizontal: 16 }}>
+                {/* Decorative glows (approximated; RN has no blur, so we use soft circles) */}
+                <View style={[styles.glow, styles.glowOne]} />
+                <View style={[styles.glow, styles.glowTwo]} />
+
                 {/* هدر جدید */}
                 <LearnHeader
                     title={subcategory.title}
@@ -132,6 +136,23 @@ const styles = StyleSheet.create({
         flex: 1,
         padding: 16,
     },
+    glow: {
+        position: 'absolute',
+        width: 280,
+        height: 280,
+        borderRadius: 140,
+        backgroundColor: '#1769ff',
+        opacity: 0.14,
+    },
+    glowOne: {
+        top: -120,
+        right: -100,
+    },
+    glowTwo: {
+        bottom: 100,
+        left: -150,
+    },
+
     notFoundText: {
         fontSize: 18,
         textAlign: 'center',

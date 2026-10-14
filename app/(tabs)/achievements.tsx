@@ -17,8 +17,8 @@ const AchievementsScreen = () => {
 
   useEffect(() => {
     const {
-      totalGamesPlayed = 0,
-      totalWins = 0,
+      totalGames = 0,
+      wins = 0,
       winStreak = 0,
       maxWinStreak = 0
     } = statistics;
@@ -27,14 +27,14 @@ const AchievementsScreen = () => {
 
     const achievementsData = [
       // دستاوردهای تعداد کل بازی‌ها
-      { id: 1, icon: '🎯', title: 'تازه‌کار واقعی', description: '۱۰ بازی انجام بده', current: Math.min(totalGamesPlayed, 10), total: 10, locked: totalGamesPlayed < 10, completed: totalGamesPlayed >= 10 },
-      { id: 2, icon: '⚡', title: 'بازیکن حرفه‌ای', description: '۵۰ بازی انجام بده', current: Math.min(totalGamesPlayed, 50), total: 50, locked: totalGamesPlayed < 50, completed: totalGamesPlayed >= 50 },
-      { id: 3, icon: '👑', title: 'افسانه بازی', description: '۱۰۰ بازی انجام بده', current: Math.min(totalGamesPlayed, 100), total: 100, locked: totalGamesPlayed < 100, completed: totalGamesPlayed >= 100 },
+      { id: 1, icon: '🎯', title: 'تازه‌کار واقعی', description: '۱۰ بازی انجام بده', current: Math.min(totalGames, 10), total: 10, locked: totalGames < 10, completed: totalGames >= 10 },
+      { id: 2, icon: '⚡', title: 'بازیکن حرفه‌ای', description: '۵۰ بازی انجام بده', current: Math.min(totalGames, 50), total: 50, locked: totalGames < 50, completed: totalGames >= 50 },
+      { id: 3, icon: '👑', title: 'افسانه بازی', description: '۱۰۰ بازی انجام بده', current: Math.min(totalGames, 100), total: 100, locked: totalGames < 100, completed: totalGames >= 100 },
 
       // دستاوردهای تعداد بردها
-      { id: 4, icon: '🥇', title: 'اولین پیروزی', description: 'اولین بازی رو ببر', current: Math.min(totalWins, 1), total: 1, locked: totalWins < 1, completed: totalWins >= 1 },
-      { id: 5, icon: '🏆', title: 'چلنجر', description: '۲۵ بازی رو ببر', current: Math.min(totalWins, 25), total: 25, locked: totalWins < 25, completed: totalWins >= 25 },
-      { id: 6, icon: '⭐', title: 'سلطان برد', description: '۵۰ بازی رو ببر', current: Math.min(totalWins, 50), total: 50, locked: totalWins < 50, completed: totalWins >= 50 },
+      { id: 4, icon: '🥇', title: 'اولین پیروزی', description: 'اولین بازی رو ببر', current: Math.min(wins, 1), total: 1, locked: wins < 1, completed: wins >= 1 },
+      { id: 5, icon: '🏆', title: 'چلنجر', description: '۲۵ بازی رو ببر', current: Math.min(wins, 25), total: 25, locked: wins < 25, completed: wins >= 25 },
+      { id: 6, icon: '⭐', title: 'سلطان برد', description: '۵۰ بازی رو ببر', current: Math.min(wins, 50), total: 50, locked: wins < 50, completed: wins >= 50 },
 
       // دستاوردهای برد پشت سر هم
       { id: 7, icon: '🔥', title: 'شروع داغ', description: '۳ برد پشت سر هم', current: Math.min(winStreak, 3), total: 3, locked: winStreak < 3, completed: winStreak >= 3 },
@@ -103,6 +103,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  
   scrollContent: {
     padding: 16,
     paddingBottom: 20,

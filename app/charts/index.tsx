@@ -6,7 +6,7 @@ import useThemeStore from '@/stores/useThemeStore';
 import useUserStore from '@/stores/useUserStore';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, Text, View } from 'react-native';
+import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const CustomChart = () => {
@@ -71,6 +71,10 @@ const CustomChart = () => {
             style={{ flex: 1 }}
         >
             <SafeAreaView style={{ flex: 1, paddingHorizontal: 16 }}>
+                {/* Decorative glows (approximated; RN has no blur, so we use soft circles) */}
+                <View style={[styles.glow, styles.glowOne]} />
+                <View style={[styles.glow, styles.glowTwo]} />
+
                 <ProfileCard />
                 <ChartSection data={displayData} />
 
@@ -85,5 +89,24 @@ const CustomChart = () => {
         </LinearGradient>
     );
 };
+
+const styles = StyleSheet.create({
+    glow: {
+        position: 'absolute',
+        width: 280,
+        height: 280,
+        borderRadius: 140,
+        backgroundColor: '#1769ff',
+        opacity: 0.14,
+    },
+    glowOne: {
+        top: -120,
+        right: -100,
+    },
+    glowTwo: {
+        bottom: 100,
+        left: -150,
+    }
+});
 
 export default CustomChart;

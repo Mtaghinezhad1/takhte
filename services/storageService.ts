@@ -133,8 +133,6 @@ class StorageService {
         wins: stats.wins || 0,
         losses: stats.losses || 0,
         draws: stats.draws || 0,
-        totalWins: stats.totalWins || 0,
-        totalGamesPlayed: stats.totalGamesPlayed || 0,
         winStreak: stats.winStreak || 0,
         maxWinStreak: stats.maxWinStreak || 0
       };
@@ -157,8 +155,6 @@ class StorageService {
         wins: 0,
         losses: 0,
         draws: 0,
-        totalWins: 0,
-        totalGamesPlayed: 0,
         winStreak: 0,
         maxWinStreak: 0
       };
@@ -169,8 +165,6 @@ class StorageService {
         wins: 0,
         losses: 0,
         draws: 0,
-        totalWins: 0,
-        totalGamesPlayed: 0,
         winStreak: 0,
         maxWinStreak: 0
       };
@@ -254,10 +248,10 @@ class StorageService {
     try {
       const stats = await this.loadStatistics();
 
-      stats.totalGamesPlayed = (stats.totalGamesPlayed || 0) + 1;
+      stats.totalGames = (stats.totalGames || 0) + 1;
 
       if (gameResult === 'win') {
-        stats.totalWins = (stats.totalWins || 0) + 1;
+        stats.wins = (stats.wins || 0) + 1;
         stats.winStreak = (stats.winStreak || 0) + 1;
         if (stats.winStreak > (stats.maxWinStreak || 0)) {
           stats.maxWinStreak = stats.winStreak;
@@ -288,8 +282,6 @@ class StorageService {
       wins: 0,
       losses: 0,
       draws: 0,
-      totalWins: 0,
-      totalGamesPlayed: 0,
       winStreak: 0,
       maxWinStreak: 0
     };

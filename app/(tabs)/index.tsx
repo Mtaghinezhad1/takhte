@@ -1,10 +1,11 @@
 // index.tsx
 import GameCard from '@/components/home/gameCard';
 import ProfileCard from '@/components/home/profileCard';
+import TrainingButton from '@/components/trainerPanel';
 import useThemeStore from '@/stores/useThemeStore';
 import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Image, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const games = [
@@ -19,13 +20,26 @@ export default function HomeScreen() {
   const { colors } = useThemeStore();
 
   return (
-   <LinearGradient
+    <LinearGradient
       colors={[colors.backgroundPrimary, colors.backgroundSecondary, colors.backgroundTertiary]}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
       style={{ flex: 1 }}
     >
       <SafeAreaView style={{ flex: 1 }}>
+
+        {/* Decorative glows (approximated; RN has no blur, so we use soft circles) */}
+        <View style={[styles.glow, styles.glowOne]} />
+        <View style={[styles.glow, styles.glowTwo]} />
+
+        
+        <View style={styles.imageContainer}>
+          <Image
+            source={require('@/assets/images/nardland.png')}
+            style={styles.nardland}
+          />
+          <TrainingButton/>
+        </View>
 
         <View style={styles.profileContainer}>
           <ProfileCard />
@@ -59,5 +73,30 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     paddingTop: '2.5%',
     gap: 12,
+  },
+  imageContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  nardland: {
+    width: '50%',
+    height: 130,
+  },
+
+  glow: {
+    position: 'absolute',
+    width: 280,
+    height: 280,
+    borderRadius: 140,
+    backgroundColor: '#1769ff',
+    opacity: 0.14,
+  },
+  glowOne: {
+    top: -120,
+    right: -100,
+  },
+  glowTwo: {
+    bottom: 100,
+    left: -150,
   },
 });

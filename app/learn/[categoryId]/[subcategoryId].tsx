@@ -4,7 +4,7 @@ import useLearningStore from '@/stores/useLearningStore';
 import useThemeStore from '@/stores/useThemeStore';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router, useLocalSearchParams } from 'expo-router';
-import { ScrollView, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function SubcategoryPage() {
@@ -29,6 +29,9 @@ export default function SubcategoryPage() {
             style={{ flex: 1 }}
         >
             <SafeAreaView style={{ flex: 1, paddingHorizontal: 16 }}>
+                {/* Decorative glows (approximated; RN has no blur, so we use soft circles) */}
+                <View style={[styles.glow, styles.glowOne]} />
+                <View style={[styles.glow, styles.glowTwo]} />
                 <TouchableOpacity onPress={() => router.back()} style={{ marginBottom: 16 }}>
                     <Text style={{ fontSize: 18, color: colors.text }}>← بازگشت</Text>
                 </TouchableOpacity>
@@ -44,10 +47,10 @@ export default function SubcategoryPage() {
                         return (
                             <TouchableOpacity
                                 key={page.id}
-                                style={[styles.item,{backgroundColor: colors.profileBgPrimary,borderColor: colors.border, shadowColor: colors.shadow}, isCompeleted && styles.passed]}
+                                style={[styles.item, { backgroundColor: colors.profileBgPrimary, borderColor: colors.border, shadowColor: colors.shadow }, isCompeleted && styles.passed]}
                                 onPress={() => router.push(`/learn/${categoryId}/${subcategoryId}/${page.id}`)}
                             >
-                                <Text style={{ fontSize: 18, textAlign: 'right', color: colors.text }}>
+                                <Text style={{ fontSize: 18, textAlign: 'right', color: colors.text, fontWeight: '800', }}>
                                     {page.title}
                                 </Text>
                             </TouchableOpacity>
@@ -61,12 +64,29 @@ export default function SubcategoryPage() {
 }
 
 const styles = StyleSheet.create({
+    glow: {
+        position: 'absolute',
+        width: 280,
+        height: 280,
+        borderRadius: 140,
+        backgroundColor: '#1769ff',
+        opacity: 0.14,
+    },
+    glowOne: {
+        top: -120,
+        right: -100,
+    },
+    glowTwo: {
+        bottom: 100,
+        left: -150,
+    },
     item: {
         padding: 16,
         borderRadius: 12,
         marginBottom: 12,
         position: 'relative',
         flexDirection: 'row',
+        justifyContent: 'flex-end',
         gap: 18, // works on newer RN, fallback: use margin/padding
         borderWidth: 1,
         shadowOffset: { width: 0, height: 15 },

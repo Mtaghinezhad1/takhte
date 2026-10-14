@@ -77,9 +77,9 @@ const AvatarGrid = ({ avatars, activeIndex, setActiveIndex, activeTab }) => {
                                 >
                                     <Image
                                         source={avatar.source}
-                                        style={styles.avatarImage}
+                                        style={[styles.avatarImage,{borderColor: colors.inactiveTab}]}
                                     />
-                                    <View style={styles.checkBadge}>
+                                    <View style={[styles.checkBadge,{borderColor: colors.inactiveTab}]}>
                                         <Text style={styles.checkText}>✓</Text>
                                     </View>
                                 </LinearGradient>
@@ -87,6 +87,7 @@ const AvatarGrid = ({ avatars, activeIndex, setActiveIndex, activeTab }) => {
                                 <View
                                     style={[
                                         styles.avatarWrapper,
+                                        {backgroundColor: colors.inactiveTab},
                                         locked && styles.avatarWrapperLocked,
                                     ]}
                                 >
@@ -142,7 +143,6 @@ const styles = StyleSheet.create({
         height: AVATAR_SIZE,
         borderRadius: AVATAR_SIZE / 2,
         padding: 3,
-        backgroundColor: '#10294d',
         alignItems: 'center',
         justifyContent: 'center',
         shadowColor: '#000',
@@ -167,8 +167,6 @@ const styles = StyleSheet.create({
         width: '100%',
         height: '100%',
         borderRadius: AVATAR_SIZE / 2,
-        borderWidth: 2,
-        borderColor: '#081c38',
     },
     avatarImageLocked: {
         opacity: 0.68,
@@ -187,7 +185,6 @@ const styles = StyleSheet.create({
         borderRadius: 13.5,
         backgroundColor: '#247cf5',
         borderWidth: 3,
-        borderColor: '#071a36',
         alignItems: 'center',
         justifyContent: 'center',
         zIndex: 3,

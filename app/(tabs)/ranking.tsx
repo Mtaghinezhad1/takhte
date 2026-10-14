@@ -7,10 +7,9 @@ import {
   Dimensions,
   Image,
   ScrollView,
-  StatusBar,
   StyleSheet,
   Text,
-  View,
+  View
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -128,37 +127,37 @@ const RankingScreen = () => {
   // ─── لودینگ ─────────────────────────────────
   if (loading) {
     return (
-      <SafeAreaView style={styles.safeArea}>
-        <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
         <LinearGradient
-          colors={['#031128', '#020b1c']}
-          start={{ x: 0.5, y: 0 }}
-          end={{ x: 0.5, y: 1 }}
-          style={StyleSheet.absoluteFill}
-        />
-        <View style={styles.centerBox}>
-          <ActivityIndicator size="large" color="#2b8dff" />
-          <Text style={styles.centerText}>در حال دریافت رتبه‌بندی…</Text>
-        </View>
-      </SafeAreaView>
+          colors={[colors.backgroundPrimary, colors.backgroundSecondary, colors.backgroundTertiary]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={{ flex: 1 }}
+        >
+          <SafeAreaView style={{ flex: 1 }}>
+            <View style={styles.centerBox}>
+              <ActivityIndicator size="large" color="#2b8dff" />
+              <Text style={styles.centerText}>در حال دریافت رتبه‌بندی…</Text>
+            </View>
+          </SafeAreaView>
+        </LinearGradient>
     );
   }
 
   // ─── خطا ────────────────────────────────────
   if (error) {
     return (
-      <SafeAreaView style={styles.safeArea}>
-        <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
-        <LinearGradient
-          colors={['#031128', '#020b1c']}
-          start={{ x: 0.5, y: 0 }}
-          end={{ x: 0.5, y: 1 }}
-          style={StyleSheet.absoluteFill}
-        />
-        <View style={styles.centerBox}>
-          <Text style={styles.errorText}>⚠️ {error}</Text>
-        </View>
-      </SafeAreaView>
+      <LinearGradient
+        colors={[colors.backgroundPrimary, colors.backgroundSecondary, colors.backgroundTertiary]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={{ flex: 1 }}
+      >
+        <SafeAreaView style={{ flex: 1 }}>
+          <View style={styles.centerBox}>
+            <Text style={styles.errorText}>⚠️ {error}</Text>
+          </View>
+        </SafeAreaView>
+      </LinearGradient>
     );
   }
 

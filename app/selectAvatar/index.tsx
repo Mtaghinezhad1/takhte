@@ -1,8 +1,7 @@
 import AvatarGrid from '@/components/selectAvatar/avatarGrid';
 import AvatarTabs from '@/components/selectAvatar/avatarTabs';
 import ProfileSection from '@/components/selectAvatar/profileSection';
-import CancelButton from '@/components/ui/cancelButton';
-import ConfirmButton from '@/components/ui/confirmButton';
+import ActionButton from '@/components/ui/actionButton';
 import { getAllAvatars, isAvatarUnlocked } from '@/constants/avatars';
 import useThemeStore from '@/stores/useThemeStore';
 import useUserStore from '@/stores/useUserStore';
@@ -18,6 +17,8 @@ const SelectAvatar = () => {
     const { colors } = useThemeStore();
 
     const [activeTab, setActiveTab] = useState('all'); // 'all' | 'premium'
+    const [isSaving, setIsSaving] = useState(false);
+
 
 
     // دریافت لیست تمام آواتارها با key و source
@@ -42,14 +43,19 @@ const SelectAvatar = () => {
 
 
     const handleConfirm = async () => {
+
         const selectedAvatar = avatars[activeIndex];
         const isUnlocked = isAvatarUnlocked(selectedAvatar.key, elo, user.coins);
 
         if (!isUnlocked) return;
 
         try {
+            setIsSaving(true);
+
             await saveAvatarToServer(selectedAvatar.key);
             router.back();
+            setIsSaving(false);
+
         } catch (error) {
             console.error('خطا در ذخیره آواتار روی سرور:', error);
             // اینجا می‌تونی یه Alert یا Toast نشون بدی
@@ -73,8 +79,8 @@ const SelectAvatar = () => {
                 <AvatarGrid avatars={avatars} activeIndex={activeIndex} setActiveIndex={setActiveIndex} activeTab={activeTab} />
 
                 <View style={styles.btnContainer}>
-                    <ConfirmButton onPress={handleConfirm}>تایید</ConfirmButton>
-                    <CancelButton onPress={() => router.back()}>انصراف</CancelButton>
+                    <ActionButton onPress={handleConfirm}>{isSaving ? 'در حال ذخیره ...' : 'تایید'}</ActionButton>
+                    <ActionButton onPress={() => router.back()} variant='cancel'>انصراف</ActionButton>
                 </View>
 
             </SafeAreaView>
@@ -87,7 +93,6 @@ const SelectAvatar = () => {
 const styles = StyleSheet.create({
     safeArea: {
         flex: 1,
-        backgroundColor: '#020c1d',
     },
     glow: {
         position: 'absolute',
@@ -105,18 +110,6 @@ const styles = StyleSheet.create({
         bottom: 100,
         left: -150,
     },
-
-
-
-
-
-
-
-
-
-
-
-
 
     body: {
         flex: 1,

@@ -1,5 +1,4 @@
 import ActionButton from '@/components/ui/actionButton';
-import CancelButton from '@/components/ui/cancelButton';
 import useThemeStore from '@/stores/useThemeStore';
 import useUserStore from '@/stores/useUserStore';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -95,6 +94,10 @@ const EditProfile = () => {
       style={{ flex: 1 }}
     >
       <SafeAreaView style={{ flex: 1, paddingHorizontal: 16 }}>
+        {/* Decorative glows (approximated; RN has no blur, so we use soft circles) */}
+        <View style={[styles.glow, styles.glowOne]} />
+        <View style={[styles.glow, styles.glowTwo]} />
+
         <ScrollView
           style={{ flex: 1 }}
           showsVerticalScrollIndicator={false}
@@ -162,7 +165,7 @@ const EditProfile = () => {
                         <Text style={[styles.genderSymbol, option.symbolStyle]}>
                           {option.symbol}
                         </Text>
-                        <Text style={[styles.genderLabel, isActive && styles.genderLabelActive]}>
+                        <Text style={[styles.genderLabel, { color: colors.text }, isActive && styles.genderLabelActive]}>
                           {option.label}
                         </Text>
                       </View>
@@ -177,8 +180,7 @@ const EditProfile = () => {
           {/* Buttons */}
           <View style={styles.btnContainer}>
             <ActionButton onPress={handleSave}>{isSaving ? 'در حال ذخیره ...' : 'ذخیره تغییرات'}</ActionButton>
-            <CancelButton onPress={() => router.back()}>انصراف</CancelButton>
-
+            <ActionButton onPress={() => router.back()} variant='cancel'>انصراف</ActionButton>
           </View>
           {showError && <Text style={{ color: colors.danger }}>خطایی پیش آمده لطفا بعدا تلاش کنید.</Text>}
         </ScrollView>
@@ -192,6 +194,22 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     padding: 16,
     justifyContent: 'center',
+  },
+  glow: {
+    position: 'absolute',
+    width: 280,
+    height: 280,
+    borderRadius: 140,
+    backgroundColor: '#1769ff',
+    opacity: 0.14,
+  },
+  glowOne: {
+    top: -120,
+    right: -100,
+  },
+  glowTwo: {
+    bottom: 100,
+    left: -150,
   },
   centered: {
     justifyContent: 'center',
@@ -325,7 +343,6 @@ const styles = StyleSheet.create({
     color: '#a377e8',
   },
   genderLabel: {
-    color: '#b4c4dc',
     fontSize: 12,
     textAlign: 'center',
     lineHeight: 19,

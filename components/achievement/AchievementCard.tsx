@@ -34,7 +34,7 @@ const AchievementCard = ({
   // ---------- Incomplete / locked state ----------
   if (!isCompleted) {
     return (
-      <View style={[styles.card, styles.cardIncomplete, {shadowColor: colors.shadow}]}>
+      <View style={[styles.card, styles.cardIncomplete, { shadowColor: colors.shadow, backgroundColor: colors.inactiveTab, borderColor: colors.border }]}>
         <View style={[styles.iconWrap, styles.iconWrapIncomplete]}>
           <Text style={[styles.iconText, styles.iconTextIncomplete]}>{icon}</Text>
         </View>
@@ -77,13 +77,20 @@ const AchievementCard = ({
       colors={[colors.profileBgPrimary, colors.profileBgSecondary]}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
-      style={[styles.card, styles.cardCompleted, {borderColor: colors.border,shadowColor: colors.shadow}]}
+      style={[styles.card, styles.cardCompleted, { borderColor: colors.border, shadowColor: colors.shadow }]}
     >
       <View style={styles.completedHighlight} pointerEvents="none" />
 
-      <View style={[styles.iconWrap, styles.iconWrapCompleted]}>
+
+      <LinearGradient
+        colors={[colors.profileBgPrimary, colors.profileBgSecondary]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={[styles.iconWrap, styles.iconWrapCompleted,{borderColor: colors.border}]}
+      >
         <Text style={styles.iconText}>{icon}</Text>
-      </View>
+
+      </LinearGradient>
 
       <Text style={[styles.title, styles.titleCompleted, { color: colors.text }]} numberOfLines={2}>
         {title}
@@ -129,7 +136,6 @@ const styles = StyleSheet.create({
 
   /* Incomplete */
   cardIncomplete: {
-    backgroundColor: 'rgba(9, 28, 56, 0.92)',
     borderWidth: 1,
     opacity: 0.78,
     shadowOffset: { width: 0, height: 10 },
@@ -174,8 +180,6 @@ const styles = StyleSheet.create({
     opacity: 0.43,
   },
   iconWrapCompleted: {
-    backgroundColor: 'rgba(4, 26, 58, 0.72)',
-    borderColor: 'rgba(35, 125, 255, 0.42)',
     shadowColor: '#1875ff',
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.12,

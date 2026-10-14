@@ -55,7 +55,7 @@ const GameCard = ({ game }) => {
   };
 
   // Dynamic styles based on variant
-  const cardBorderColor = isStandard ? '#2782ff' : '#42a75c';
+  const cardBorderColor = isStandard ? colors.border : '#42a75c';
   const tagBorderColor = isStandard
     ? 'rgba(125, 156, 205, 0.16)'
     : 'rgba(81, 201, 95, 0.2)';
@@ -68,9 +68,10 @@ const GameCard = ({ game }) => {
     : '#4cbf5c';
   const buttonBgColor = isStandard ? '#1249a2' : '#176c3a';
   const buttonShadowColor = isStandard ? '#1158d1' : '#2e9c48';
+  const ShadowColor = isStandard ? colors.shadow : '#2e9c48';
 
   return (
-    <View style={[styles.card, { borderColor: cardBorderColor, width: width * 0.9 }]}>
+    <View style={[styles.card, { borderColor: cardBorderColor, width: width * 0.9 , shadowColor: ShadowColor}]}>
       {/* Accent gradient overlay */}
       <LinearGradient
         colors={[colors.profileBgPrimary, colors.profileBgSecondary]}
@@ -129,14 +130,10 @@ const styles = StyleSheet.create({
     borderRadius: 25,
     borderWidth: 1,
     overflow: 'hidden',
-    minHeight: 205,
-    backgroundColor: '#102e67', // fallback, will be overridden by gradient
-    shadowColor: '#000',
     shadowOffset: { width: 0, height: 18 },
     shadowOpacity: 0.3,
     shadowRadius: 35,
     elevation: 20,
-    marginVertical: 8, // spacing when mapped
   },
   content: {
     padding: 20,
@@ -147,7 +144,6 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: '800',
     color: '#f4f7ff',
-    marginTop: 10,
     textAlign: 'right',
   },
   subtitle: {

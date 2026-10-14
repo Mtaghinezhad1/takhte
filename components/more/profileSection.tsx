@@ -73,7 +73,7 @@ const ProfileSection = () => {
                     {/* Stats */}
                     <View style={[styles.stats, { borderTopColor: colors.border }]}>
                         <View style={styles.stat}>
-                            <Text style={[styles.statNumber, isShort && styles.statNumberShort, { color: colors.text }]}>{statistics.wins / statistics.totalGames || 0}%</Text>
+                            <Text style={[styles.statNumber, isShort && styles.statNumberShort, { color: colors.text }]}>{statistics.wins / statistics.totalGames * 100 || 0}%</Text>
                             <Text style={[styles.statLabel, isShort && styles.statLabelShort]}>
                                 نرخ برد
                             </Text>
@@ -86,7 +86,9 @@ const ProfileSection = () => {
                         </View>
                         <View style={styles.stat}>
                             <Text style={[styles.statNumber, isShort && styles.statNumberShort, { color: colors.text }]}>{statistics.totalGames}</Text>
-                            <Text style={[styles.statLabel, isShort && styles.statLabelShort]}>تعداد باز</Text>
+                            <Text style={[styles.statLabel, isShort && styles.statLabelShort]}>
+                                تعداد بازی ها
+                            </Text>
                         </View>
                     </View>
                 </LinearGradient>

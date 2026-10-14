@@ -62,7 +62,7 @@ const styles = StyleSheet.create({
     card: {
         flexDirection: 'row',
         alignItems: 'center',
-        padding: 20,
+        padding: 10,
         borderRadius: 25,
         borderWidth: 1,
         // Shadow (iOS & Android)
@@ -72,7 +72,6 @@ const styles = StyleSheet.create({
         shadowRadius: 50,
         elevation: 20,
         backgroundColor: 'transparent', // gradient handles background
-        minHeight: 135,
     },
     avatarWrapper: {
         marginRight: 14,

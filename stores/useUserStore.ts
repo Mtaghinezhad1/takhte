@@ -30,8 +30,6 @@ const DEFAULT_STATISTICS = {
   totalGames: 0,
   wins: 0,
   losses: 0,
-  totalWins: 0,
-  totalGamesPlayed: 0,
   winStreak: 0,
   maxWinStreak: 0,
 };
@@ -181,6 +179,24 @@ const useUserStore = create((set, get) => ({
         username:
           serverUser.displayName || serverUser.username || currentUser.username,
         gender: serverUser.gender || currentUser.gender,
+      };
+      set({ user: newUser });
+      await storageService.saveUserData(newUser);
+    }
+
+    return serverUser;
+  },
+
+  // ─── ذخیره آواتار در سرور ──────────────────────────
+  // اول سرور، بعد state + persist محلی
+  saveAvatarToServer: async (avatarKey) => {
+    const serverUser = await userService.updateAvatar(avatarKey);
+
+    if (serverUser) {
+      const currentUser = get().user;
+      const newUser = {
+        ...currentUser,
+        avatarKey: serverUser.avatarKey || avatarKey,
       };
       set({ user: newUser });
       await storageService.saveUserData(newUser);

@@ -8,7 +8,7 @@ const MAPPING = {
   'stars.fill': 'stars',
   'school.fill': 'school',
   'menu.fill': 'menu',
-  'leaderboard.fill': 'leaderboard ',
+  'leaderboard.fill': 'leaderboard',
   'account_circle.fill': 'person',
   'info.fill': 'info',
   'attach-money': 'attach-money',
