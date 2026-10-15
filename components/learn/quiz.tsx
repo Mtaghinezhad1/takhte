@@ -1,4 +1,5 @@
 import { learnData } from '@/constants/learnData';
+import useRTLStore from '@/stores/useRTLStore';
 import useThemeStore from '@/stores/useThemeStore';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useState } from 'react';
@@ -6,6 +7,7 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 const Quiz = ({ categoryId, subcategoryId, pageId, isAnswerCorrect, setIsAnswerCorrect }) => {
     const { colors, isDark } = useThemeStore();
+    const isRTL = useRTLStore(state => state.isRTL);
 
     const category = learnData.find(c => c.key === categoryId);
     const subcategory = category?.subcategories.find(s => s.key === subcategoryId);
@@ -28,15 +30,15 @@ const Quiz = ({ categoryId, subcategoryId, pageId, isAnswerCorrect, setIsAnswerC
             colors={[colors.profileBgPrimary, colors.profileBgSecondary]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
-            style={[styles.card,{borderColor: colors.border, shadowColor: colors.shadow}]}
+            style={[styles.card, { borderColor: colors.border, shadowColor: colors.shadow }]}
         >
             {/* Header */}
             <View style={styles.questionHeader}>
-                <Text style={[styles.questionTitle, { color: colors.text }]}>سوال</Text>
+                <Text style={[styles.questionTitle, { color: colors.text, textAlign: isRTL ? 'left' : 'right', }]}>سوال</Text>
             </View>
 
             {/* Question text */}
-            <Text style={[styles.questionText, { color: colors.text }]}>{quizComponent.question}</Text>
+            <Text style={[styles.questionText, { color: colors.text, textAlign: isRTL ? 'left' : 'right', }]}>{quizComponent.question}</Text>
 
             {/* Answer options */}
             <View style={styles.answersContainer}>
@@ -74,16 +76,16 @@ const Quiz = ({ categoryId, subcategoryId, pageId, isAnswerCorrect, setIsAnswerC
                                 <View
                                     style={[
                                         styles.answer,
-                                        {backgroundColor: colors.profileBgSecondary},
+                                        { backgroundColor: colors.profileBgSecondary },
                                         showAsWrong && styles.answerWrong,
-                                        showAsWrong && isDark && {backgroundColor: 'rgba(120, 20, 30, 0.55)'},
-                                        showAsWrong && !isDark && {backgroundColor: 'rgba(227, 122, 133, 0.55)'},
+                                        showAsWrong && isDark && { backgroundColor: 'rgba(120, 20, 30, 0.55)' },
+                                        showAsWrong && !isDark && { backgroundColor: 'rgba(227, 122, 133, 0.55)' },
                                     ]}
                                 >
                                     <Text
                                         style={[
                                             styles.answerText,
-                                            { color: colors.text },
+                                            { color: colors.text, textAlign: isRTL ? 'left' : 'right', },
                                             showAsWrong && styles.answerTextWrong,
                                         ]}
                                     >
@@ -113,23 +115,18 @@ const styles = StyleSheet.create({
         elevation: 8,
     },
     questionHeader: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
         marginBottom: 12,
     },
     questionTitle: {
         fontSize: 20,
         fontWeight: '900',
         color: '#f4f8ff',
-        textAlign: 'right',
     },
     questionText: {
         color: '#dbeaff',
         fontSize: 14,
         lineHeight: 28,
         marginBottom: 15,
-        textAlign: 'right',
     },
     answersContainer: {
         gap: 0,
@@ -140,9 +137,6 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: 'rgba(0, 122, 255, 0.38)',
         marginTop: 9,
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
         paddingHorizontal: 17,
         paddingVertical: 12,
     },
@@ -172,7 +166,6 @@ const styles = StyleSheet.create({
         color: '#d5e6fa',
         fontSize: 15,
         fontWeight: '500',
-        textAlign: 'right',
     },
     answerTextCorrect: {
         color: '#eafff5',

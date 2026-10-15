@@ -7,6 +7,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import { StatusBar, View } from "react-native";
 
+import useRTLStore from '@/stores/useRTLStore';
 import { CoachmarkOverlay, CoachmarkProvider } from '@edwardloopez/react-native-coachmark';
 
 SplashScreen.preventAutoHideAsync();
@@ -20,7 +21,8 @@ export default function RootLayout() {
     'Kaghaz': require('../assets/fonts/Kaghaz.ttf'),
     'KaghazBold': require('../assets/fonts/KaghazBold.ttf'),
   });
-  
+  const initializeRTL = useRTLStore(state => state.initialize);
+
   const initializeFromStorage = useUserStore(state => state.initializeFromStorage);
   const initializeFromServer = useUserStore(state => state.initializeFromServer);
   const isLoading = useUserStore(state => state.isLoading);
@@ -30,13 +32,19 @@ export default function RootLayout() {
     initializeTheme();
   }, []);
 
-  useEffect(() => {
-    initializeFromStorage();
+  // useEffect(() => {
+  //   initializeFromStorage();
+  // }, []);
+
+    useEffect(() => {
+    initializeFromServer();
   }, []);
 
-  //   useEffect(() => {
-  //   initializeFromServer();
-  // }, []);
+  useEffect(() => {
+    initializeRTL();
+  }, []);
+
+
 
   useEffect(() => {
     if ((fontsLoaded || fontError) && !isLoading && !themeLoading) {

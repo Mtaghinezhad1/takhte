@@ -1,4 +1,5 @@
 import { learnData } from '@/constants/learnData';
+import useRTLStore from '@/stores/useRTLStore';
 import useThemeStore from '@/stores/useThemeStore';
 import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
@@ -8,6 +9,7 @@ import { Image, StyleSheet, Text, View } from 'react-native';
 
 const ContentCard = ({ categoryId, subcategoryId, pageId }) => {
     const { colors } = useThemeStore();
+    const isRTL = useRTLStore(state => state.isRTL);
 
     const category = learnData.find(c => c.key === categoryId);
     const subcategory = category?.subcategories.find(s => s.key === subcategoryId);
@@ -28,18 +30,18 @@ const ContentCard = ({ categoryId, subcategoryId, pageId }) => {
             style={[styles.card, { borderColor: colors.border, shadowColor: colors.shadow }]}
         >
             {/* Title */}
-            <View style={styles.cardTitle}>
+            <View style={[styles.cardTitle, { flexDirection: isRTL ?  'row' : 'row-reverse', }]}>
                 <View style={styles.titleIcon}>
                     <Text style={styles.titleIconText}>{page?.id}</Text>
                 </View>
-                <Text style={[styles.titleText, { color: colors.text }]}>{heroComponent.title}</Text>
+                <Text style={[styles.titleText, { color: colors.text, textAlign: isRTL ? 'left' : 'right', }]}>{heroComponent.title}</Text>
             </View>
 
             {/* Body text */}
-            <Text style={[styles.text, { color: colors.text }]}>{contentComponent.value}</Text>
+            <Text style={[styles.text, { color: colors.text, textAlign: isRTL ? 'left' : 'right', }]}>{contentComponent.value}</Text>
 
             {/* Board image wrapper */}
-            <View style={[styles.boardWrapper,{borderColor: colors.border, shadowColor: colors.shadow}]}>
+            <View style={[styles.boardWrapper, { borderColor: colors.border, shadowColor: colors.shadow }]}>
                 <Image
                     source={imageComponent.src}
                     style={styles.boardImage}
@@ -63,7 +65,6 @@ const styles = StyleSheet.create({
         elevation: 8,
     },
     cardTitle: {
-        flexDirection: 'row',
         alignItems: 'center',
         gap: 10,
         marginBottom: 15,
@@ -93,13 +94,11 @@ const styles = StyleSheet.create({
         fontSize: 21,
         fontWeight: '900',
         color: '#f4f8ff',
-        textAlign: 'right',
     },
     text: {
         color: '#d8e7fb',
         fontSize: 14,
         lineHeight: 30, // ~2.2
-        textAlign: 'right',
         marginBottom: 18,
     },
     boardWrapper: {

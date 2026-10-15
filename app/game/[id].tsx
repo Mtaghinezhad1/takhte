@@ -1,11 +1,10 @@
 // [id].tsx
 import { createTour, useCoachmark } from '@edwardloopez/react-native-coachmark';
-import * as Localization from 'expo-localization';
 import * as NavigationBar from 'expo-navigation-bar';
 import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
 import * as ScreenOrientation from 'expo-screen-orientation';
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { ActivityIndicator, AppState, BackHandler, I18nManager, StyleSheet, Text, useWindowDimensions, View } from "react-native";
+import { ActivityIndicator, AppState, BackHandler, StyleSheet, Text, useWindowDimensions, View } from "react-native";
 
 import GameStatusBar from "@/components/game/gameStatusBar";
 import HalfBoard from "@/components/game/halfBoard";
@@ -19,11 +18,14 @@ import StaticsBar from "@/components/game/staticsBar";
 import { gameTourSteps } from '@/constants/tourSteps';
 import storageService from '@/services/storageService';
 import useGameStore from '@/stores/useGameStore';
+import useRTLStore from '@/stores/useRTLStore';
+import { LinearGradient } from 'expo-linear-gradient';
 
 export default function Index() {
   const { gameMode, targetScore, aiLevel, aiLevelForWhite } = useLocalSearchParams();
   const store = useGameStore();
   const { start, isActive } = useCoachmark();
+  const isRTL = useRTLStore(state => state.isRTL);
 
   const { height: screenHeight } = useWindowDimensions();
 
@@ -33,20 +35,8 @@ export default function Index() {
 
   const appState = useRef(AppState.currentState);
   const isSavedRef = useRef(false);
-  const [isRTL, setIsRTL] = useState(false);
 
-  const checkRTL = () => {
-    try {
-      const locales = Localization.getLocales();
-      const isRTLSystem = locales[0]?.textDirection === 'rtl';
-      const isRTLManager = I18nManager.isRTL;
-      const finalRTL = isRTLSystem || isRTLManager;
-      setIsRTL(finalRTL);
-    } catch (error) {
-      console.error('Error checking RTL:', error);
-      setIsRTL(I18nManager.isRTL);
-    }
-  };
+
 
   const saveGame = () => {
     if (isSavedRef.current) return;
@@ -66,7 +56,6 @@ export default function Index() {
         );
         await NavigationBar.setVisibilityAsync('hidden');
         await NavigationBar.setBehaviorAsync('overlay-swipe');
-        checkRTL();
 
         setLoadingMessage('در حال بارگذاری بازی...');
         const savedGame = await storageService.loadGameState(gameMode);
@@ -167,7 +156,6 @@ export default function Index() {
 
   // ========== ذخیره‌سازی هنگام unmount ==========
   useEffect(() => {
-    checkRTL();
     return () => {
       saveGame();
     };
@@ -205,7 +193,12 @@ export default function Index() {
     <View style={[styles.container, { height: screenHeight }]}>
       <GameStatusBar />
 
-      <View style={[styles.board, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+      <LinearGradient
+        colors={['rgba(25, 55, 91, 0.72)', 'rgba(25, 55, 91, 0.88)']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={[styles.board, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}
+      >
 
         <Leftbar />
 
@@ -220,9 +213,10 @@ export default function Index() {
         <InformModal />
         <NoMoveModal />
         <MatchEndModal />
-      </View>
+      </LinearGradient>
 
-      <Text style={{color: 'white'}}>strategy</Text>
+
+      <Text style={{ color: 'white' }}>strategy</Text>
     </View>
   );
 }
@@ -256,8 +250,14 @@ const styles = StyleSheet.create({
     aspectRatio: 13 / 9,
     flexDirection: 'row',
     justifyContent: 'space-between',
-    backgroundColor: '#070024',
     position: 'relative',
-    borderRadius: 10,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.09)',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 20 },
+    shadowOpacity: 0.25,
+    shadowRadius: 50,
+    elevation: 12,
   },
 });

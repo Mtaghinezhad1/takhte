@@ -1,3 +1,4 @@
+import useRTLStore from '@/stores/useRTLStore';
 import useThemeStore from '@/stores/useThemeStore';
 import {
     Dimensions,
@@ -13,11 +14,12 @@ const { height: screenHeight } = Dimensions.get('window');
 const MenuItem = ({ icon, title, subtitle, onPress = null, showToggle = false }) => {
     const { isDark, toggleTheme, colors } = useThemeStore();
     const isShort = screenHeight < 700;
+    const isRTL = useRTLStore(state => state.isRTL);
 
 
     return (
         <TouchableOpacity
-            style={[styles.menuItem, isShort && styles.menuItemShort]}
+            style={[styles.menuItem, isShort && styles.menuItemShort, { flexDirection: isRTL ? 'row-reverse' : 'row', }]}
             onPress={onPress}
             activeOpacity={0.7}
             disabled={showToggle} // disable press for toggle item, handled by switch
@@ -35,8 +37,8 @@ const MenuItem = ({ icon, title, subtitle, onPress = null, showToggle = false })
                 <Text style={styles.arrow}>‹</Text>
             )}
             <View style={styles.menuContent}>
-                <Text style={[styles.menuTitle, { color: colors.text }]}>{title}</Text>
-                <Text style={styles.menuSubtitle}>{subtitle}</Text>
+                <Text style={[styles.menuTitle, { color: colors.text, textAlign: isRTL ? 'left' : 'right', }]}>{title}</Text>
+                <Text style={[styles.menuSubtitle, { textAlign: isRTL ? 'left' : 'right', }]}>{subtitle}</Text>
             </View>
             <View style={styles.menuIcon}>
                 <Text style={styles.menuIconText}>{icon}</Text>
@@ -77,13 +79,11 @@ const styles = StyleSheet.create({
         fontSize: 12,
         fontWeight: 'bold',
         color: '#ffffff',
-        textAlign: 'right',
     },
     menuSubtitle: {
         fontSize: 8,
         color: '#718db5',
         marginTop: 3,
-        textAlign: 'right',
     },
     arrow: {
         color: '#7695be',

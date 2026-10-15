@@ -93,8 +93,8 @@ const useUserStore = create((set, get) => ({
         const updatedUser = {
           ...currentUser,
           username:
-            serverUser.displayName ||
             serverUser.username ||
+            serverUser.displayName ||
             currentUser.username,
           avatarKey: serverUser.avatarKey || currentUser.avatarKey,
           coins: serverUser.coins ?? currentUser.coins,
@@ -177,7 +177,7 @@ const useUserStore = create((set, get) => ({
       const newUser = {
         ...currentUser,
         username:
-          serverUser.displayName || serverUser.username || currentUser.username,
+          serverUser.username || serverUser.displayName || currentUser.username,
         gender: serverUser.gender || currentUser.gender,
       };
       set({ user: newUser });

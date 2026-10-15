@@ -10,6 +10,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function MoreScreen() {
   const { colors } = useThemeStore();
+  
 
   return (
     <LinearGradient

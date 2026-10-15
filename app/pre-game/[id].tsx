@@ -1,5 +1,6 @@
 // [id].tsx
 import storageService from '@/services/storageService';
+import useRTLStore from '@/stores/useRTLStore';
 import useThemeStore from '@/stores/useThemeStore';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router, useLocalSearchParams } from 'expo-router';
@@ -16,6 +17,7 @@ const PreGameScreen = () => {
   const [matchLength, setMatchLength] = useState(3);
   const [difficulty, setDifficulty] = useState(5);
   const { colors } = useThemeStore();
+  const isRTL = useRTLStore(state => state.isRTL);
 
 
   const isAIvsAI = gameMode === 'AIvsAI';
@@ -110,7 +112,7 @@ const PreGameScreen = () => {
             <View style={styles.header}>
 
               <TouchableOpacity
-                style={[styles.back,{borderColor: colors.border, shadowColor: colors.shadow}]}
+                style={[styles.back, { borderColor: colors.border, shadowColor: colors.shadow }]}
                 onPress={() => router.back()}
                 activeOpacity={0.8}
               >
@@ -137,11 +139,11 @@ const PreGameScreen = () => {
               colors={[colors.profileBgPrimary, colors.profileBgSecondary]}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
-              style={[styles.settingsCard,{borderColor: colors.border, shadowColor: colors.shadow}]}
+              style={[styles.settingsCard, { borderColor: colors.border, shadowColor: colors.shadow }]}
             >
-              <View style={styles.sectionTitle}>
-                <Text style={[styles.sectionTitleText, { color: colors.text }]}>طول بازی</Text>
+              <View style={[styles.sectionTitle, { flexDirection: isRTL ? 'row-reverse' : 'row', }]}>
                 <Text style={styles.sectionIcon}>🎯</Text>
+                <Text style={[styles.sectionTitleText, { color: colors.text }]}>طول بازی</Text>
               </View>
 
               <Text style={styles.sectionDescription}>
@@ -170,8 +172,8 @@ const PreGameScreen = () => {
                           </Text>
                         </LinearGradient>
                       ) : (
-                        <View style={[styles.number,{backgroundColor: colors.inactiveTab,borderColor: colors.border}]}>
-                          <Text style={[styles.numberText,{ color: colors.text }]}>{num}</Text>
+                        <View style={[styles.number, { backgroundColor: colors.inactiveTab, borderColor: colors.border }]}>
+                          <Text style={[styles.numberText, { color: colors.text }]}>{num}</Text>
                         </View>
                       )}
                     </TouchableOpacity>
@@ -186,11 +188,11 @@ const PreGameScreen = () => {
               colors={[colors.profileBgPrimary, colors.profileBgSecondary]}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
-              style={[styles.settingsCard,{borderColor: colors.border, shadowColor: colors.shadow}]}
+              style={[styles.settingsCard, { borderColor: colors.border, shadowColor: colors.shadow }]}
             >
-              <View style={styles.sectionTitle}>
-                <Text style={[styles.sectionTitleText, { color: colors.text }]}>سختی بازی</Text>
+              <View style={[styles.sectionTitle, { flexDirection: isRTL ? 'row-reverse' : 'row', }]}>
                 <Text style={styles.sectionIcon}>🧠</Text>
+                <Text style={[styles.sectionTitleText, { color: colors.text }]}>سختی بازی</Text>
               </View>
 
               <Text style={styles.sectionDescription}>
@@ -219,8 +221,8 @@ const PreGameScreen = () => {
                           </Text>
                         </LinearGradient>
                       ) : (
-                        <View style={[styles.number,{backgroundColor: colors.inactiveTab,borderColor: colors.border}]}>
-                          <Text style={[styles.numberText,{ color: colors.text }]}>{num}</Text>
+                        <View style={[styles.number, { backgroundColor: colors.inactiveTab, borderColor: colors.border }]}>
+                          <Text style={[styles.numberText, { color: colors.text }]}>{num}</Text>
                         </View>
                       )}
                     </TouchableOpacity>
@@ -306,23 +308,6 @@ const styles = StyleSheet.create({
     marginBottom: 22,
     minHeight: 60,
   },
-  backBtn: {
-    position: 'absolute',
-    right: 0,
-    width: 50,
-    height: 50,
-    borderRadius: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'rgba(18, 61, 113, 0.85)',
-    borderWidth: 1,
-    borderColor: 'rgba(20, 120, 255, 0.45)',
-    shadowColor: '#006eff',
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.08,
-    shadowRadius: 20,
-    elevation: 4,
-  },
   back: {
     width: 52,
     height: 52,
@@ -369,7 +354,6 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   sectionTitle: {
-    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     marginBottom: 9,

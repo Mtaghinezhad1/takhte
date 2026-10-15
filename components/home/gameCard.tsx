@@ -1,4 +1,5 @@
 import storageService from '@/services/storageService';
+import useRTLStore from '@/stores/useRTLStore';
 import useThemeStore from '@/stores/useThemeStore';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
@@ -12,6 +13,7 @@ const GameCard = ({ game }) => {
   const [isLoading, setIsLoading] = useState(false);
   const { width, height } = useWindowDimensions();
   const { colors, isDark } = useThemeStore();
+  const isRTL = useRTLStore(state => state.isRTL);
 
 
 
@@ -71,7 +73,7 @@ const GameCard = ({ game }) => {
   const ShadowColor = isStandard ? colors.shadow : '#2e9c48';
 
   return (
-    <View style={[styles.card, { borderColor: cardBorderColor, width: width * 0.9 , shadowColor: ShadowColor}]}>
+    <View style={[styles.card, { borderColor: cardBorderColor, width: width * 0.9, shadowColor: ShadowColor }]}>
       {/* Accent gradient overlay */}
       <LinearGradient
         colors={[colors.profileBgPrimary, colors.profileBgSecondary]}
@@ -80,8 +82,8 @@ const GameCard = ({ game }) => {
         style={StyleSheet.absoluteFillObject}
       />
       <View style={styles.content}>
-        <Text style={[styles.title, { color: colors.text }]}>{game.title}</Text>
-        <Text style={styles.subtitle}>{game.subtitle}</Text>
+        <Text style={[styles.title, { color: colors.text, textAlign: isRTL ? 'left':'right', }]}>{game.title}</Text>
+        <Text style={[styles.subtitle,{textAlign: isRTL ? 'left':'right'}]}>{game.subtitle}</Text>
 
         {/* Features tags */}
         <View style={styles.featuresRow}>
@@ -144,14 +146,13 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: '800',
     color: '#f4f7ff',
-    textAlign: 'right',
+
   },
   subtitle: {
     fontSize: 11,
     color: '#9caecf',
     marginTop: 4,
     lineHeight: 18,
-    textAlign: 'right',
   },
   featuresRow: {
     flexDirection: 'row',

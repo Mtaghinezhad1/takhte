@@ -49,7 +49,7 @@ const styles = StyleSheet.create({
     container: {
         height: '5%',
         display: 'flex',
-        backgroundColor: 'rgba(7, 0, 36, 1.00)',
+        backgroundColor: 'rgba(7, 0, 36, 0)',
     },
     textContainer: {
         flex: 1,

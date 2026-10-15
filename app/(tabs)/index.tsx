@@ -1,7 +1,6 @@
 // index.tsx
 import GameCard from '@/components/home/gameCard';
 import ProfileCard from '@/components/home/profileCard';
-import TrainingButton from '@/components/trainerPanel';
 import useThemeStore from '@/stores/useThemeStore';
 import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
@@ -38,7 +37,6 @@ export default function HomeScreen() {
             source={require('@/assets/images/nardland.png')}
             style={styles.nardland}
           />
-          <TrainingButton/>
         </View>
 
         <View style={styles.profileContainer}>

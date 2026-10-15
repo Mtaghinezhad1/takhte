@@ -1,6 +1,7 @@
 import { learnData } from '@/constants/learnData';
 import { learnService } from '@/services/learnService';
 import useLearningStore from '@/stores/useLearningStore';
+import useRTLStore from '@/stores/useRTLStore';
 import useThemeStore from '@/stores/useThemeStore';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router, useLocalSearchParams } from 'expo-router';
@@ -11,8 +12,7 @@ export default function SubcategoryPage() {
     const { categoryId, subcategoryId } = useLocalSearchParams();
     const completedLessons = useLearningStore(state => state.completedLessons);
     const { colors } = useThemeStore();
-
-
+    const isRTL = useRTLStore(state => state.isRTL);
 
     const category = learnData.find(c => c.key === categoryId);
     const subcategory = category?.subcategories.find(s => s.key === subcategoryId);
@@ -32,11 +32,23 @@ export default function SubcategoryPage() {
                 {/* Decorative glows (approximated; RN has no blur, so we use soft circles) */}
                 <View style={[styles.glow, styles.glowOne]} />
                 <View style={[styles.glow, styles.glowTwo]} />
-                <TouchableOpacity onPress={() => router.back()} style={{ marginBottom: 16 }}>
-                    <Text style={{ fontSize: 18, color: colors.text }}>← بازگشت</Text>
+
+                <TouchableOpacity
+                    style={[styles.back, { borderColor: colors.border, shadowColor: colors.shadow }]}
+                    onPress={() => router.back()}
+                    activeOpacity={0.8}
+                >
+                    <LinearGradient
+                        colors={[colors.profileBgPrimary, colors.profileBgSecondary]}
+                        start={{ x: 0, y: 0 }}
+                        end={{ x: 1, y: 1 }}
+                        style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}
+                    >
+                        <Text style={[styles.backIcon, { color: colors.text }]}>‹</Text>
+                    </LinearGradient>
                 </TouchableOpacity>
 
-                <Text style={{ fontSize: 24, color: colors.text, marginBottom: 20, textAlign: 'right' }}>
+                <Text style={{ fontSize: 24, fontWeight: '800', color: colors.text, marginBottom: 20, textAlign: isRTL ? 'left' : 'right', }}>
                     {subcategory.title}
                 </Text>
 
@@ -50,7 +62,7 @@ export default function SubcategoryPage() {
                                 style={[styles.item, { backgroundColor: colors.profileBgPrimary, borderColor: colors.border, shadowColor: colors.shadow }, isCompeleted && styles.passed]}
                                 onPress={() => router.push(`/learn/${categoryId}/${subcategoryId}/${page.id}`)}
                             >
-                                <Text style={{ fontSize: 18, textAlign: 'right', color: colors.text, fontWeight: '800', }}>
+                                <Text style={{ fontSize: 18, textAlign: isRTL ? 'left' : 'right', color: colors.text, fontWeight: '800', }}>
                                     {page.title}
                                 </Text>
                             </TouchableOpacity>
@@ -80,13 +92,29 @@ const styles = StyleSheet.create({
         bottom: 100,
         left: -150,
     },
+    back: {
+        width: 52,
+        height: 52,
+        borderRadius: 16,
+        borderWidth: 1,
+        shadowColor: '#0082ff',
+        shadowOffset: { width: 0, height: 0 },
+        shadowOpacity: 0.25,
+        shadowRadius: 15,
+        elevation: 6,
+        overflow: 'hidden'
+    },
+    backIcon: {
+        color: '#ffffff',
+        fontSize: 28,
+        lineHeight: 30,
+        marginTop: -4,
+    },
     item: {
         padding: 16,
         borderRadius: 12,
         marginBottom: 12,
         position: 'relative',
-        flexDirection: 'row',
-        justifyContent: 'flex-end',
         gap: 18, // works on newer RN, fallback: use margin/padding
         borderWidth: 1,
         shadowOffset: { width: 0, height: 15 },

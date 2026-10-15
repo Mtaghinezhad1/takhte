@@ -1,4 +1,5 @@
 // 7 learn top.js
+import useRTLStore from '@/stores/useRTLStore';
 import useThemeStore from '@/stores/useThemeStore';
 import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
@@ -20,11 +21,12 @@ const LearnHeader = ({
   onBack,
 }) => {
   const { colors } = useThemeStore();
+  const isRTL = useRTLStore(state => state.isRTL);
   return (
     <View style={styles.header}>
       {/* Back button */}
       <TouchableOpacity
-        style={[styles.back,{borderColor: colors.border,  shadowColor: colors.shadow}]}
+        style={[styles.back, { borderColor: colors.border, shadowColor: colors.shadow }]}
         onPress={onBack}
         activeOpacity={0.8}
       >
@@ -43,12 +45,12 @@ const LearnHeader = ({
         colors={[colors.profileBgPrimary, colors.profileBgSecondary]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 0 }}
-        style={[styles.progressCard,{borderColor: colors.border, shadowColor: colors.shadow}]}
+        style={[styles.progressCard, { borderColor: colors.border, shadowColor: colors.shadow }]}
       >
-        <Text style={[styles.progressTitle, { color: colors.text }]} numberOfLines={1}>
+        <Text style={[styles.progressTitle, { color: colors.text, textAlign: isRTL ? 'left' : 'right', }]} numberOfLines={1}>
           {title}
         </Text>
-        <Text style={styles.lessonNumber} numberOfLines={1}>
+        <Text style={[styles.lessonNumber, { textAlign: isRTL ? 'left' : 'right', }]} numberOfLines={1}>
           درس {fa(currentLesson)} از {fa(totalLessons)}
         </Text>
       </LinearGradient>
@@ -102,12 +104,10 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: 'bold',
     color: '#f4f8ff',
-    textAlign: 'right',
   },
   lessonNumber: {
     color: '#9abce9',
     fontSize: 12,
-    textAlign: 'left',
   },
 });
 

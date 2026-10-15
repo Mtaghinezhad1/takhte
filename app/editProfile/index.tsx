@@ -1,4 +1,5 @@
 import ActionButton from '@/components/ui/actionButton';
+import useRTLStore from '@/stores/useRTLStore';
 import useThemeStore from '@/stores/useThemeStore';
 import useUserStore from '@/stores/useUserStore';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -26,7 +27,7 @@ const EditProfile = () => {
     saveProfileToServer,
   } = useUserStore();
   const { colors } = useThemeStore();
-
+  const isRTL = useRTLStore(state => state.isRTL);
 
 
   // State محلی برای ویرایش موقت
@@ -119,7 +120,7 @@ const EditProfile = () => {
             <View style={styles.field}>
               <View style={styles.labelRow}>
                 <Text style={styles.labelIcon}>♙</Text>
-                <Text style={[styles.labelText, { color: colors.text }]}>نام کاربری</Text>
+                <Text style={[styles.labelText, { color: colors.text, textAlign: isRTL ? 'left' : 'right', }]}>نام کاربری</Text>
               </View>
               <View style={[styles.inputWrapper, { backgroundColor: colors.profileBgSecondary }]}>
                 <TextInput
@@ -131,7 +132,7 @@ const EditProfile = () => {
                   textAlign="right"
                 />
               </View>
-              <Text style={styles.helperText}>
+              <Text style={[styles.helperText, { textAlign: isRTL ? 'left' : 'right', }]}>
                 این نام در بازی و جدول‌ها نمایش داده می‌شود.
               </Text>
             </View>
@@ -140,7 +141,7 @@ const EditProfile = () => {
             <View style={styles.field}>
               <View style={styles.labelRow}>
                 <Text style={styles.labelIcon}>♙</Text>
-                <Text style={[styles.labelText, { color: colors.text }]}>جنسیت</Text>
+                <Text style={[styles.labelText, { color: colors.text, textAlign: isRTL ? 'left' : 'right', }]}>جنسیت</Text>
               </View>
               <View style={styles.genderOptions}>
                 {genderOptions.map((option) => {
@@ -268,7 +269,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     color: '#f5f8ff',
-    textAlign: 'right',
   },
   inputWrapper: {
     height: 59,
@@ -299,7 +299,6 @@ const styles = StyleSheet.create({
     color: '#7186a9',
     fontSize: 10,
     lineHeight: 18,
-    textAlign: 'right',
   },
   genderOptions: {
     flexDirection: 'row',

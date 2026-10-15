@@ -1,4 +1,5 @@
 import { getAvatarByKey } from '@/constants/avatars';
+import useRTLStore from '@/stores/useRTLStore';
 import useThemeStore from '@/stores/useThemeStore';
 import useUserStore from '@/stores/useUserStore';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -19,6 +20,8 @@ const ProfileSection = () => {
     const { user, statistics } = useUserStore();
     const elo = useUserStore.getState().getCurrentElo();
     const { colors } = useThemeStore();
+    const isRTL = useRTLStore(state => state.isRTL);
+
 
 
 
@@ -29,7 +32,7 @@ const ProfileSection = () => {
         <View style={styles.appContainer}>
             {/* Header */}
             <View style={[styles.header, isShort && styles.headerShort]}>
-                <Text style={[styles.headerTitle, { color: colors.text }]}>
+                <Text style={[styles.headerTitle, { color: colors.text, textAlign: isRTL ? 'left' : 'right', }]}>
                     نرد <Text style={styles.headerHighlight}>لند</Text>
                 </Text>
             </View>
@@ -43,7 +46,7 @@ const ProfileSection = () => {
                     end={{ x: 1, y: 1 }}
                     style={[styles.profileCard, { borderColor: colors.border, shadowColor: colors.shadow }]}
                 >
-                    <View style={styles.profileTop}>
+                    <View style={[styles.profileTop,{flexDirection: isRTL ? 'row-reverse' : 'row',}]}>
                         {/* ELO box */}
                         <View style={[styles.eloBox, { borderRightColor: colors.border }]}>
                             <Text style={styles.eloLabel}>توانایی</Text>
@@ -107,9 +110,6 @@ const styles = StyleSheet.create({
     },
     header: {
         height: 58,
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
         paddingHorizontal: 18,
     },
     headerShort: {
@@ -118,7 +118,6 @@ const styles = StyleSheet.create({
     headerTitle: {
         fontSize: 20,
         fontWeight: '900',
-        textAlign: 'right',
     },
     headerHighlight: {
         color: '#3184ff',
@@ -141,7 +140,6 @@ const styles = StyleSheet.create({
         padding: 10,
     },
     profileTop: {
-        flexDirection: 'row',
         alignItems: 'center',
         gap: 13,
     },

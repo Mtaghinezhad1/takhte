@@ -1,3 +1,4 @@
+import useRTLStore from '@/stores/useRTLStore';
 import useThemeStore from '@/stores/useThemeStore';
 import useUserStore from '@/stores/useUserStore';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -16,6 +17,7 @@ const ProfileSection = ({ source }) => {
     const { user, statistics } = useUserStore();
     const elo = useUserStore.getState().getCurrentElo();
     const { colors } = useThemeStore();
+    const isRTL = useRTLStore(state => state.isRTL);
 
 
 
@@ -27,7 +29,7 @@ const ProfileSection = ({ source }) => {
             colors={[colors.profileBgPrimary, colors.profileBgSecondary]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
-            style={[styles.profileCard, {borderColor: colors.border, shadowColor: colors.shadow}]}
+            style={[styles.profileCard, {borderColor: colors.border, shadowColor: colors.shadow, flexDirection: isRTL ? 'row-reverse' : 'row',}]}
         >
             {/* ELO box */}
             <View style={[styles.eloBox,{borderRightColor: colors.border}]}>
@@ -63,7 +65,6 @@ const styles = StyleSheet.create({
         shadowRadius: 30,
         marginVertical: 16,
         elevation: 8,
-        flexDirection: 'row',
         alignItems: 'center',
         gap: 13,
     },

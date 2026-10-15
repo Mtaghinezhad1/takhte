@@ -1,4 +1,5 @@
 import { getAvatarByKey } from '@/constants/avatars';
+import useRTLStore from '@/stores/useRTLStore';
 import useThemeStore from '@/stores/useThemeStore';
 import useUserStore from '@/stores/useUserStore';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -13,6 +14,7 @@ const ProfileCard = () => {
     const { user } = useUserStore();
     const elo = useUserStore.getState().getCurrentElo();
     const { colors } = useThemeStore();
+    const isRTL = useRTLStore(state => state.isRTL);
 
 
     return (
@@ -21,7 +23,7 @@ const ProfileCard = () => {
                 colors={[colors.profileBgPrimary, colors.profileBgSecondary]}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
-                style={[styles.card,{borderColor: colors.border, shadowColor: colors.shadow}]}
+                style={[styles.card,{borderColor: colors.border, shadowColor: colors.shadow, flexDirection: isRTL ? 'row' : 'row-reverse',}]}
             >
 
                 {/* Avatar */}
@@ -34,10 +36,7 @@ const ProfileCard = () => {
 
                 {/* Info */}
                 <View style={styles.info}>
-                    <View style={styles.nameRow}>
                         <Text style={[styles.name, { color: colors.text }]}>{user.username}</Text>
-                    </View>
-                    {/* optional subtitle could be added here */}
                 </View>
 
                 {/* ELO */}
@@ -60,7 +59,6 @@ const styles = StyleSheet.create({
 
     },
     card: {
-        flexDirection: 'row',
         alignItems: 'center',
         padding: 10,
         borderRadius: 25,
@@ -92,11 +90,6 @@ const styles = StyleSheet.create({
     info: {
         flex: 1,
         flexShrink: 1,
-    },
-    nameRow: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 7, // works on iOS 13+ / Android; fallback margin
     },
     name: {
         fontSize: 20,
