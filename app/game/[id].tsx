@@ -216,7 +216,7 @@ export default function Index() {
       </LinearGradient>
 
 
-      <Text style={{ color: 'white' }}>strategy</Text>
+      {/* <Text style={{ color: 'white' }}>strategy</Text> */}
     </View>
   );
 }

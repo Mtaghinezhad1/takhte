@@ -46,17 +46,17 @@ const ProfileSection = () => {
                     end={{ x: 1, y: 1 }}
                     style={[styles.profileCard, { borderColor: colors.border, shadowColor: colors.shadow }]}
                 >
-                    <View style={[styles.profileTop,{flexDirection: isRTL ? 'row-reverse' : 'row',}]}>
+                    <View style={[styles.profileTop, { flexDirection: isRTL ? 'row-reverse' : 'row', }]}>
                         {/* ELO box */}
-                        <View style={[styles.eloBox, { borderRightColor: colors.border }]}>
+                        <View style={[styles.eloBox, isRTL ? { borderLeftColor: colors.border, borderLeftWidth: 1 } : { borderRightColor: colors.border, borderRightWidth: 1 }]}>
                             <Text style={styles.eloLabel}>توانایی</Text>
                             <Text style={[styles.eloNumber, isShort && styles.eloNumberShort, { color: colors.text }]}>{elo}</Text>
                         </View>
 
                         {/* Profile info */}
                         <View style={styles.profileInfo}>
-                            <Text style={[styles.profileName, isShort && styles.profileNameShort, { color: colors.text }]}>{user.username}</Text>
-                            <Text style={[styles.profileStatus, isShort && styles.profileStatusShort]}>
+                            <Text style={[styles.profileName, isShort && styles.profileNameShort, { color: colors.text, textAlign: isRTL ? 'left' : 'right'  }]}>{user.username}</Text>
+                            <Text style={[styles.profileStatus, isShort && styles.profileStatusShort, {textAlign: isRTL ? 'left' : 'right' }]}>
                                 برای شروع بازی وارد حساب شوید
                             </Text>
                         </View>
@@ -183,7 +183,6 @@ const styles = StyleSheet.create({
     eloBox: {
         alignItems: 'center',
         paddingRight: 10,
-        borderRightWidth: 1,
     },
     eloLabel: {
         color: '#4992ff',

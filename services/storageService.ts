@@ -36,7 +36,7 @@ class StorageService {
   }
 
   // اضافه کردن رکورد جدید به تاریخچه
-  async addEloRecord(elo, gameMode, opponent, result, matchLength = 5, timestamp = Date.now()) {
+  async addEloRecord(elo, gameMode, opponent, matchLength = 5) {
     try {
       const history = await this.loadEloHistory();
 
@@ -44,9 +44,7 @@ class StorageService {
         elo,
         gameMode,
         opponent,
-        result, // 'win', 'loss', 'draw'
         matchLength,
-        timestamp
       };
 
       // محدود کردن به 1000 رکورد آخر
@@ -74,7 +72,7 @@ class StorageService {
 
   // ریست کردن تاریخچه
   async resetEloHistory() {
-    const defaultHistory = [{ elo: 1500, timestamp: Date.now(), gameMode: 'initial', opponent: 'system', result: 'initial', matchLength: 0 }];
+    const defaultHistory = [{ elo: 1500, gameMode: 'initial', opponent: 'system', matchLength: 0 }];
     await this.saveEloHistory(defaultHistory);
     return defaultHistory;
   }

@@ -18,12 +18,12 @@ const ProfileCard = () => {
 
 
     return (
-        <TouchableOpacity style={[styles.body,{borderColor: colors.border, shadowColor: colors.shadow}]} onPress={() => router.push(`/charts`)}>
+        <TouchableOpacity style={[styles.body, { borderColor: colors.border, shadowColor: colors.shadow }]} onPress={() => router.push(`/charts`)}>
             <LinearGradient
                 colors={[colors.profileBgPrimary, colors.profileBgSecondary]}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
-                style={[styles.card,{borderColor: colors.border, shadowColor: colors.shadow, flexDirection: isRTL ? 'row' : 'row-reverse',}]}
+                style={[styles.card, { borderColor: colors.border, shadowColor: colors.shadow, flexDirection: isRTL ? 'row' : 'row-reverse', }]}
             >
 
                 {/* Avatar */}
@@ -36,11 +36,11 @@ const ProfileCard = () => {
 
                 {/* Info */}
                 <View style={styles.info}>
-                        <Text style={[styles.name, { color: colors.text }]}>{user.username}</Text>
+                    <Text style={[styles.name, { color: colors.text, textAlign: isRTL ? 'left' : 'right' }]}>{user.username}</Text>
                 </View>
 
                 {/* ELO */}
-                <View style={[styles.eloContainer,{borderLeftColor: colors.border}]}>
+                <View style={[styles.eloContainer, isRTL ? { borderLeftColor: colors.border, borderLeftWidth: 1 } : { borderRightColor: colors.border, borderRightWidth: 1 }]}>
                     <Text style={styles.eloLabel}>توانایی</Text>
                     <View style={styles.eloValue}>
                         <Text style={[styles.eloNumber, { color: colors.text }]}>{elo}</Text>
@@ -99,7 +99,6 @@ const styles = StyleSheet.create({
     },
     eloContainer: {
         alignItems: 'center',
-        borderLeftWidth: 1,
         paddingLeft: 15,
         minWidth: 78,
     },

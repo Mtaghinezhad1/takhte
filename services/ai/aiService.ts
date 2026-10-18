@@ -8,7 +8,7 @@ import { scoreCalculator } from './scoreCalculator';
 import { strategyEngine } from './strategyEngine';
 
 export const aiService = {
-    executeBestMove(board, dice, sequences, currentTurn, whiteBornOff, blackBornOff, difficulty = '3') {
+    executeBestMove(board, dice, sequences, currentTurn, whiteBornOff, blackBornOff, difficulty = '10') {
         const strategyInfo = strategyEngine.determineStrategy(board, currentTurn);
 
         const bestMove = this.selectBestMove(board, dice, sequences, currentTurn, difficulty, strategyInfo);
@@ -56,13 +56,15 @@ export const aiService = {
         dice,
         moves,
         currentTurn,
-        difficulty = '5',
+        difficulty = '10',
         strategyInfo = null,
         customWeights = null  // وزن‌های سفارشی (شامل همه استراتژی‌ها)
     ) {
-        const config = LEVEL_CONFIG[difficulty] || LEVEL_CONFIG['3'];
+
+
+        const config = LEVEL_CONFIG[difficulty] || LEVEL_CONFIG['10'];
         const depth = config.depth;
-        const difficultyLevel = config.difficulty || '5';
+        const difficultyLevel = config.difficulty || '10';
 
         // ✅ اگر strategyInfo نداده شده، خودش تشخیص بده
         if (!strategyInfo) {

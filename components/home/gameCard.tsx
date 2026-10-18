@@ -64,11 +64,11 @@ const GameCard = ({ game }) => {
   const tagBgColor = isStandard
     ? 'rgba(255,255,255,0.025)'
     : 'rgba(70, 201, 94, 0.1)';
-  const tagTextColor = isStandard ? '#899bc0' : '#88e66e';
+  const tagTextColor = isStandard ? (isDark ? '#899bc0' : '#72819f') : (isDark ? '#88e66e' : '#5da14a');
   const buttonBorderColor = isStandard
     ? 'rgba(78, 145, 255, 0.5)'
     : '#4cbf5c';
-  const buttonBgColor = isStandard ? '#1249a2' : '#176c3a';
+  const buttonBgColor = isStandard ? (isDark ? '#1249a2' : '#68a1fd') : (isDark ? '#176c3a' : '#36c672');
   const buttonShadowColor = isStandard ? '#1158d1' : '#2e9c48';
   const ShadowColor = isStandard ? colors.shadow : '#2e9c48';
 
@@ -82,8 +82,8 @@ const GameCard = ({ game }) => {
         style={StyleSheet.absoluteFillObject}
       />
       <View style={styles.content}>
-        <Text style={[styles.title, { color: colors.text, textAlign: isRTL ? 'left':'right', }]}>{game.title}</Text>
-        <Text style={[styles.subtitle,{textAlign: isRTL ? 'left':'right'}]}>{game.subtitle}</Text>
+        <Text style={[styles.title, { color: colors.text, textAlign: isRTL ? 'left' : 'right', }]}>{game.title}</Text>
+        <Text style={[styles.subtitle, { textAlign: isRTL ? 'left' : 'right' }]}>{game.subtitle}</Text>
 
         {/* Features tags */}
         <View style={styles.featuresRow}>

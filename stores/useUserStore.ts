@@ -18,10 +18,8 @@ const DEFAULT_USER = {
 const DEFAULT_ELO_HISTORY = [
   {
     elo: 1500,
-    timestamp: Date.now(),
     gameMode: 'initial',
     opponent: 'system',
-    result: 'initial',
     matchLength: 0,
   },
 ];
@@ -71,45 +69,97 @@ const useUserStore = create((set, get) => ({
     set({ isLoading: true });
 
     // ۱. بارگذاری داده‌های محلی (برای fallback)
-    const userData = await storageService.loadUserData();
-    const eloHistory = await storageService.loadEloHistory();
-    const stats = await storageService.loadStatistics();
+    const localUser = await storageService.loadUserData();
+    const localEloHistory = await storageService.loadEloHistory();
+    const localStats = await storageService.loadStatistics();
 
-    // به‌روزرسانی اولیه state با داده‌های محلی
     set({
-      user: {
-        ...DEFAULT_USER,
-        ...(userData || {}),
-      },
-      eloHistory: eloHistory.length > 0 ? eloHistory : [...DEFAULT_ELO_HISTORY],
-      statistics: stats || { ...DEFAULT_STATISTICS },
+      user: { ...DEFAULT_USER, ...(localUser || {}) },
+      eloHistory:
+        localEloHistory.length > 0 ? localEloHistory : [...DEFAULT_ELO_HISTORY],
+      statistics: localStats || { ...DEFAULT_STATISTICS },
     });
 
-    // ۲. درخواست به سرور برای دریافت جدیدترین اطلاعات
+    // ۲. دریافت اطلاعات از سرور
     try {
       const serverUser = await fetchUserProfile();
       if (serverUser) {
         const currentUser = get().user;
+
+        // ─── الف) محاسبه age از birthdate ─────────────────
+        let age = currentUser.age;
+        if (serverUser.birthdate) {
+          const bd = new Date(serverUser.birthdate);
+          if (!isNaN(bd.getTime())) {
+            age = Math.floor(
+              (Date.now() - bd.getTime()) / (365.25 * 24 * 3600 * 1000)
+            );
+          }
+        }
+
+        // ─── A) user ─────────────────────────────────────
         const updatedUser = {
           ...currentUser,
           username:
-            serverUser.username ||
+            (serverUser.username && serverUser.username.trim()) ||
             serverUser.displayName ||
             currentUser.username,
-          avatarKey: serverUser.avatarKey || currentUser.avatarKey,
-          coins: serverUser.coins ?? currentUser.coins,
-          age: serverUser.age ?? currentUser.age,
+          avatarKey: serverUser.avatarKey ?? currentUser.avatarKey,
           gender: serverUser.gender ?? currentUser.gender,
-          city: serverUser.city || currentUser.city,
-          province: serverUser.province || currentUser.province,
-          phoneNumber: serverUser.phoneNumber || currentUser.phoneNumber,
-          email: serverUser.email || currentUser.email,
         };
-        set({ user: updatedUser });
-        await storageService.saveUserData(updatedUser);
+
+        // ─── B) statistics ───────────────────────────────
+        const s = serverUser.stats || {};
+        const updatedStatistics = {
+          totalGames: s.gamesPlayed ?? 0,
+          wins: s.gamesWon ?? 0,
+          losses: s.gamesLost ?? 0,
+          winStreak: s.winStreak ?? 0,
+          maxWinStreak: s.maxWinStreak ?? 0,
+        };
+
+        // ─── C) eloHistory ───────────────────────────────
+        const currentLocalElo =
+          localEloHistory.length > 0
+            ? localEloHistory[localEloHistory.length - 1].elo
+            : 1500;
+        const serverElo = Number(s.currentElo ?? 1000);
+
+        let updatedEloHistory = localEloHistory;
+
+        if (serverElo !== currentLocalElo) {
+          const newRecord = {
+            elo: serverElo,
+            gameMode: 'sync',
+            opponent: 'server',
+            matchLength: 0,
+          };
+          updatedEloHistory = [...localEloHistory, newRecord];
+          await storageService.saveEloHistory(updatedEloHistory);
+        }
+
+        // ─── ه) یک بار set کن همه را ─────────────────────
+        set({
+          user: updatedUser,
+          statistics: updatedStatistics,
+          eloHistory:
+            updatedEloHistory.length > 0
+              ? updatedEloHistory
+              : [...DEFAULT_ELO_HISTORY],
+        });
+
+        // ─── و) persist محلی ────────────────────────────
+        await Promise.all([
+          storageService.saveUserData(updatedUser),
+          storageService.saveStatistics(updatedStatistics),
+          // saveEloHistory قبلاً صدا زده شد
+        ]);
       }
     } catch (error) {
-      console.warn('Failed to fetch user from server, using local data:', error);
+      console.warn(
+        'Failed to fetch user from server, using local data:',
+        error?.message
+      );
     }
 
     set({ isLoading: false });

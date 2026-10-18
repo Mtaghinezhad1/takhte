@@ -1,4 +1,6 @@
+import { getAvatarByKey } from '@/constants/avatars';
 import { fetchLeaderboard } from '@/services/api/userApi';
+import useRTLStore from '@/stores/useRTLStore';
 import useThemeStore from '@/stores/useThemeStore';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useEffect, useState } from 'react';
@@ -36,6 +38,8 @@ const RankingScreen = () => {
   const [topPlayers, setTopPlayers] = useState([]);
   const [myRank, setMyRank] = useState(null);
   const colors = useThemeStore(state => state.colors);
+  const isRTL = useRTLStore(state => state.isRTL);
+
 
 
   useEffect(() => {
@@ -88,7 +92,7 @@ const RankingScreen = () => {
           ]}
         >
           <Image
-            source={{ uri: avatarUrl(player.avatarKey) }}
+            source={player.avatarKey ? getAvatarByKey(player.avatarKey) : require('@/assets/avatar/default.jpeg')}
             style={[
               styles.avatar,
               { borderColor },
@@ -127,19 +131,19 @@ const RankingScreen = () => {
   // ─── لودینگ ─────────────────────────────────
   if (loading) {
     return (
-        <LinearGradient
-          colors={[colors.backgroundPrimary, colors.backgroundSecondary, colors.backgroundTertiary]}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={{ flex: 1 }}
-        >
-          <SafeAreaView style={{ flex: 1 }}>
-            <View style={styles.centerBox}>
-              <ActivityIndicator size="large" color="#2b8dff" />
-              <Text style={styles.centerText}>در حال دریافت رتبه‌بندی…</Text>
-            </View>
-          </SafeAreaView>
-        </LinearGradient>
+      <LinearGradient
+        colors={[colors.backgroundPrimary, colors.backgroundSecondary, colors.backgroundTertiary]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={{ flex: 1 }}
+      >
+        <SafeAreaView style={{ flex: 1 }}>
+          <View style={styles.centerBox}>
+            <ActivityIndicator size="large" color="#2b8dff" />
+            <Text style={styles.centerText}>در حال دریافت رتبه‌بندی…</Text>
+          </View>
+        </SafeAreaView>
+      </LinearGradient>
     );
   }
 
@@ -203,24 +207,30 @@ const RankingScreen = () => {
             {/* Ranking list (ranks 4–50) */}
             <View style={styles.rankingList}>
               {listPlayers.map((row) => (
-                <View key={row.userId} style={styles.rankRow}>
+                <LinearGradient
+                  colors={[colors.profileBgPrimary, colors.profileBgSecondary]}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                  key={row.userId}
+                  style={[styles.rankRow, { borderColor: colors.border, shadowColor: colors.shadow }]}
+                >
                   <View style={styles.rankNumber}>
                     <Text style={styles.rankNumberText}>{fa(row.rank)}</Text>
                   </View>
 
                   <Image
-                    source={{ uri: avatarUrl(row.avatarKey) }}
+                    source={row.avatarKey ? getAvatarByKey(row.avatarKey) : require('@/assets/avatar/default.jpeg')}
                     style={styles.listAvatar}
                   />
 
                   <View style={styles.rankInfo}>
-                    <Text style={styles.rankName} numberOfLines={1}>
+                    <Text style={[styles.rankName,{color: colors.text}]} numberOfLines={1}>
                       {row.username || 'ناشناس'}
                     </Text>
                   </View>
 
                   <Text style={styles.rankElo}>{fa(Math.round(row.elo))}</Text>
-                </View>
+                </LinearGradient>
               ))}
             </View>
 
@@ -459,7 +469,6 @@ const styles = StyleSheet.create({
   rankName: {
     fontSize: 14,
     fontWeight: 'bold',
-    color: '#f4f7ff',
     textAlign: 'right',
   },
   rankElo: {

@@ -1,11 +1,14 @@
 // Dice.tsx
 import useGameStore from '@/stores/useGameStore';
+import useRTLStore from '@/stores/useRTLStore';
 import { CoachmarkAnchor } from '@edwardloopez/react-native-coachmark';
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 // کامپوننت تاس با شکل اصلی (نقطه‌ها)
 const DiceFace = ({ value, isActive = false, isUsed = false, isWhiteTurn = true }) => {
+  const isRTL = useRTLStore(state => state.isRTL);
+
   // موقعیت نقاط بر اساس عدد تاس
   const getDotPositions = (num) => {
     const positions = {
@@ -41,8 +44,8 @@ const DiceFace = ({ value, isActive = false, isUsed = false, isWhiteTurn = true 
           key={index}
           style={[
             styles.dot,
+            isRTL ? {left: `${pos[0] * 100}%`} : {right: `${pos[0] * 100}%`},
             {
-              left: `${pos[0] * 100}%`,
               top: `${pos[1] * 100}%`,
               transform: [{ translateX: '-50%' }, { translateY: '-50%' }],
               backgroundColor: dotColor,

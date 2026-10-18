@@ -38,7 +38,6 @@ export default function HomeScreen() {
             style={styles.nardland}
           />
         </View>
-
         <View style={styles.profileContainer}>
           <ProfileCard />
         </View>
