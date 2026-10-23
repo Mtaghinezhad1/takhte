@@ -44,7 +44,7 @@ const DiceFace = ({ value, isActive = false, isUsed = false, isWhiteTurn = true 
           key={index}
           style={[
             styles.dot,
-            isRTL ? {left: `${pos[0] * 100}%`} : {right: `${pos[0] * 100}%`},
+            isRTL ? {right: `${pos[0] * 100}%`} : {left: `${pos[0] * 100}%`},
             {
               top: `${pos[1] * 100}%`,
               transform: [{ translateX: '-50%' }, { translateY: '-50%' }],

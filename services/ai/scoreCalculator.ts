@@ -2,24 +2,18 @@ import { AI_LEVELS, STRATEGY_PHASE_WEIGHTS } from '@/constants/aiWeights';
 
 export const scoreCalculator = {
     calculateScore(features, strategy, phase, difficulty = '5', showDetails = false) {
-        // 1. دریافت وزن‌های استراتژی
         const weights = this.getWeights(strategy, phase);
         if (!weights) {
             return this.calculateDefaultScore(features);
         }
 
-        // 2. محاسبه امتیاز خام
         const rawScore = this.calculateRawScore(features, weights);
 
-        // 3. اعمال نویز بر اساس سطح دشواری
-        const noiseLevel = this.getNoiseLevel(difficulty);
-        const finalScore = rawScore * (1 + (Math.random() - 0.5) * noiseLevel);
-
         if (showDetails) {
-            this.printDetails(features, weights, rawScore, finalScore, strategy, phase, difficulty);
+            this.printDetails(features, weights, rawScore, strategy, phase, difficulty);
         }
 
-        return finalScore;
+        return rawScore;
     },
 
     getWeights(strategy, phase) {
@@ -28,13 +22,18 @@ export const scoreCalculator = {
 
     getNoiseLevel(difficulty) {
         const level = AI_LEVELS[difficulty];
-        return level?.noise ?? 0.3; // پیش‌فرض: 0.3
+        return level?.noise ?? 0.3;
+    },
+
+    applyNoise(score, difficulty = '5') {
+        const noiseLevel = this.getNoiseLevel(difficulty);
+        if (noiseLevel <= 0) return score;
+        return score * (1 + (Math.random() - 0.5) * noiseLevel);
     },
 
     calculateRawScore(features, weights) {
         let score = 0;
 
-        // وزن‌های پایه
         if (weights.pipCount !== undefined) {
             score += (features.pipCount?.pipDiff || 0) * weights.pipCount;
         }
@@ -54,7 +53,6 @@ export const scoreCalculator = {
             score += (features.attack?.totalHitValue || 0) * weights.hits;
         }
 
-        // وزن‌های اختصاصی استراتژی‌ها
         const specialKeys = [
             'homeBoardStrength', 'opponentOnBar', 'anchorStrength', 'primeExtensionValue', 'oppClosedPoint',
             'blockingValue', 'wastage', 'contactAvoidance', 'bearoffEfficiency',
@@ -114,14 +112,13 @@ export const scoreCalculator = {
         );
     },
 
-    printDetails(features, weights, rawScore, finalScore, strategy, phase, difficulty) {
+    printDetails(features, weights, rawScore, strategy, phase, difficulty) {
         console.log('===== جزئیات محاسبه امتیاز =====');
         console.log(`استراتژی: ${strategy}`);
         console.log(`فاز: ${phase}`);
         console.log(`سطح دشواری: ${difficulty}`);
-        console.log(`نویز: ${this.getNoiseLevel(difficulty)}`);
-        console.log(`امتیاز خام: ${rawScore.toFixed(2)}`);
-        console.log(`امتیاز نهایی: ${finalScore.toFixed(2)}`);
+        console.log(`نویز (اعمال‌شده در selectBestMove): ${this.getNoiseLevel(difficulty)}`);
+        console.log(`امتیاز خام (بدون نویز): ${rawScore.toFixed(2)}`);
         console.log('================================\n');
     }
 };

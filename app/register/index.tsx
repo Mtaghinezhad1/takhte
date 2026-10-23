@@ -70,7 +70,7 @@ const EditProfile = () => {
       ]);
       router.back();
     } catch (error) {
-      console.error('خطا در ذخیره مشخصات:', error);
+      console.warn('خطا در ذخیره مشخصات:', error)
       Alert.alert('خطا', 'مشکل در ذخیره مشخصات');
     } finally {
       setIsSaving(false);
@@ -88,7 +88,7 @@ const EditProfile = () => {
   }
 
   return (
-   <LinearGradient
+    <LinearGradient
       colors={[colors.backgroundPrimary, colors.backgroundSecondary, colors.backgroundTertiary]}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}

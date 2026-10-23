@@ -117,7 +117,7 @@ const RankingScreen = () => {
         </View>
 
         <Text
-          style={[styles.playerName, isFirst && styles.playerNameFirst]}
+          style={[styles.playerName, isFirst && styles.playerNameFirst, { color: colors.text }]}
           numberOfLines={1}
         >
           {player.username || 'ناشناس'}
@@ -182,17 +182,17 @@ const RankingScreen = () => {
           <View style={styles.appContainer}>
             {/* Header */}
             <View style={styles.header}>
-              <Text style={styles.title}>رتبه بندی</Text>
+              <Text style={[styles.title,{color: colors.text}]}>رتبه بندی</Text>
               <Text style={styles.subtitle}>بهترین بازیکنان نرد لند</Text>
             </View>
 
             {/* Podium card */}
             {podiumPlayers.length > 0 && (
               <LinearGradient
-                colors={['rgba(20,117,255,0.15)', 'rgba(7,28,61,0.82)']}
+                colors={[colors.profileBgPrimary, colors.profileBgSecondary]}
                 start={{ x: 0.5, y: 0 }}
                 end={{ x: 0.5, y: 1 }}
-                style={styles.podiumCard}
+                style={[styles.podiumCard, { borderColor: colors.border, shadowColor: colors.shadow, }]}
               >
                 <View style={styles.podium}>
                   {PODIUM_ORDER.map((idx, position) => {
@@ -212,24 +212,21 @@ const RankingScreen = () => {
                   start={{ x: 0, y: 0 }}
                   end={{ x: 1, y: 1 }}
                   key={row.userId}
-                  style={[styles.rankRow, { borderColor: colors.border, shadowColor: colors.shadow }]}
+                  style={[styles.rankRow, { borderColor: colors.border, shadowColor: colors.shadow, flexDirection: isRTL ? 'row-reverse' : 'row' }]}
                 >
-                  <View style={styles.rankNumber}>
-                    <Text style={styles.rankNumberText}>{fa(row.rank)}</Text>
+                  <Text style={styles.rankElo}>{fa(Math.round(row.elo))}</Text>
+                  <View style={styles.rankInfo}>
+                    <Text style={[styles.rankName, { color: colors.text, textAlign: isRTL ? 'left' : 'right' }]} numberOfLines={1}>
+                      {row.username || 'ناشناس'}
+                    </Text>
                   </View>
-
                   <Image
                     source={row.avatarKey ? getAvatarByKey(row.avatarKey) : require('@/assets/avatar/default.jpeg')}
                     style={styles.listAvatar}
                   />
-
-                  <View style={styles.rankInfo}>
-                    <Text style={[styles.rankName,{color: colors.text}]} numberOfLines={1}>
-                      {row.username || 'ناشناس'}
-                    </Text>
+                  <View style={styles.rankNumber}>
+                    <Text style={styles.rankNumberText}>{fa(row.rank)}</Text>
                   </View>
-
-                  <Text style={styles.rankElo}>{fa(Math.round(row.elo))}</Text>
                 </LinearGradient>
               ))}
             </View>
@@ -306,10 +303,8 @@ const styles = StyleSheet.create({
     marginBottom: 22,
   },
   title: {
-    fontSize: isSmall ? 29 : 34,
+    fontSize:  29 ,
     fontWeight: '900',
-    color: '#f4f7ff',
-    letterSpacing: -1,
     textAlign: 'center',
     textShadowColor: 'rgba(40, 140, 255, 0.25)',
     textShadowOffset: { width: 0, height: 0 },
@@ -326,12 +321,10 @@ const styles = StyleSheet.create({
   podiumCard: {
     borderRadius: 24,
     borderWidth: 1,
-    borderColor: 'rgba(26, 130, 255, 0.42)',
     paddingTop: 28,
     paddingBottom: 18,
     paddingHorizontal: 10,
     marginBottom: 20,
-    shadowColor: '#000',
     shadowOffset: { width: 0, height: 15 },
     shadowOpacity: 0.3,
     shadowRadius: 45,
@@ -426,11 +419,8 @@ const styles = StyleSheet.create({
     gap: 10,
     paddingVertical: 9,
     paddingHorizontal: 10,
-    backgroundColor: 'rgba(4, 26, 59, 0.9)',
     borderWidth: 1,
-    borderColor: 'rgba(13, 112, 231, 0.42)',
     borderRadius: 17,
-    shadowColor: '#000',
     shadowOffset: { width: 0, height: 7 },
     shadowOpacity: 0.22,
     shadowRadius: 20,
@@ -469,7 +459,6 @@ const styles = StyleSheet.create({
   rankName: {
     fontSize: 14,
     fontWeight: 'bold',
-    textAlign: 'right',
   },
   rankElo: {
     color: '#89a9d5',

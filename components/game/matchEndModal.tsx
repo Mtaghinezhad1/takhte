@@ -28,8 +28,8 @@ export default function MatchEndModal() {
     } = useGameStore();
 
     // محاسبه تغییرات ELO
-    const userEloChange = (finalWhiteElo !== null && oldUserElo !== null) ? finalWhiteElo - oldUserElo : 0;
-    const aiEloChange = (finalBlackElo !== null && oldAIElo !== null) ? finalBlackElo - oldAIElo : 0;
+    const userEloChange = (finalWhiteElo !== null && oldUserElo !== null) ? Math.round((finalWhiteElo - oldUserElo) * 100) / 100 : 0;
+    const aiEloChange = (finalBlackElo !== null && oldAIElo !== null) ? Math.round((finalBlackElo - oldAIElo) * 100) / 100 : 0;
 
     const handleGoHome = () => {
         resetMatchEndState(); // پاک کردن وضعیت مودال

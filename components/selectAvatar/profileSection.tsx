@@ -32,14 +32,14 @@ const ProfileSection = ({ source }) => {
             style={[styles.profileCard, {borderColor: colors.border, shadowColor: colors.shadow, flexDirection: isRTL ? 'row-reverse' : 'row',}]}
         >
             {/* ELO box */}
-            <View style={[styles.eloBox,{borderRightColor: colors.border}]}>
+            <View style={[styles.eloBox,isRTL ? { borderLeftColor: colors.border, borderLeftWidth: 1,paddingLeft: 10, } : { borderRightColor: colors.border, borderRightWidth: 1, paddingRight: 10, }]}>
                 <Text style={styles.eloLabel}>توانایی</Text>
                 <Text style={[styles.eloNumber, isShort && styles.eloNumberShort, { color: colors.text }]}>{elo}</Text>
             </View>
 
             {/* Profile info */}
             <View style={styles.profileInfo}>
-                <Text style={[styles.profileName, isShort && styles.profileNameShort, { color: colors.text }]}>{user.username}</Text>
+                <Text style={[styles.profileName, isShort && styles.profileNameShort, { color: colors.text, textAlign: isRTL ? 'left' : 'right' }]}>{user.username}</Text>
             </View>
 
             {/* Avatar */}
@@ -93,9 +93,6 @@ const styles = StyleSheet.create({
     profileName: {
         fontSize: 18,
         fontWeight: '900',
-        color: '#ffffff',
-        marginBottom: 5,
-        textAlign: 'right',
     },
     profileNameShort: {
         fontSize: 16,
@@ -110,8 +107,6 @@ const styles = StyleSheet.create({
     },
     eloBox: {
         alignItems: 'center',
-        paddingRight: 10,
-        borderRightWidth: 1,
     },
     eloLabel: {
         color: '#4992ff',

@@ -3,12 +3,12 @@ import { testAIEngine } from '@/services/trainAI/testAIEnine';
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-const SAMPLE_INPUT =    {
+const SAMPLE_INPUT = {
         board: [0, -2, 0, 0, 0, 0, 5, 0, 3, 0, 0, 0, -5, 5, 0, 0, 0, -3, 0, -5, 0, 0, 0, 0, 2, 0],
-        dice: [1, 2],
+        dice: [2, 3],
         turn: 'black',
-        bestMoves: [{ from: 1, to: 2, die: 1 }, { from: 12, to: 14, die: 2 }],
-    };
+        bestMoves: [{ from: 1, to: 4, die: 3 }, { from: 12, to: 14, die: 2 }],
+};
 
 export default function TestAIButton() {
     const handlePress = () => {

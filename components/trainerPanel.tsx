@@ -3,7 +3,7 @@ import { trainer } from '@/services/ai/trainer';
 import React, { useState } from 'react';
 import { Alert, Clipboard, Text, TouchableOpacity, View } from 'react-native';
 
-const TrainingButton = () => {
+const TrainerPanel = () => {
     const [isTraining, setIsTraining] = useState(false);
     const [trainingComplete, setTrainingComplete] = useState(false);
     const [weights, setWeights] = useState(null);
@@ -28,7 +28,7 @@ const TrainingButton = () => {
             console.log('----------------------------------------');
 
             // ✅ بدون استراتژی و فاز - خودش تشخیص می‌دهد
-            const trainedWeights = trainer.train(100, 5);
+            const trainedWeights = trainer.train(300, 5);
 
             setWeights(trainedWeights);
             setTrainingComplete(true);
@@ -96,4 +96,4 @@ const TrainingButton = () => {
     );
 };
 
-export default TrainingButton;
+export default TrainerPanel;

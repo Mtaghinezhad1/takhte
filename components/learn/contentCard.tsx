@@ -45,7 +45,7 @@ const ContentCard = ({ categoryId, subcategoryId, pageId }) => {
                 <Image
                     source={imageComponent.src}
                     style={styles.boardImage}
-                    resizeMode="cover"
+                    resizeMode="stretch"
                 />
             </View>
         </LinearGradient>

@@ -23,8 +23,6 @@ const ProfileSection = () => {
     const isRTL = useRTLStore(state => state.isRTL);
 
 
-
-
     // Responsive styles based on screen height
     const isShort = screenHeight < 700;
 
@@ -48,15 +46,15 @@ const ProfileSection = () => {
                 >
                     <View style={[styles.profileTop, { flexDirection: isRTL ? 'row-reverse' : 'row', }]}>
                         {/* ELO box */}
-                        <View style={[styles.eloBox, isRTL ? { borderLeftColor: colors.border, borderLeftWidth: 1 } : { borderRightColor: colors.border, borderRightWidth: 1 }]}>
+                        <View style={[styles.eloBox, isRTL ? { borderLeftColor: colors.border, borderLeftWidth: 1, paddingLeft: 10, } : { borderRightColor: colors.border, borderRightWidth: 1, paddingRight: 10, }]}>
                             <Text style={styles.eloLabel}>توانایی</Text>
                             <Text style={[styles.eloNumber, isShort && styles.eloNumberShort, { color: colors.text }]}>{elo}</Text>
                         </View>
 
                         {/* Profile info */}
                         <View style={styles.profileInfo}>
-                            <Text style={[styles.profileName, isShort && styles.profileNameShort, { color: colors.text, textAlign: isRTL ? 'left' : 'right'  }]}>{user.username}</Text>
-                            <Text style={[styles.profileStatus, isShort && styles.profileStatusShort, {textAlign: isRTL ? 'left' : 'right' }]}>
+                            <Text style={[styles.profileName, isShort && styles.profileNameShort, { color: colors.text, textAlign: isRTL ? 'left' : 'right' }]}>{user.username}</Text>
+                            <Text style={[styles.profileStatus, isShort && styles.profileStatusShort, { textAlign: isRTL ? 'left' : 'right' }]}>
                                 برای شروع بازی وارد حساب شوید
                             </Text>
                         </View>
@@ -76,7 +74,7 @@ const ProfileSection = () => {
                     {/* Stats */}
                     <View style={[styles.stats, { borderTopColor: colors.border }]}>
                         <View style={styles.stat}>
-                            <Text style={[styles.statNumber, isShort && styles.statNumberShort, { color: colors.text }]}>{statistics.wins / statistics.totalGames * 100 || 0}%</Text>
+                            <Text style={[styles.statNumber, isShort && styles.statNumberShort, { color: colors.text }]}>{Math.round(statistics.wins / statistics.totalGames * 10000) / 100 || 0}%</Text>
                             <Text style={[styles.statLabel, isShort && styles.statLabelShort]}>
                                 نرخ برد
                             </Text>
@@ -182,7 +180,6 @@ const styles = StyleSheet.create({
     },
     eloBox: {
         alignItems: 'center',
-        paddingRight: 10,
     },
     eloLabel: {
         color: '#4992ff',

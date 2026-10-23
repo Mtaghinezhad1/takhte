@@ -13,39 +13,14 @@ export const aiService = {
 
         const bestMove = this.selectBestMove(board, dice, sequences, currentTurn, difficulty, strategyInfo);
 
-        let currentBoard = [...board];
-        let currentDice = [...dice];
-        let currentWhiteBornOff = whiteBornOff;
-        let currentBlackBornOff = blackBornOff;
-
-
-
-        // Execute moves in sequence
-        for (const move of bestMove) {
-            const result = boardService.makeMove(
-                currentBoard, move.from, move.die, currentTurn,
-                currentBoard, currentWhiteBornOff, currentBlackBornOff
-            );
-
-            currentBoard = result.newBoard;
-            currentWhiteBornOff = result.newWhiteBornOff;
-            currentBlackBornOff = result.newBlackBornOff;
-
-            const dieIndex = currentDice.indexOf(move.die);
-            if (dieIndex !== -1) {
-                currentDice.splice(dieIndex, 1);
-            }
-        }
-
-        const turnComplete = currentDice.length === 0 ||
-            !boardService.hasAnyMove(currentBoard, currentDice, currentTurn);
+        const boardAterMove = this.executeSequence(board, dice, whiteBornOff, blackBornOff, bestMove, currentTurn);
 
         return {
-            board: currentBoard,
-            remainingDice: currentDice,
-            whiteBornOff: currentWhiteBornOff,
-            blackBornOff: currentBlackBornOff,
-            turnComplete,
+            board: boardAterMove.board,
+            remainingDice: boardAterMove.remainingDice,
+            whiteBornOff: boardAterMove.whiteBornOff,
+            blackBornOff: boardAterMove.blackBornOff,
+            turnComplete: boardAterMove.turnComplete,
             strategyInfo
         };
     },
@@ -107,8 +82,12 @@ export const aiService = {
                 );
             }
 
+            //for make ai weaker in lower levels
+            score = scoreCalculator.applyNoise(score, difficultyLevel);
+
             if (score > bestScore) {
                 bestScore = score;
+                console.log(bestScore);
                 bestMove = move;
             }
         });
@@ -241,5 +220,42 @@ export const aiService = {
         }
 
         return score;
+    },
+
+    executeSequence(board, dice, whiteBornOff, blackBornOff, bestMove, currentTurn) {
+        let currentBoard = [...board];
+        let currentDice = [...dice];
+        let currentWhiteBornOff = whiteBornOff;
+        let currentBlackBornOff = blackBornOff;
+
+
+
+        // Execute moves in sequence
+        for (const move of bestMove) {
+            const result = boardService.makeMove(
+                currentBoard, move.from, move.die, currentTurn,
+                currentBoard, currentWhiteBornOff, currentBlackBornOff
+            );
+
+            currentBoard = result.newBoard;
+            currentWhiteBornOff = result.newWhiteBornOff;
+            currentBlackBornOff = result.newBlackBornOff;
+
+            const dieIndex = currentDice.indexOf(move.die);
+            if (dieIndex !== -1) {
+                currentDice.splice(dieIndex, 1);
+            }
+        }
+
+        const turnComplete = currentDice.length === 0 ||
+            !boardService.hasAnyMove(currentBoard, currentDice, currentTurn);
+
+        return {
+            board: currentBoard,
+            remainingDice: currentDice,
+            whiteBornOff: currentWhiteBornOff,
+            blackBornOff: currentBlackBornOff,
+            turnComplete,
+        };
     },
 };

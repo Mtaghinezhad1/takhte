@@ -63,7 +63,7 @@ export const darkColors = {
   cancelBtnPrimary: 'rgba(4, 20, 43, 0.95)',
   cancelBtnSecondary: 'rgba(17, 54, 98, 0.85)',
   //-----------border-------------
-  border: 'rgba(91,139,213,0.25)',
+  border: 'rgba(98, 148, 223, 0.38)',
   //-----------background-------------
   backgroundPrimary: '#102b63',
   backgroundSecondary: '#061636',
@@ -81,10 +81,10 @@ export const darkColors = {
 };
 
 const useThemeStore = create((set, get) => ({
-  theme: 'dark',
-  isDark: true,
+  theme: 'light',
+  isDark: false,
   isLoading: true,
-  colors: darkColors,
+  colors: lightColors,
 
   // مقداردهی اولیه از storage
   initialize: async () => {

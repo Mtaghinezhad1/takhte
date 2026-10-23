@@ -69,10 +69,8 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.3,
         shadowRadius: 50,
         elevation: 20,
+        gap: 13,
         backgroundColor: 'transparent', // gradient handles background
-    },
-    avatarWrapper: {
-        marginRight: 14,
     },
     avatar: {
         width: 80,
@@ -89,7 +87,6 @@ const styles = StyleSheet.create({
     },
     info: {
         flex: 1,
-        flexShrink: 1,
     },
     name: {
         fontSize: 20,
@@ -99,7 +96,6 @@ const styles = StyleSheet.create({
     },
     eloContainer: {
         alignItems: 'center',
-        paddingLeft: 15,
         minWidth: 78,
     },
     eloLabel: {

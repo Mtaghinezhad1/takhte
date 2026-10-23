@@ -258,14 +258,12 @@ export const detectGamePhase = (board, color) => {
 
     const totalPips = myPips + oppPips;
 
-    if (totalPips > 280) {  // هر دو بازیکن پیمایش بالایی دارند
+    if (totalPips > 280 && (myPips > 140 || oppPips > 140)) {  // هر دو بازیکن پیمایش بالایی دارند
         return 'OPENING';
     } else if (totalPips < 120) {  // بازی رو به پایان است
         return 'ENDGAME';
     } else if (myPips < 80 || oppPips < 80) {
         return 'ENDGAME';
-    } else if (myPips > 140) {
-        return 'OPENING';
     } else {
         return 'MIDDLEGAME';
     }
