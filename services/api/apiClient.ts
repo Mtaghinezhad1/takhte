@@ -4,7 +4,7 @@ import * as Device from 'expo-device';
 import { Platform } from 'react-native';
 
 // آدرس پایه سرور – می‌توانید از متغیر محیطی استفاده کنید
-const BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://nardland.ir';
+const BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'https://nardland.ir';
 
 const apiClient = axios.create({
   baseURL: BASE_URL,
