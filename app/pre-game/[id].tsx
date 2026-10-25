@@ -27,8 +27,6 @@ const PreGameScreen = () => {
 
       const saved = await storageService.loadGameSettings();
       if (!saved) return;
-      console.log(saved);
-      console.log(typeof saved.matchLength);
 
 
       if (typeof saved.matchLength === 'number') {

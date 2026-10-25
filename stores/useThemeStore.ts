@@ -81,10 +81,10 @@ export const darkColors = {
 };
 
 const useThemeStore = create((set, get) => ({
-  theme: 'light',
-  isDark: false,
+  theme: 'dark',
+  isDark: true,
   isLoading: true,
-  colors: lightColors,
+  colors: darkColors,
 
   // مقداردهی اولیه از storage
   initialize: async () => {

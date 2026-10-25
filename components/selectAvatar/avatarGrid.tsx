@@ -162,6 +162,7 @@ const styles = StyleSheet.create({
     avatarWrapperLocked: {
         borderWidth: 1,
         borderColor: 'rgba(100, 145, 200, 0.4)',
+        opacity: 0
     },
     avatarImage: {
         width: '100%',
@@ -218,6 +219,7 @@ const styles = StyleSheet.create({
         fontSize: 8,
         textAlign: 'center',
         width: '100%',
+        opacity: 0
     },
 });
 

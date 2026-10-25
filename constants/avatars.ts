@@ -11,9 +11,9 @@ export const AVATAR_CONFIG = {
         avatar_7: require('@/assets/avatar/1107.jpeg'),
         avatar_8: require('@/assets/avatar/1108.jpeg'),
         avatar_9: require('@/assets/avatar/1109.jpeg'),
-        avatar_10: require('@/assets/avatar/1110.jpeg'),
-        avatar_11: require('@/assets/avatar/1111.jpeg'),
-        avatar_12: require('@/assets/avatar/1112.jpeg'),
+        avatar_10: require('@/assets/avatar/1201.jpeg'),
+        avatar_11: require('@/assets/avatar/1202.jpeg'),
+        avatar_12: require('@/assets/avatar/1203.jpeg'),
     },
     // می‌تونید requirements اضافه کنید
     requirements: {

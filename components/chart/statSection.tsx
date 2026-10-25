@@ -37,7 +37,7 @@ const StatCard = ({ label, value, color }: { label: string; value: number; color
 
 
 const StatSection = ({ average, maxElo, minElo, currentElo, data }: StatSectionProps) => {
-    const totalChange = data.length > 1 ? data[data.length - 1] - data[0] : 0;
+    const totalChange = data.length > 1 ? Math.round((data[data.length - 1] - data[0]) * 100) / 100 : 0;
     const { colors } = useThemeStore();
 
     return (
@@ -58,20 +58,20 @@ const StatSection = ({ average, maxElo, minElo, currentElo, data }: StatSectionP
 
             {/* نمایش تغییرات کلی */}
             {data.length > 1 && (
-                    <LinearGradient
-                        colors={[colors.profileBgPrimary, colors.profileBgSecondary]}
-                        start={{ x: 0, y: 0 }}
-                        end={{ x: 1, y: 1 }}
-                        style={{
-                            marginTop: 15,
-                            padding: 10,
-                            borderRadius: 10,
-                            width: '100%',
-                            alignItems: 'center',
-                            borderWidth: 1,
-                            borderColor: colors.border
-                        }}
-                    >
+                <LinearGradient
+                    colors={[colors.profileBgPrimary, colors.profileBgSecondary]}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 1 }}
+                    style={{
+                        marginTop: 15,
+                        padding: 10,
+                        borderRadius: 10,
+                        width: '100%',
+                        alignItems: 'center',
+                        borderWidth: 1,
+                        borderColor: colors.border
+                    }}
+                >
                     <Text style={{ color: '#aaa', fontSize: 12 }}>
                         تغییر کل:
                         <Text style={{
@@ -84,7 +84,7 @@ const StatSection = ({ average, maxElo, minElo, currentElo, data }: StatSectionP
                             {totalChange}
                         </Text>
                     </Text>
-                    </LinearGradient>
+                </LinearGradient>
             )}
         </>
     );
