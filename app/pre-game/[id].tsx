@@ -14,8 +14,8 @@ const DIFFICULTIES = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 const PreGameScreen = () => {
   const { id, gameMode } = useLocalSearchParams();
   const [isReady, setIsReady] = useState(true);
-  const [matchLength, setMatchLength] = useState(3);
-  const [difficulty, setDifficulty] = useState(5);
+  const [matchLength, setMatchLength] = useState(1);
+  const [difficulty, setDifficulty] = useState(8);
   const { colors } = useThemeStore();
   const isRTL = useRTLStore(state => state.isRTL);
 

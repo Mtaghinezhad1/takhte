@@ -1,12 +1,22 @@
 // ============================================
-// trainer.ts - نسخه با سیستم امتیازدهی
+// trainer.ts - نسخه با سیستم امتیازدهی و آموزش جداگانه فازها
 // ============================================
 
 import { STRATEGY_PHASE_WEIGHTS } from '@/constants/aiWeights';
 import { getAvailableMoves } from '@/utils/availableMoves';
+import { detectGamePhase } from '@/utils/computerAI';
 import { aiService } from './aiService';
 
+type GamePhase = 'OPENING' | 'MIDDLEGAME' | 'ENDGAME';
+
 class BackgammonAITrainer {
+    originalWeights: any;
+    weights: any;
+    trainingData: any[];
+    history: any[];
+    bestNormalizedScore: number;
+    bestRawScore: number;
+
     constructor() {
         this.originalWeights = JSON.parse(JSON.stringify(STRATEGY_PHASE_WEIGHTS));
         this.weights = JSON.parse(JSON.stringify(STRATEGY_PHASE_WEIGHTS));
@@ -19,8 +29,8 @@ class BackgammonAITrainer {
     // ============================================
     // ۱. اضافه کردن داده آموزشی
     // ============================================
-    addTrainingData(sampleOrBoard, dice, turn, bestMoves) {
-        let sample;
+    addTrainingData(sampleOrBoard: any, dice?: any, turn?: string, bestMoves?: any) {
+        let sample: any;
 
         // ✅ تشخیص فرمت قدیمی (board, dice, turn, bestMoves)
         if (
@@ -62,7 +72,7 @@ class BackgammonAITrainer {
     // ============================================
     // ۲. بارگذاری از JSON
     // ============================================
-    loadTrainingDataFromJSON(jsonData) {
+    loadTrainingDataFromJSON(jsonData: any) {
         this.trainingData = [];
         this.history = [];
         this.bestNormalizedScore = 0;
@@ -80,8 +90,8 @@ class BackgammonAITrainer {
     // ============================================
     // ۳. استخراج همه کاندیدهای یک نمونه
     // ============================================
-    collectCandidates(sample) {
-        const candidates = [];
+    collectCandidates(sample: any) {
+        const candidates: { moves: any; score: number }[] = [];
         let i = 1;
 
         while (sample[`bestMoves${i}`] !== undefined) {
@@ -104,7 +114,7 @@ class BackgammonAITrainer {
     // ============================================
     // ۴. حداکثر امتیاز ممکن برای یک نمونه (برای نرمال‌سازی)
     // ============================================
-    getMaxScoreForSample(sample) {
+    getMaxScoreForSample(sample: any) {
         const candidates = this.collectCandidates(sample);
         if (candidates.length === 0) return 0;
         return Math.max(...candidates.map((c) => c.score));
@@ -113,7 +123,7 @@ class BackgammonAITrainer {
     // ============================================
     // ۵. محاسبه امتیاز یک نمونه با وزن‌های داده‌شده
     // ============================================
-    calculateSampleScore(sample, weights) {
+    calculateSampleScore(sample: any, weights: any) {
         const { board, dice, turn } = sample;
         const candidates = this.collectCandidates(sample);
         if (candidates.length === 0) return 0;
@@ -149,7 +159,7 @@ class BackgammonAITrainer {
     // ============================================
     // ۶. محاسبه امتیاز کل (مجموع امتیازات + نرمال‌شده)
     // ============================================
-    getOverallScore(weights) {
+    getOverallScore(weights: any) {
         if (this.trainingData.length === 0) {
             return { rawScore: 0, maxScore: 0, normalized: 0 };
         }
@@ -172,15 +182,15 @@ class BackgammonAITrainer {
     // ============================================
     // ۷. مقایسه دو توالی حرکت
     // ============================================
-    compareMoves(move1, move2) {
+    compareMoves(move1: any, move2: any) {
         if (!move1 || !move2) return false;
         if (move1.length !== move2.length) return false;
 
         const sorted1 = [...move1].sort(
-            (a, b) => a.from - b.from || a.die - b.die
+            (a: any, b: any) => a.from - b.from || a.die - b.die
         );
         const sorted2 = [...move2].sort(
-            (a, b) => a.from - b.from || a.die - b.die
+            (a: any, b: any) => a.from - b.from || a.die - b.die
         );
 
         for (let i = 0; i < sorted1.length; i++) {
@@ -197,7 +207,7 @@ class BackgammonAITrainer {
     }
 
     // ============================================
-    // ۸. آموزش با بهینه‌سازی تکاملی
+    // ۸. آموزش با بهینه‌سازی تکاملی (همه فازها)
     // ============================================
     train(iterations = 100, populationSize = 30) {
         console.log('🧠 شروع آموزش...');
@@ -231,7 +241,7 @@ class BackgammonAITrainer {
         let noImprovementCount = 0;
 
         for (let iter = 0; iter < iterations; iter++) {
-            const population = [];
+            const population: any[] = [];
 
             // ایجاد جمعیت با جهش‌های متفاوت
             for (let i = 0; i < populationSize; i++) {
@@ -331,25 +341,178 @@ class BackgammonAITrainer {
     }
 
     // ============================================
-    // ۹. انواع جهش
+    // ۸.۱. آموزش مخصوص یک فاز (OPENING / MIDDLEGAME / ENDGAME)
     // ============================================
-    mutateWeightsStrong(weights) {
+    trainForPhase(targetPhase: GamePhase, iterations = 100, populationSize = 30) {
+        console.log('========================================');
+        console.log(`🎯 شروع آموزش برای فاز: ${targetPhase}`);
+        console.log('========================================');
+
+        if (this.trainingData.length === 0) {
+            console.log('❌ هیچ داده آموزشی وجود ندارد!');
+            return null;
+        }
+
+        // ✅ فیلتر کردن نمونه‌ها بر اساس فاز تشخیص‌داده‌شده
+        const originalData = this.trainingData;
+        const filteredData = originalData.filter(
+            (s) => detectGamePhase(s.board, s.turn) === targetPhase
+        );
+
+        console.log(
+            `📊 ${filteredData.length} نمونه از ${originalData.length} نمونه مربوط به فاز ${targetPhase}`
+        );
+
+        if (filteredData.length === 0) {
+            console.log(`❌ هیچ نمونه‌ای برای فاز ${targetPhase} یافت نشد`);
+            return null;
+        }
+
+        // موقتاً فقط از نمونه‌های این فاز استفاده کن
+        this.trainingData = filteredData;
+
+        try {
+            let bestWeights = JSON.parse(JSON.stringify(this.weights));
+            let initialResult = this.getOverallScore(bestWeights);
+            const maxPossibleScore = initialResult.maxScore;
+            let bestRaw = initialResult.rawScore;
+            let bestNormalized = initialResult.normalized;
+
+            console.log(
+                `📈 امتیاز اولیه فاز ${targetPhase}: ${bestRaw.toFixed(2)} / ${maxPossibleScore.toFixed(2)} (${(bestNormalized * 100).toFixed(2)}%)`
+            );
+
+            if (bestNormalized >= 0.9999) {
+                console.log('✅ امتیاز ۱۰۰٪! نیازی به آموزش نیست.');
+                return bestWeights;
+            }
+
+            let noImprovementCount = 0;
+
+            for (let iter = 0; iter < iterations; iter++) {
+                const population: any[] = [];
+
+                // ایجاد جمعیت با جهش‌های متفاوت (فقط روی فاز هدف)
+                for (let i = 0; i < populationSize; i++) {
+                    let mutant;
+                    if (i < populationSize * 0.3) {
+                        mutant = this._mutatePhase(bestWeights, targetPhase, 0.6, 1.5, -3, 5);
+                    } else if (i < populationSize * 0.6) {
+                        mutant = this._mutatePhase(bestWeights, targetPhase, 0.4, 0.8, -3, 5);
+                    } else {
+                        mutant = this._mutatePhase(bestWeights, targetPhase, 0.2, 0.3, -3, 5);
+                    }
+                    population.push(mutant);
+                }
+
+                // حفظ نخبه
+                population.push(JSON.parse(JSON.stringify(bestWeights)));
+
+                // ارزیابی
+                const scored = population.map((w) => ({
+                    weights: w,
+                    result: this.getOverallScore(w),
+                }));
+
+                scored.sort((a, b) => b.result.normalized - a.result.normalized);
+
+                if (scored[0].result.normalized > bestNormalized) {
+                    const improvement =
+                        (scored[0].result.normalized - bestNormalized) * 100;
+                    bestNormalized = scored[0].result.normalized;
+                    bestRaw = scored[0].result.rawScore;
+                    bestWeights = JSON.parse(JSON.stringify(scored[0].weights));
+                    noImprovementCount = 0;
+
+                    console.log(
+                        `🔄 [${targetPhase}] نسل ${iter + 1}: امتیاز = ${bestRaw.toFixed(2)} / ${maxPossibleScore.toFixed(2)} (${(bestNormalized * 100).toFixed(2)}%) (+${improvement.toFixed(2)}%)`
+                    );
+                    this.showWeightChanges(
+                        bestWeights,
+                        `تغییرات نسل ${iter + 1} - فاز ${targetPhase}`
+                    );
+                } else {
+                    noImprovementCount++;
+                }
+
+                // جهش شدید در صورت رکود
+                if (noImprovementCount > 20) {
+                    console.log(
+                        `⚠️ [${targetPhase}] ${noImprovementCount} نسل بدون بهبود - افزایش نرخ جهش...`
+                    );
+                    for (let i = 0; i < 5; i++) {
+                        const extremeMutant = this._mutatePhase(
+                            bestWeights, targetPhase, 0.8, 3.0, -5, 7
+                        );
+                        const result = this.getOverallScore(extremeMutant);
+                        if (result.normalized > bestNormalized) {
+                            bestNormalized = result.normalized;
+                            bestRaw = result.rawScore;
+                            bestWeights = JSON.parse(
+                                JSON.stringify(extremeMutant)
+                            );
+                            console.log(
+                                `💥 جهش شدید [${targetPhase}]! امتیاز جدید: ${bestRaw.toFixed(2)} / ${maxPossibleScore.toFixed(2)} (${(bestNormalized * 100).toFixed(2)}%)`
+                            );
+                            break;
+                        }
+                    }
+                    noImprovementCount = 0;
+                }
+
+                // گزارش هر ۱۰ نسل
+                if ((iter + 1) % 10 === 0) {
+                    console.log(
+                        `📊 [${targetPhase}] نسل ${iter + 1}/${iterations} - بهترین امتیاز: ${bestRaw.toFixed(2)} / ${maxPossibleScore.toFixed(2)} (${(bestNormalized * 100).toFixed(2)}%)`
+                    );
+                    this.history.push({
+                        phase: targetPhase,
+                        iteration: iter + 1,
+                        rawScore: bestRaw,
+                        maxScore: maxPossibleScore,
+                        normalized: bestNormalized,
+                        normalizedPercent: (bestNormalized * 100).toFixed(2),
+                    });
+                }
+            }
+
+            console.log('========================================');
+            console.log(`✅ آموزش فاز ${targetPhase} کامل شد!`);
+            console.log(
+                `🏆 بهترین امتیاز: ${bestRaw.toFixed(2)} / ${maxPossibleScore.toFixed(2)} (${(bestNormalized * 100).toFixed(2)}%)`
+            );
+            console.log('========================================');
+
+            this.showWeightChanges(bestWeights, `وزن‌های نهایی فاز ${targetPhase}`);
+
+            this.weights = bestWeights;
+            return bestWeights;
+        } finally {
+            // ✅ برگرداندن داده اصلی در هر شرایطی (موفق یا خطا)
+            this.trainingData = originalData;
+        }
+    }
+
+    // ============================================
+    // ۹. انواع جهش (همه فازها)
+    // ============================================
+    mutateWeightsStrong(weights: any) {
         return this._mutate(weights, 0.6, 1.5, -3, 5);
     }
 
-    mutateWeightsMedium(weights) {
+    mutateWeightsMedium(weights: any) {
         return this._mutate(weights, 0.4, 0.8, -3, 5);
     }
 
-    mutateWeightsWeak(weights) {
+    mutateWeightsWeak(weights: any) {
         return this._mutate(weights, 0.2, 0.3, -3, 5);
     }
 
-    mutateWeightsExtreme(weights) {
+    mutateWeightsExtreme(weights: any) {
         return this._mutate(weights, 0.8, 3.0, -5, 7);
     }
 
-    _mutate(weights, rate, scale, min, max) {
+    _mutate(weights: any, rate: number, scale: number, min: number, max: number) {
         const mutant = JSON.parse(JSON.stringify(weights));
 
         for (const strategy of Object.keys(mutant)) {
@@ -371,14 +534,45 @@ class BackgammonAITrainer {
     }
 
     // ============================================
+    // ۹.۱. جهش فقط برای یک فاز خاص
+    // ============================================
+    _mutatePhase(
+        weights: any,
+        targetPhase: GamePhase,
+        rate: number,
+        scale: number,
+        min: number,
+        max: number
+    ) {
+        const mutant = JSON.parse(JSON.stringify(weights));
+
+        for (const strategy of Object.keys(mutant)) {
+            const phaseWeights = mutant[strategy]?.[targetPhase];
+            if (!phaseWeights) continue;
+
+            for (const key of Object.keys(phaseWeights)) {
+                if (Math.random() < rate) {
+                    const change = (Math.random() - 0.5) * scale * 2;
+                    phaseWeights[key] = Math.max(
+                        min,
+                        Math.min(max, phaseWeights[key] + change)
+                    );
+                }
+            }
+        }
+
+        return mutant;
+    }
+
+    // ============================================
     // ۱۰. نمایش تغییرات وزن‌ها
     // ============================================
-    showWeightChanges(newWeights, label = '') {
+    showWeightChanges(newWeights: any, label = '') {
         console.log(`\n📊 ${label}:`);
 
         let totalDiff = 0;
         let count = 0;
-        const changes = [];
+        const changes: any[] = [];
 
         for (const strategy of Object.keys(newWeights)) {
             for (const phase of Object.keys(newWeights[strategy])) {
@@ -421,7 +615,7 @@ class BackgammonAITrainer {
     // ============================================
     // ۱۱. ارزیابی روی داده تست
     // ============================================
-    evaluateOnTestData(testData) {
+    evaluateOnTestData(testData: any[]) {
         if (!testData || testData.length === 0) {
             console.log('❌ داده تست وجود ندارد');
             return null;
@@ -447,7 +641,7 @@ class BackgammonAITrainer {
         return JSON.stringify(this.weights, null, 2);
     }
 
-    loadWeights(weightsJson) {
+    loadWeights(weightsJson: any) {
         this.weights =
             typeof weightsJson === 'string'
                 ? JSON.parse(weightsJson)

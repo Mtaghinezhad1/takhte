@@ -120,7 +120,7 @@ const RankingScreen = () => {
           style={[styles.playerName, isFirst && styles.playerNameFirst, { color: colors.text }]}
           numberOfLines={1}
         >
-          {player.username || 'ناشناس'}
+          {player.username || 'بازیکن مهمان'}
         </Text>
 
         <Text style={styles.elo}>{fa(Math.round(player.elo))}</Text>
@@ -198,7 +198,7 @@ const RankingScreen = () => {
                   {PODIUM_ORDER.map((idx, position) => {
                     const player = podiumPlayers[idx];
                     if (!player) return <View key={idx} style={styles.player} />;
-                    return renderPodiumPlayer(player, position);
+                    return renderPodiumPlayer(player, PODIUM_ORDER[position]);
                   })}
                 </View>
               </LinearGradient>
@@ -217,7 +217,7 @@ const RankingScreen = () => {
                   <Text style={styles.rankElo}>{fa(Math.round(row.elo))}</Text>
                   <View style={styles.rankInfo}>
                     <Text style={[styles.rankName, { color: colors.text, textAlign: isRTL ? 'left' : 'right' }]} numberOfLines={1}>
-                      {row.username || 'ناشناس'}
+                      {row.username || 'بازیکن مهمان'}
                     </Text>
                   </View>
                   <Image

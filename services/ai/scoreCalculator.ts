@@ -7,7 +7,7 @@ export const scoreCalculator = {
             return this.calculateDefaultScore(features);
         }
 
-        const rawScore = this.calculateRawScore(features, weights);
+        const rawScore = this.calculateRawScore(features, weights, showDetails);
 
         if (showDetails) {
             this.printDetails(features, weights, rawScore, strategy, phase, difficulty);
@@ -31,26 +31,29 @@ export const scoreCalculator = {
         return score * (1 + (Math.random() - 0.5) * noiseLevel);
     },
 
-    calculateRawScore(features, weights) {
+    calculateRawScore(features, weights, showDetails = false) {
         let score = 0;
 
-        if (weights.pipCount !== undefined) {
-            score += (features.pipCount?.pipDiff || 0) * weights.pipCount;
-        }
+
         if (weights.blots !== undefined) {
             score += (features.blot?.blotDiff || 0) * weights.blots;
+            if (showDetails) console.log('blot', (features.blot?.blotDiff || 0) * weights.blots)
         }
         if (weights.closedPoints !== undefined) {
             score += (features.closedPoints?.closedDiff || 0) * weights.closedPoints;
+            if (showDetails) console.log('closedPoint', (features.closedPoints?.closedDiff || 0) * weights.closedPoints)
         }
         if (weights.risk !== undefined) {
             score += (features.blot?.totalRisk || 0) * weights.risk;
+            if (showDetails) console.log('totalRisk', (features.blot?.totalRisk || 0) * weights.risk)
         }
         if (weights.primes !== undefined) {
             score += (features.prime?.primeDiff || 0) * weights.primes;
+            if (showDetails) console.log('prime', (features.prime?.primeDiff || 0) * weights.primes)
         }
         if (weights.hits !== undefined) {
             score += (features.attack?.totalHitValue || 0) * weights.hits;
+            if (showDetails) console.log('hits', (features.attack?.totalHitValue || 0) * weights.hits)
         }
 
         const specialKeys = [
@@ -68,8 +71,8 @@ export const scoreCalculator = {
             homeBoardStrength: features.closedPoints?.myClosedCount || 0,
             opponentOnBar: features.attack?.opponentOnBar || 0,
             anchorStrength: features.defense?.anchorStrength || 0,
-            primeExtensionValue: features.prime?.myMaxPrimeLength || 0,
-            blockingValue: -(features.prime?.oppMaxPrimeLength || 0),
+            primeExtensionValue: features.prime?.myMaxPrimeValue || 0,
+            blockingValue: -(features.prime?.oppMaxPrimeValue || 0),
             wastage: (features.pipCount?.effectivePips || 0) - (features.pipCount?.myPips || 0),
             contactAvoidance: (features.blot?.myBlots || 0) > 0 || (features.blot?.oppBlots || 0) > 0 ? -1 : 1,
             bearoffEfficiency: (features.bearoff?.diceUtilization || 0) - (features.bearoff?.averageDistance || 0) * 0.1,
@@ -95,6 +98,7 @@ export const scoreCalculator = {
         for (const key of specialKeys) {
             if (weights[key] !== undefined && specialFeatures[key] !== undefined) {
                 score += specialFeatures[key] * weights[key];
+                if (showDetails) console.log(key, specialFeatures[key] * weights[key])
             }
         }
 
@@ -103,22 +107,20 @@ export const scoreCalculator = {
 
     calculateDefaultScore(features) {
         return (
-            (features.pipCount?.pipDiff || 0) * 0.5 +
             (features.blot?.blotDiff || 0) * 0.3 +
             (features.closedPoints?.closedDiff || 0) * 0.4 +
             (features.blot?.totalRisk || 0) * -0.2 +
-            (features.prime?.primeDiff || 0) * 0.3 +
             (features.attack?.totalHitValue || 0) * 0.1
         );
     },
 
     printDetails(features, weights, rawScore, strategy, phase, difficulty) {
-        console.log('===== جزئیات محاسبه امتیاز =====');
-        console.log(`استراتژی: ${strategy}`);
-        console.log(`فاز: ${phase}`);
-        console.log(`سطح دشواری: ${difficulty}`);
-        console.log(`نویز (اعمال‌شده در selectBestMove): ${this.getNoiseLevel(difficulty)}`);
-        console.log(`امتیاز خام (بدون نویز): ${rawScore.toFixed(2)}`);
+        console.log('===== calcucate score details =====');
+        console.log(`strategy: ${strategy}`);
+        console.log(`phase: ${phase}`);
+        console.log(`difficulty: ${difficulty}`);
+        console.log(`(noise in selectBestMove): ${this.getNoiseLevel(difficulty)}`);
+        console.log(`raw score: ${rawScore.toFixed(2)}`);
         console.log('================================\n');
     }
 };

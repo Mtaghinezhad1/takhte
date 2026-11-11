@@ -64,6 +64,8 @@ export const strategyEngine = {
         // محاسبه تایمینگ
         const timing = this.calculateTiming(board, currentTurn, myPips, oppPips);
 
+        const hasContact = this.hasContact(board);
+
         return {
             myPips,
             oppPips,
@@ -78,11 +80,21 @@ export const strategyEngine = {
             iHaveAdvancedAnchor,
             opponentBlotsInOurHome,
             amIClosedOut,
-            timing
+            timing,
+            hasContact
         };
     },
 
     checkStrategicOverrides(features) {
+        if (!features.hasContact) {
+            return {
+                strategy: STRATEGIES.RACE,
+                confidence: 1.0,
+                scores: { RACE: 1.0 }
+            };
+        }
+
+
         // بسته شدن کامل = فقط زنده بمان
         if (features.amIClosedOut) {
             return {
@@ -91,6 +103,8 @@ export const strategyEngine = {
                 scores: { HOLDING: 1.0 }
             };
         }
+
+
 
         // Close out = بلیتز مطلق
         if (features.opponentOnBar >= 2 && features.myClosedPoints >= 4) {
@@ -123,23 +137,21 @@ export const strategyEngine = {
         };
 
         // لایه ۱: تخته داخلی (وزن ۳۵٪)
-        if (features.myHomeClosedPoints >= 4) {
+        if (features.myHomeClosedPoints >= 4 && features.opponentBlotsInOurHome >= 1) {
             scores.BLITZ += 0.30;
             scores.HOLDING -= 0.10;
         }
-        else if (features.myHomeClosedPoints >= 3) {
+        else if (features.myHomeClosedPoints >= 3 && features.opponentBlotsInOurHome >= 1) {
             scores.BLITZ += 0.20;
             scores.HOLDING -= 0.10;
         }
         else if (features.myHomeClosedPoints <= 1 && features.oppHomeClosedPoints >= 4) {
-            scores.RACE += 0.10;
             scores.HOLDING += 0.15;
         }
 
         // لایه ۲: پرایم (وزن ۲۵٪)
         if (features.myPrimeLength >= 5) {
             scores.PRIME += 0.25;
-            scores.RACE -= 0.05;
         }
         else if (features.myPrimeLength >= 4) {
             scores.PRIME += 0.05;
@@ -147,7 +159,6 @@ export const strategyEngine = {
 
         if (features.oppPrimeLength >= 4 && features.pipDiff < 0) {
             scores.BACKGAME += 0.10;
-            scores.RACE -= 0.15;
         }
 
         // لایه ۳: تماس و بلات‌ها (وزن ۲۰٪)
@@ -166,10 +177,8 @@ export const strategyEngine = {
         // لایه ۴: پیپ کانت (وزن ۱۵٪)
         const pipDiff = features.pipDiff;
         if (pipDiff > 30) {
-            scores.RACE += 0.08;
             scores.PRIME += 0.05;
         } else if (pipDiff > 15) {
-            scores.RACE += 0.05;
             scores.PRIME += 0.03;
         } else if (pipDiff < -30) {
             scores.HOLDING += 0.08;
@@ -181,10 +190,8 @@ export const strategyEngine = {
 
         // لایه ۵: فاز بازی (وزن ۵٪)
         if (phase === PHASES.OPENING) {
-            scores.RACE += 0.02;
             scores.PRIME += 0.03;
         } else if (phase === PHASES.ENDGAME) {
-            scores.RACE += 0.03;
             scores.BLITZ -= 0.02;
         }
 
@@ -230,6 +237,33 @@ export const strategyEngine = {
             }
         }
         return count;
+    },
+
+    hasContact(board: number[]): boolean {
+        // اگر هر یک از طرفین مهره روی بار دارد، تماس قطعی است
+        if (board[0] < 0 || board[25] > 0) {
+            return true;
+        }
+
+        let maxWhite = -Infinity; // بالاترین نقطهٔ مهره سفید
+        let minBlack = Infinity;  // پایین‌ترین نقطهٔ مهره سیاه
+
+        for (let i = 1; i <= 24; i++) {
+            if (board[i] > 0) {
+                maxWhite = Math.max(maxWhite, i);
+            }
+            if (board[i] < 0) {
+                minBlack = Math.min(minBlack, i);
+            }
+        }
+
+        // اگر یکی از طرفین هیچ مهره‌ای روی صفحه ندارد
+        if (maxWhite === -Infinity || minBlack === Infinity) {
+            return false;
+        }
+
+        // تماس وجود دارد اگر هنوز یک مهره سفید بالاتر از یک مهره سیاه باشد
+        return maxWhite > minBlack;
     },
 
     calculateTiming(board, currentTurn, myPips, oppPips) {

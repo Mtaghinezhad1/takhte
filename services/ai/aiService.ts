@@ -46,6 +46,7 @@ export const aiService = {
             strategyInfo = strategyEngine.determineStrategy(board, currentTurn);
         }
         const { strategy, phase } = strategyInfo;
+        // console.log(strategy, phase);
 
         // ✅ اگر customWeights داریم، وزن‌های مربوط به استراتژی تشخیص‌داده‌شده را استخراج کن
         let effectiveWeights = null;
@@ -87,10 +88,11 @@ export const aiService = {
 
             if (score > bestScore) {
                 bestScore = score;
-                console.log(bestScore);
                 bestMove = move;
             }
         });
+
+        // this.evaluateMoveWithoutDepth(board, bestMove, currentTurn, 10, strategy, phase, true);
 
         return bestMove;
     },

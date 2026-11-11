@@ -37,7 +37,6 @@ export const STRATEGIES = {
   RACE: 'RACE',
   HOLDING: 'HOLDING',
   BACKGAME: 'BACKGAME',
-  BEAROFF: 'BEAROFF'
 };
 
 export const PHASES = {
@@ -49,205 +48,177 @@ export const PHASES = {
 export const STRATEGY_PHASE_WEIGHTS = {
   "BLITZ": {
     "OPENING": {
-      "pipCount": 3.3330502291933954,
-      "blots": 2.179057113175946,
-      "hits": -2.7566325542471852,
-      "closedPoints": 0.9959364393795707,
-      "oppClosedPoint": 0.47557860349823156,
-      "homeClosedDifference": 1.7008718414994193,
-      "risk": 0.885643894902355,
-      "primes": -2.6283670565748176,
-      "anchorStrength": 2.7946040307416093,
-      "desperateEscape": 0.529783795609122,
-      "homeBoardStrength": 0.77144354875415,
-      "opponentOnBar": 0.05319177646194029
+      "blots": -0.12150999782660388,
+      "hits": -2.362481546571369,
+      "closedPoints": 0.41365710636667613,
+      "oppClosedPoint": 0.8886682898803246,
+      "homeClosedDifference": 4.1521225761808305,
+      "risk": -0.6026816477532488,
+      "primes": 0.28422150582672195,
+      "anchorStrength": 3.4001173724892473,
+      "desperateEscape": 2.5190353180539207,
+      "homeBoardStrength": -1.6853450246391712,
+      "opponentOnBar": 1.092901784132022
     },
     "MIDDLEGAME": {
-      "pipCount": 0.34177927287062504,
-      "blots": -1.5990076857376065,
-      "hits": 1.1952702037641303,
-      "closedPoints": 1.6626565118665753,
-      "oppClosedPoint": 0.3858515802922543,
-      "homeClosedDifference": -0.02353173215699711,
-      "risk": -0.32589567303468947,
-      "primes": -0.7274796990151091,
-      "anchorStrength": 2.202365603914768,
-      "desperateEscape": -0.08620221480803855,
-      "homeBoardStrength": 1.1679591567173757,
-      "opponentOnBar": -2.466573855059055
+      "blots": 0.02166757963965471,
+      "hits": -1.2183557656960067,
+      "closedPoints": 4.348140650236052,
+      "oppClosedPoint": 2.5793884188930387,
+      "homeClosedDifference": 2.207412765330944,
+      "risk": 0.05774669070293932,
+      "primes": -5,
+      "anchorStrength": -0.3624487637116185,
+      "desperateEscape": -2.282736220357342,
+      "homeBoardStrength": 4.919672887846281,
+      "opponentOnBar": -3
     },
     "ENDGAME": {
-      "pipCount": 0.5989766254832021,
-      "blots": 1.1869736005092086,
+      "blots": 1.079129014788735,
       "hits": 1.0007477375779195,
-      "oppClosedPoint": 0.5,
+      "oppClosedPoint": 0.7918775451200653,
       "homeClosedDifference": -0.0348556841515468,
-      "closedPoints": -0.2084144953024969,
+      "closedPoints": -0.261835015189381,
       "risk": 1.2370638590810759,
-      "primes": -2.551434862903178,
+      "primes": -2.844975522374468,
       "anchorStrength": 1.7298857042206763,
-      "desperateEscape": -0.7950614561090078,
-      "bearoffEfficiency": 1.7297080490945742,
-      "safety": 2.434307504221984
+      "desperateEscape": -0.5918951907811967,
+      "bearoffEfficiency": 1.7572735953058434,
+      "safety": 2.5723155447151194
     }
   },
   "PRIME": {
     "OPENING": {
-      "pipCount": 1.6230400047988962,
-      "blots": -0.005532904661879251,
-      "hits": -0.3492864774790385,
-      "oppClosedPoint": 0.6448142303414616,
-      "homeClosedDifference": 2.214073819884862,
-      "closedPoints": 2.052509742723196,
-      "risk": -2.3165490866764435,
-      "primes": 0.9152991447447334,
-      "anchorStrength": -1.175805983827505,
-      "desperateEscape": -0.5377481170704443,
-      "flexibility": -0.13041282416602507,
-      "blockingValue": -0.2150945625395097
+      "blots": -0.6056745303479034,
+      "hits": -2.28677557013306,
+      "oppClosedPoint": 3.9631456173641944,
+      "homeClosedDifference": -2.6475479613327475,
+      "closedPoints": 3.85595751390919,
+      "risk": -3,
+      "primes": 3.796866764991226,
+      "anchorStrength": -2.171653307259667,
+      "desperateEscape": -1.2512702803717441,
+      "flexibility": 0.2682415750011182,
+      "blockingValue": 1.7753566981617777
     },
     "MIDDLEGAME": {
-      "pipCount": 0.2735973149218949,
-      "blots": 5,
-      "hits": 1.255720922954279,
-      "oppClosedPoint": 0.5,
-      "homeClosedDifference": 0.2941472900804398,
-      "closedPoints": -0.9673490784713559,
-      "risk": -2.6245752377843017,
-      "primes": -0.6037012138317632,
-      "anchorStrength": 0.39331520535607156,
-      "desperateEscape": 0.5534113757675662,
-      "primeExtensionValue": 0.8113538439033903,
-      "blockingValue": 1.5299542717993762
+      "blots": 4.995194514094175,
+      "hits": 0.17518067048639274,
+      "oppClosedPoint": 2.8641741450773,
+      "homeClosedDifference": -1.629404358290222,
+      "closedPoints": -3,
+      "risk": -3,
+      "primes": 2.0683429246224945,
+      "anchorStrength": -1.5765603158573744,
+      "desperateEscape": -2.2483261681953275,
+      "primeExtensionValue": 1.089766369944058,
+      "blockingValue": 2.313835285320502
     },
     "ENDGAME": {
-      "pipCount": 0.937043622431559,
-      "blots": -0.054125079020058586,
-      "hits": 2.894892033820502,
-      "oppClosedPoint": 0.18905024504796797,
-      "homeClosedDifference": -0.5980413122901969,
-      "closedPoints": 2.0231746350722144,
+      "blots": -0.32743824798482385,
+      "hits": 2.6564997764728546,
+      "oppClosedPoint": -0.09062906080844413,
+      "homeClosedDifference": -0.8489969926495391,
+      "closedPoints": 2.081144569908985,
       "risk": 0.0996047930384163,
-      "primes": 2.6946754035978837,
-      "anchorStrength": -0.9286801911258576,
+      "primes": 2.6281186270484866,
+      "anchorStrength": -0.8632995539245341,
       "desperateEscape": -0.899463116125606,
       "bearoffPrep": 0.6259963524483626,
-      "safetyInHome": 2.645079928787693
+      "safetyInHome": 2.7217249892597946
     }
   },
   "HOLDING": {
     "OPENING": {
-      "pipCount": -1.0922387970438079,
-      "blots": 1.2517542968309006,
-      "hits": -2.081757616774204,
-      "oppClosedPoint": 0.5,
-      "homeClosedDifference": 1.655856067567231,
-      "closedPoints": 0.21062002557629989,
-      "risk": 1.966139111680743,
-      "primes": 0.80170031202294,
-      "anchorStrength": 2.196256300848535,
-      "escapePotential": 1.3282951344541025
+      "blots": 1.8971387359447387,
+      "hits": -1.6777120906048566,
+      "oppClosedPoint": 2.528917414096862,
+      "homeClosedDifference": 4.42776324490884,
+      "closedPoints": 1.6036145761491443,
+      "risk": 2.347551216559315,
+      "primes": 2.198430592173531,
+      "anchorStrength": 1.5682637441280973,
+      "escapePotential": 2.3539322005948566
     },
     "MIDDLEGAME": {
-      "pipCount": -3,
-      "blots": 4.190947476330709,
-      "hits": 4.066762791799154,
-      "oppClosedPoint": 0.5,
-      "homeClosedDifference": 1.7054957359374092,
-      "closedPoints": 2.4434375130032095,
-      "risk": 1.869138238533183,
-      "primes": 1.0152947481294428,
-      "anchorStrength": -2.400358327273482,
-      "counterPlay": 0.8097258448324665
+      "blots": 6.56461626913577,
+      "hits": 3.979568167663789,
+      "oppClosedPoint": 1.4089867238046012,
+      "homeClosedDifference": 4.280469786118835,
+      "closedPoints": 1.908384453063576,
+      "risk": 3.741271788802811,
+      "primes": 4.328870658704557,
+      "anchorStrength": -3,
+      "counterPlay": 3.4974394848246675
     },
     "ENDGAME": {
-      "pipCount": 0.029713236231443438,
       "blots": 0.538748497959969,
       "hits": 0.49385224895421986,
-      "oppClosedPoint": 0.20899762765347024,
+      "oppClosedPoint": 0.40217786656420007,
       "homeClosedDifference": -0.8967296280229061,
       "closedPoints": 1.9621113333157554,
       "risk": 1.9919604410236689,
-      "primes": 3.0130015318867116,
-      "anchorStrength": -0.3328894221645224,
-      "desperateEscape": -1.721418105950122,
-      "savingGammon": -1.0928141388929538
+      "primes": 2.7424751760631154,
+      "anchorStrength": -0.3016223072238747,
+      "desperateEscape": -1.8084802321722409,
+      "savingGammon": -1.0413659029306623
     }
   },
   "BACKGAME": {
     "MIDDLEGAME": {
-      "pipCount": -1.512918478200392,
-      "blots": 3.522881659091256,
-      "hits": 2.4356860646444147,
-      "oppClosedPoint": 0.6710809411751947,
-      "homeClosedDifference": 1.816601030880968,
-      "closedPoints": 0.026218470912978936,
-      "risk": 0.3308981485349649,
-      "primes": 0.5524391461942737,
-      "timingValue": 1.7278492533093643,
-      "anchorStrength": -1.866530792604589,
-      "anchorCount": -0.6818307550156664,
-      "hittingNumbers": -2.0293536420788714
+      "blots": 4.540999424565655,
+      "hits": 5,
+      "oppClosedPoint": -2.878115062590845,
+      "homeClosedDifference": 1.0956266119181333,
+      "closedPoints": 1.9888692758569815,
+      "risk": 3.6219174725609786,
+      "primes": 2.648565895225316,
+      "timingValue": 5.213373622898546,
+      "anchorStrength": -0.15727812879616834,
+      "anchorCount": -4.878886990162802,
+      "hittingNumbers": -3
     },
     "ENDGAME": {
-      "pipCount": 2.763382425619311,
-      "blots": -1.679099100101387,
-      "hits": 1.7916726192975188,
-      "oppClosedPoint": 0.8849155510997947,
+      "blots": -1.5238181022637785,
+      "hits": 2.0290537076084854,
+      "oppClosedPoint": 0.48900305144685924,
       "homeClosedDifference": -2.5302141417149056,
-      "closedPoints": 0.11199880894688341,
-      "risk": -0.44544320652401354,
+      "closedPoints": 0.26028657491457163,
+      "risk": -0.5580855651724536,
       "primes": -3,
-      "anchorStrength": -0.29828530376254114,
-      "anchorCount": 0.5536052753834483,
+      "anchorStrength": -0.19512166057143412,
+      "anchorCount": 0.7762645470876564,
       "hitAndContain": 5,
       "containmentValue": 0.4068513846040238
     }
   },
   "RACE": {
     "OPENING": {
-      "pipCount": 1.5958159730807853,
-      "blots": 2.3168478030529034,
-      "hits": 1.796822620678132,
-      "closedPoints": -2.8909279277353264,
-      "risk": 3.9959443302547935,
-      "primes": -0.49551636247268716,
-      "wastage": -0.4039248336317445,
-      "contactAvoidance": -0.6243589247423005
+      "blots": 2.478981739663958,
+      "hits": 3.010740170416245,
+      "closedPoints": -1.3052113771376552,
+      "risk": 4.667086853939155,
+      "primes": -3,
+      "wastage": -2.9519125542641973,
+      "contactAvoidance": 2.6572930006723205
     },
     "MIDDLEGAME": {
-      "pipCount": 4.163787201449711,
-      "blots": 3.6786973363443054,
-      "hits": -1.0906216651429081,
-      "closedPoints": 0.4534787647999795,
-      "risk": -1.3732008757119476,
-      "primes": 1.5800731831113441,
-      "wastage": 3.804476071949107,
-      "gapControl": -2.351419879400949
+      "blots": 2.489091319699925,
+      "hits": 2.4514165989719205,
+      "closedPoints": 3.381871738141527,
+      "risk": -2.4395998415229223,
+      "primes": 2.228283431686264,
+      "wastage": 3.3396092737671825,
+      "gapControl": -3.225234203664348
     },
     "ENDGAME": {
-      "pipCount": 2.715646222996521,
-      "blots": -0.0022889655165805323,
+      "blots": 0.29335584484137583,
       "hits": -1.3196220455371561,
-      "closedPoints": -1.2275287995848634,
+      "closedPoints": -1.327074002295069,
       "risk": -1.2146423759519727,
-      "primes": -0.1813615362746338,
-      "bearoffEfficiency": 0.6485489605552825,
-      "wastage": -2.232756738311315
-    }
-  },
-  "BEAROFF": {
-    "ENDGAME": {
-      "pipCount": 0.9693753731980376,
-      "blots": -1.5760315523962714,
-      "hits": 1.8116870564991365,
-      "closedPoints": -1.6479703557607772,
-      "risk": -1.7133013665024395,
-      "primes": 2.2756657269855323,
-      "bearoffEfficiency": 1.6852785012299458,
-      "diceUtilization": 3.8014133179226692,
-      "averageDistance": 2.1416450628182058,
-      "safety": 2.5137905415440676
+      "primes": -0.20074003671887283,
+      "bearoffEfficiency": 0.6889126107106173,
+      "wastage": -2.2608697824610737
     }
   }
 };
@@ -264,6 +235,25 @@ export const LEVEL_CONFIG = {
   '9': { depth: 0, difficulty: '9' },
   '10': { depth: 0, difficulty: '10' },
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

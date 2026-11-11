@@ -4,7 +4,6 @@ import {
     calculateAverageDistance,
     calculateDiceUtilization,
     checkerValueByPosition, countBlots,
-    countPrimes,
     countRemainingCheckers,
     detectGamePhase,
     getBlotHitProbability,
@@ -112,15 +111,12 @@ export const featureExtractor = {
     },
 
     extractPrimeFeatures(board, color, opponent) {
-        const myPrimes = countPrimes(board, color);
-        const oppPrimes = countPrimes(board, opponent);
-
+        const myPrime = this.calculateMaxPrimeValue(board, color);
+        const oppPrime = this.calculateMaxPrimeValue(board, opponent);
         return {
-            myPrimes,
-            oppPrimes,
-            primeDiff: myPrimes - oppPrimes,
-            myMaxPrimeLength: this.calculateMaxPrimeLength(board, color),
-            oppMaxPrimeLength: this.calculateMaxPrimeLength(board, opponent)
+            myMaxPrimeValue: myPrime,
+            oppMaxPrimeValue: oppPrime,
+            primeDiff: myPrime - oppPrime
         };
     },
 
@@ -169,7 +165,7 @@ export const featureExtractor = {
             stackingPenalty: this.calculateStackingPenalty(board, color),
             flexibility: this.calculateFlexibility(board, color),
             connectivity: this.calculateConnectivity(board, color),
-            distribution: this.calculateDistribution(board, color)
+            distribution: this.calculateDistribution(board, color),
         };
     },
 
@@ -222,7 +218,7 @@ export const featureExtractor = {
         return 1 - ENTRANCE_PROB[count];
     },
 
-    calculateMaxPrimeLength(board, color) {
+    calculateMaxPrimeValue(board, color) {
         let maxLength = 0;
         let currentLength = 0;
 
@@ -238,7 +234,12 @@ export const featureExtractor = {
             }
         }
 
-        return maxLength;
+        // calculate value based on possibilities
+        let primeValue = (maxLength ** 2) / 36;
+        if (maxLength >= 6) {
+            primeValue = 1;
+        }
+        return primeValue;
     },
 
     calculateAnchorStrength(anchors, color) {

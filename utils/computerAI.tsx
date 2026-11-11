@@ -63,27 +63,6 @@ export const countBlots = (board, color) => {
     return blots;
 }
 
-export const countPrimes = (board, color) => {
-    let maxConsecutive = 0;
-    let currentStreak = 0;
-
-    for (let i = 1; i <= 24; i++) {
-        const count = board[i];
-        const isMyPoint = (color === 'white' && count >= 2) ||
-            (color === 'black' && count <= -2);
-
-        if (isMyPoint) {
-            currentStreak++;
-            maxConsecutive = Math.max(maxConsecutive, currentStreak);
-        } else {
-            currentStreak = 0;
-        }
-    }
-
-    // ارزش بیشتر برای پرایم‌های ۶ تایی
-    return maxConsecutive >= 6 ? maxConsecutive * 2 : maxConsecutive;
-}
-
 /**
  * احتمال اینکه یک بلات توسط حریف ضربه بخورد (با در نظر گرفتن همه مهره‌های حریف)
  */

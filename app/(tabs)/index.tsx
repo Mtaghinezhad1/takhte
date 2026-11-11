@@ -41,6 +41,7 @@ export default function HomeScreen() {
         <View style={styles.profileContainer}>
           <ProfileCard />
         </View>
+        {/* <TrainerPanel/> */}
         <View style={styles.cardsContainer}>
           {games.map((game) => (
             <View key={game.id}>
